@@ -1,0 +1,37 @@
+.formInput {
+    display: flex;
+    flex-direction: column;
+    width: 250px;
+
+    input {
+        padding: 15px;
+        margin: 10px 0px; // top-bottom, left-right
+        border-radius: 10px;
+        border: 1px solid gray;
+
+        // Select and style only if the value of the <input> element is invalid
+        // ~ general sibiling selector
+        // [attribute*=value] Selector
+        &:invalid[focused="true"] ~ span {
+            // https://morioh.com/p/82d24895598e
+            display: block;
+        }
+
+        // Make sure no space btwn
+        &:invalid[focused="true"] {
+            border: 1px solid red;
+        }
+    }
+
+    label {
+        font-size: 13px;
+        color: gray;
+    }
+
+    span {
+        font-size: 12px;
+        padding: 4px;
+        color: red;
+        display: none;
+    }
+}
