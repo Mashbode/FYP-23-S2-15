@@ -21,24 +21,34 @@ export const userColumns = [
     headerName: "Email",
     width: 230,
   },
-
   {
-    field: "address",
-    headerName: "Address",
-    width: 100,
+    field: "birthday",
+    headerName: "Birthday",
+    width: 130,
   },
   {
-    field: "status",
-    headerName: "Status",
-    width: 160,
+    field: "timeStamp",
+    headerName: "Registered",
+    width: 130,
     renderCell: (params) => {
-      return (
-        <div className={`cellWithStatus ${params.row.status}`}>
-          {params.row.status}
-        </div>
-      );
+      let lastModifiedDate = new Date(
+        params.row.timeStamp.toDate() // Returns Date object (Firebase)
+      ).toDateString(); // Into readable string (React JS)
+      return <div className="cellWithLastModified">{lastModifiedDate}</div>;
     },
   },
+  // {
+  //   field: "status",
+  //   headerName: "Status",
+  //   width: 160,
+  //   renderCell: (params) => {
+  //     return (
+  //       <div className={`cellWithStatus ${params.row.status}`}>
+  //         {params.row.status}
+  //       </div>
+  //     );
+  //   },
+  // },
 ];
 
 export const fileColumns = [

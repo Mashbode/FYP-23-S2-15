@@ -276,7 +276,12 @@ const Datatable = ({ type }) => {
     <div className="datatable">
       <div className="datatableTitle">
         {type.replace(/^./, type[0].toUpperCase())}
-        <Link to={`/${type}/new`} className="link">
+        {/* <Link to={`/${type}/new`} className="link"> */}
+        <Link
+          to={`/${type}/new`}
+          // Add New button to add new user is disabled as of now
+          className={type === "users" ? "link user" : "link"}
+        >
           Add New
         </Link>
       </div>
