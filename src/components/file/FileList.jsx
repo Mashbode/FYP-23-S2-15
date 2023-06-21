@@ -7,7 +7,8 @@ const FileList = ({ files, isFileUploading }) => {
       {files &&
         files.map((file) => (
           <FileItem
-            key={file.name}
+            // This is to avoid the error when the user uploads the same file after delete
+            key={`${file.name}_${new Date().getTime()}`}
             file={file}
             isFileUploading={isFileUploading}
           />
