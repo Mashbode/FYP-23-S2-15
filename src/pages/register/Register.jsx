@@ -123,7 +123,7 @@ const Register = () => {
       });
 
       // setRegistering(false);
-      navigate(-1);
+      navigate("/login", { replace: true });
     } catch (error) {
       console.log(error);
     }
