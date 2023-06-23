@@ -109,32 +109,40 @@ const Datatable = ({ type }) => {
 
   const handleUserDelete = async (id) => {
     try {
-      // db, collection, id
-      await deleteDoc(doc(db, "users", id));
-      setData(data.filter((item) => item.id !== id)); // If used on its own, when refreshed the data is not deleted
+      if (window.confirm("Are you sure to delete the user?")) {
+        // db, collection, id
+        await deleteDoc(doc(db, "users", id));
+        setData(data.filter((item) => item.id !== id)); // If used on its own, when refreshed the data is not deleted
+      } else {
+        return;
+      }
     } catch (error) {}
   };
 
   const handleFileDelete = async (params) => {
     try {
-      // Delete the document
-      // db, collection, id
-      await deleteDoc(doc(db, "files", params.row.id));
+      if (window.confirm("Are you sure to delete the file?")) {
+        // Delete the document
+        // db, collection, id
+        await deleteDoc(doc(db, "files", params.row.id));
 
-      // Delete the file inside storage
-      const name = `${currentUser.uid}_files/${params.row.filename}`;
-      const storageRef = ref(storage, name);
+        // Delete the file inside storage
+        const name = `${currentUser.uid}_files/${params.row.filename}`;
+        const storageRef = ref(storage, name);
 
-      // Delete the file
-      deleteObject(storageRef)
-        .then(() => {
-          console.log("File deleted successfully");
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+        // Delete the file
+        deleteObject(storageRef)
+          .then(() => {
+            console.log("File deleted successfully");
+          })
+          .catch((error) => {
+            console.log(error);
+          });
 
-      setData(data.filter((item) => item.id !== params.row.id)); // If used on its own, when refreshed the data is not deleted
+        setData(data.filter((item) => item.id !== params.row.id)); // If used on its own, when refreshed the data is not deleted
+      } else {
+        return;
+      }
     } catch (error) {}
   };
 
