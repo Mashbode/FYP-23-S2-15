@@ -9,7 +9,7 @@ import { Link } from "react-router-dom";
 import CircularProgress from "@mui/material/CircularProgress";
 
 const Login = () => {
-  const [error, setError] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
   // const [email, setEmail] = useState("");
   // const [password, setPassword] = useState("");
   const [values, setValues] = useState({
@@ -56,12 +56,22 @@ const Login = () => {
         const user = userCredential.user;
         // console.log(user);
         dispatch({ type: "LOGIN", payload: user });
-        navigate("/");
+        navigate("/home");
       })
       .catch((error) => {
-        // const errorCode = error.code;
-        // const errorMessage = error.message;
-        setError(true);
+        switch (error.code) {
+          case "auth/user-not-found": // Email X Pwd O/X
+            setErrorMsg("User is not found with provided email!");
+            break;
+          case "auth/wrong-password": // Email O Pwd X
+            setErrorMsg("Provided password is wrong!");
+            break;
+          default:
+            setErrorMsg(`Contact admin: ${error.code}`);
+            break;
+        }
+
+        setLoggingIn(false);
       });
   };
 
@@ -98,7 +108,7 @@ const Login = () => {
         <button>
           {loggingIn ? <CircularProgress color="inherit" size={20} /> : "Login"}
         </button>
-        {/* {error && <span>Wrong email or password!</span>} */}
+        {<span>{errorMsg}</span>}
         <Link to={`/register`} className="link">
           Don't have an account?
         </Link>
