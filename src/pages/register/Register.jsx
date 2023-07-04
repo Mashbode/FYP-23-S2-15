@@ -17,6 +17,7 @@ const Register = () => {
     confirmPassword: "",
   }); // Handle multiple input
   const [registering, setRegistering] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
   const formInputs = [
     {
@@ -125,7 +126,16 @@ const Register = () => {
       // setRegistering(false);
       navigate("/login", { replace: true });
     } catch (error) {
-      console.log(error);
+      switch (error.code) {
+        case "auth/email-already-in-use":
+          setErrorMsg("Provided email is already in use!");
+          break;
+        default:
+          setErrorMsg(`Contact admin: ${error.code}`);
+          break;
+      }
+
+      setRegistering(false);
     }
   };
 
@@ -159,6 +169,7 @@ const Register = () => {
             "Submit"
           )}
         </button>
+        {<span className="registerErr">{errorMsg}</span>}
       </form>
     </div>
   );

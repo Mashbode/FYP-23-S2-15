@@ -108,10 +108,11 @@ const Login = () => {
         <button>
           {loggingIn ? <CircularProgress color="inherit" size={20} /> : "Login"}
         </button>
-        {<span>{errorMsg}</span>}
-        <Link to={`/register`} className="link">
-          Don't have an account?
-        </Link>
+        <div className="links">
+          <Link to={`/register`}>Don't have an account?</Link>
+          <Link to={`/restore`}>Forgot password?</Link>
+        </div>
+        {<span className="loginErr">{errorMsg}</span>}
       </form>
     </div>
   );

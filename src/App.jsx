@@ -2,6 +2,7 @@ import Landing from "./pages/landing/Landing";
 import Home from "./pages/home/Home";
 import Login from "./pages/login/Login";
 import Register from "./pages/register/Register";
+import Restore from "./pages/restore/Restore";
 import List from "./pages/list/List";
 import Single from "./pages/single/Single";
 import New from "./pages/new/New";
@@ -115,6 +116,7 @@ function App() {
           <Route path="/">
             <Route path="login" element={<Login />} />
             <Route path="register" element={<Register />} />
+            <Route path="restore" element={<Restore />} />
             {/* 
             1. Determines if the route is an index route. Index routes render into their parent's Outlet at their parent's URL (like a default child route). 
             2. Whenever we go to homepage and if there’s no current user, website directs to login page
