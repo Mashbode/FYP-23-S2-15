@@ -1,4 +1,4 @@
-.login {
+.restore {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -56,16 +56,15 @@
     //     padding: 4px;
     // }
 
-    .links {
+    .link {
         display: flex;
-        align-items: center;
-        justify-content: space-evenly;
+        justify-content: center;
         color: purple;
         font-size: 11px;
         cursor: pointer;
     }
 
-    .loginErr {
+    .restoreErr {
         display: flex;
         justify-content: center;
         font-size: 12px;
