@@ -7,6 +7,7 @@ import { auth } from "../../firebase";
 import { AuthContext } from "../../context/AuthContext";
 import { Link } from "react-router-dom";
 import CircularProgress from "@mui/material/CircularProgress";
+import ReCAPTCHA from "react-google-recaptcha";
 
 const Login = () => {
   const [errorMsg, setErrorMsg] = useState("");
@@ -17,6 +18,7 @@ const Login = () => {
     password: "",
   });
   const [loggingIn, setLoggingIn] = useState(false);
+  const [loginDisabled, setLoginDisabled] = useState(true);
 
   const navigate = useNavigate();
 
@@ -105,7 +107,13 @@ const Login = () => {
             setPassword(e.target.value);
           }}
         /> */}
-        <button>
+        <ReCAPTCHA // Version 2
+          sitekey="6LepZvgmAAAAADAKbms268rK5jJFAy28Z3yV6f3H"
+          onChange={() => {
+            setLoginDisabled(false);
+          }}
+        />
+        <button disabled={loginDisabled}>
           {loggingIn ? <CircularProgress color="inherit" size={20} /> : "Login"}
         </button>
         <div className="links">
