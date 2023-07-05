@@ -37,6 +37,10 @@
         font-size: 18px;
         cursor: pointer;
         margin: 15px 0px;
+
+        &:disabled {
+            background-color: rgba(128, 0, 128, 0.55);
+        }
     }
 
     // .registerLink {

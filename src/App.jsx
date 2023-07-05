@@ -7,6 +7,7 @@ import List from "./pages/list/List";
 import Single from "./pages/single/Single";
 import New from "./pages/new/New";
 import NewFile from "./pages/new/NewFile";
+import OTP from "./pages/otp/OTP";
 
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
@@ -117,6 +118,7 @@ function App() {
             <Route path="login" element={<Login />} />
             <Route path="register" element={<Register />} />
             <Route path="restore" element={<Restore />} />
+            <Route path="otp" element={<OTP />} />
             {/* 
             1. Determines if the route is an index route. Index routes render into their parent's Outlet at their parent's URL (like a default child route). 
             2. Whenever we go to homepage and if there’s no current user, website directs to login page
