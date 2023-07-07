@@ -7,7 +7,7 @@ import { auth } from "../../firebase";
 import { AuthContext } from "../../context/AuthContext";
 import { Link } from "react-router-dom";
 import CircularProgress from "@mui/material/CircularProgress";
-import ReCAPTCHA from "react-google-recaptcha";
+// import ReCAPTCHA from "react-google-recaptcha";
 
 const Login = () => {
   const [errorMsg, setErrorMsg] = useState("");
@@ -18,11 +18,10 @@ const Login = () => {
     password: "",
   });
   const [loggingIn, setLoggingIn] = useState(false);
-  const [loginDisabled, setLoginDisabled] = useState(true);
-
-  const navigate = useNavigate();
+  // const [loginDisabled, setLoginDisabled] = useState(true);
 
   const { dispatch } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const formInputs = [
     {
@@ -107,15 +106,28 @@ const Login = () => {
             setPassword(e.target.value);
           }}
         /> */}
-        <ReCAPTCHA // Version 2
-          sitekey="6LepZvgmAAAAADAKbms268rK5jJFAy28Z3yV6f3H"
+        {/* <ReCAPTCHA // Version 2
+          sitekey="6LepZvgmAAAAADAKbms268rK5jJFAy28Z3yV6f3H" // 체크표시
+          // sitekey="6Ld6Cv4mAAAAAF1crKvlaFevtmpgpHZoJvkW7jXE" // 표시되지 않는
+          // size="invisible"
           onChange={() => {
             setLoginDisabled(false);
           }}
-        />
-        <button disabled={loginDisabled}>
-          {loggingIn ? <CircularProgress color="inherit" size={20} /> : "Login"}
-        </button>
+        /> */}
+        <div className="buttons">
+          <button
+          // disabled={loginDisabled}
+          >
+            {loggingIn ? (
+              <CircularProgress color="inherit" size={20} />
+            ) : (
+              "Login"
+            )}
+          </button>
+          <Link style={{ textDecoration: "none" }} to="/otp">
+            <button>Login with OTP</button>
+          </Link>
+        </div>
         <div className="links">
           <Link to={`/register`}>Don't have an account?</Link>
           <Link to={`/restore`}>Forgot password?</Link>
