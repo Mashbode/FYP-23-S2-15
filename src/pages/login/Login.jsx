@@ -7,6 +7,7 @@ import { auth } from "../../firebase";
 import { AuthContext } from "../../context/AuthContext";
 import { Link } from "react-router-dom";
 import CircularProgress from "@mui/material/CircularProgress";
+// import ReCAPTCHA from "react-google-recaptcha";
 
 const Login = () => {
   const [errorMsg, setErrorMsg] = useState("");
@@ -105,7 +106,14 @@ const Login = () => {
             setPassword(e.target.value);
           }}
         /> */}
-
+        {/* <ReCAPTCHA // Version 2
+          sitekey="6LepZvgmAAAAADAKbms268rK5jJFAy28Z3yV6f3H" // 체크표시
+          // sitekey="6Ld6Cv4mAAAAAF1crKvlaFevtmpgpHZoJvkW7jXE" // 표시되지 않는
+          // size="invisible"
+          onChange={() => {
+            setLoginDisabled(false);
+          }}
+        /> */}
         <div className="buttons">
           <button
           // disabled={loginDisabled}

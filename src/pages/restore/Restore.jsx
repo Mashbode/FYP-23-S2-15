@@ -88,7 +88,13 @@ const Restore = () => {
         </button>
         {<span className="restoreErr">{errorMsg}</span>}
       </form>
-      {alertDialog && <AlertDialog />}
+      {alertDialog && (
+        <AlertDialog
+          title="Check your device"
+          description="We sent an email to your account. Check the mail app and click the link inside."
+          link="/login"
+        />
+      )}
     </div>
   );
 };

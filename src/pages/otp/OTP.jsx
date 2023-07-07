@@ -26,12 +26,14 @@ const OTP = () => {
   function onReCaptchaVerify() {
     if (!window.recaptchaVerifier) {
       window.recaptchaVerifier = new RecaptchaVerifier(
+        // "send-code",
         "recaptcha-container",
         {
           size: "invisible",
+          // size: "normal",
           callback: (response) => {
             // reCAPTCHA solved, allow signInWithPhoneNumber.
-            onSignup();
+            onSignIn();
           },
           "expired-callback": () => {
             // Response expired. Ask user to solve reCAPTCHA again.
@@ -43,7 +45,7 @@ const OTP = () => {
   }
 
   // https://firebase.google.com/docs/auth/web/phone-auth?hl=en&authuser=0&_gl=1*15phf25*_ga*MTY1MDUwNDE3NC4xNjg1NDU0ODQ5*_ga_CW55HF8NVT*MTY4ODYyMjUxOC42Mi4xLjE2ODg2MjI1MjguMC4wLjA.#send-a-verification-code-to-the-users-phone
-  function onSignup() {
+  function onSignIn() {
     setLoading(true);
     onReCaptchaVerify();
 
@@ -53,10 +55,10 @@ const OTP = () => {
       .then((confirmationResult) => {
         // SMS sent. Prompt user to type the code from the message, then sign the
         // user in with confirmationResult.confirm(code).
+        // toast.success("OTP sent successfully!");
         window.confirmationResult = confirmationResult;
         setLoading(false);
         setShowOtp(true);
-        toast.success("OTP sent successfully!");
       })
       .catch((error) => {
         // Error; SMS not sent
@@ -87,14 +89,25 @@ const OTP = () => {
       })
       .catch((error) => {
         // User couldn't sign in (bad verification code?)
-        console.log(error);
-        window.location.reload();
-        setLoading(false);
+        switch (error.code) {
+          case "auth/invalid-verification-code":
+            toast.error("Verification code does not match.");
+            break;
+          default:
+            toast.error(`Contact admin: ${error.code}`);
+            break;
+        }
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
+        // setLoading(false);
       });
   }
 
   return (
     <div>
+      <Toaster toastOptions={{ duration: 2000 }} />
+      <div id="recaptcha-container"></div>
       {/* <ReCAPTCHA // Version 2
         // sitekey="6LepZvgmAAAAADAKbms268rK5jJFAy28Z3yV6f3H" // 체크표시
         sitekey="6Ld6Cv4mAAAAAF1crKvlaFevtmpgpHZoJvkW7jXE" // 표시되지 않는
@@ -103,16 +116,14 @@ const OTP = () => {
         //   setLoginDisabled(false);
         // }}
       /> */}
-      <Toaster toastOptions={{ duration: 4000 }} />
-      <div id="recaptcha-container"></div>
       <div className="otp">
         {/* {user ? (
           "Login success"
-        ) : (
-          <>
+          ) : (
+            <>
             
-          </>
-        )} */}
+            </>
+          )} */}
         {showOtp ? ( // otp vs phone
           <>
             <div className="form">
@@ -150,7 +161,10 @@ const OTP = () => {
                 value={phone}
                 onChange={setPhone}
               ></PhoneInput>
-              <button onClick={onSignup}>
+              <button
+                // id="send-code"
+                onClick={onSignIn}
+              >
                 {loading ? (
                   <CircularProgress color="inherit" size={20} />
                 ) : (
