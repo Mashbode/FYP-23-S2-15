@@ -4,9 +4,55 @@ import Navbar from "../../components/navbar/Navbar";
 import Chart from "../../components/chart/chart/Chart";
 import List from "../../components/table/Table";
 
+import { AuthContext } from "../../context/AuthContext";
+import { useContext } from "react";
+
+import { doc, updateDoc } from "firebase/firestore";
+import { db } from "../../firebase";
+
+import { toast, Toaster } from "react-hot-toast";
+
 const Single = () => {
+  const { dispatch } = useContext(AuthContext);
+
+  const handleUserDelete = async () => {
+    if (window.confirm("Are you sure to delete?")) {
+      const user = JSON.parse(localStorage.getItem("user")); // Getting a user from local storage
+      console.log(user);
+      console.log(user.uid);
+
+      // // db, collection, id
+      await updateDoc(doc(db, "users", user.uid), {
+        status: "deleted",
+      })
+        .then(() => {
+          // User deleted.
+          toast.success("Your account deleted successfully!");
+          setTimeout(() => {
+            dispatch({ type: "LOGOUT" });
+          }, 2000);
+        })
+        .catch((error) => {
+          // An error ocurred
+          toast.error(`Contact admin: ${error.code}`);
+        });
+      // await deleteUser(user)
+      //   .then(() => {
+      //     // User deleted.
+      //     toast.success("Your account deleted successfully!");
+      //   })
+      //   .catch((error) => {
+      //     // An error ocurred
+      //     toast.error(`Contact admin: ${error.code}`);
+      //   });
+    } else {
+      return;
+    }
+  };
+
   return (
     <div className="single">
+      <Toaster toastOptions={{ duration: 2000 }} />
       <Sidebar />
       <div className="singleContainer">
         <Navbar />
@@ -42,6 +88,9 @@ const Single = () => {
                   <span className="itemValue">USA</span>
                 </div>
               </div>
+            </div>
+            <div className="deleteButton" onClick={handleUserDelete}>
+              Delete Account
             </div>
           </div>
           <div className="right">

@@ -28,6 +28,19 @@
                     border-radius: 0px 0px 0px 5px;
                 }
 
+                .deleteButton {
+                    // width: 100%;
+                    display: flex;
+                    justify-content: center;
+                    padding: 5px;
+                    border-radius: 5px;
+                    border: none;
+                    font-size: 12px;
+                    background-color: rgba(255, 0, 0, 0.05);
+                    color: red;
+                    cursor: pointer;
+                }
+
                 .item {
                     display: flex;
                     gap: 20px;

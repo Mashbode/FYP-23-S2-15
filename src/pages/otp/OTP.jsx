@@ -4,8 +4,9 @@ import OtpInput from "otp-input-react";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import CircularProgress from "@mui/material/CircularProgress";
-import { auth } from "../../firebase";
+import { db, auth } from "../../firebase";
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
+import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { useState, useContext } from "react";
 // import ReCAPTCHA from "react-google-recaptcha";
 import { toast, Toaster } from "react-hot-toast";
@@ -80,11 +81,18 @@ const OTP = () => {
     window.confirmationResult
       .confirm(otp)
       .then((result) => {
+        setLoading(false);
         // console.log(result.user);
         // setUser(result.user);
-        setLoading(false);
+        const user = result.user;
 
-        dispatch({ type: "LOGIN", payload: result.user });
+        setDoc(doc(db, "users", user.uid), {
+          phoneNumber: user.phoneNumber,
+          status: "activated",
+          timeStamp: serverTimestamp(),
+        });
+
+        dispatch({ type: "LOGIN", payload: user });
         navigate("/home");
       })
       .catch((error) => {
