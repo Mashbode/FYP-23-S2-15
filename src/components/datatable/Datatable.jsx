@@ -116,7 +116,9 @@ const Datatable = ({ type }) => {
       } else {
         return;
       }
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleFileDelete = async (params) => {
