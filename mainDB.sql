@@ -2,8 +2,8 @@
 -- Please log an issue at https://redmine.postgresql.org/projects/pgadmin4/issues/new if you find any bugs, including reproduction steps.
 BEGIN;
 
-
-CREATE TABLE IF NOT EXISTS public.admin
+CREATE SEQUENCE admin_admin_id_seq AS integer;
+CREATE TABLE IF NOT EXISTS public.admintable
 (
     user_id integer,
     admin_id integer NOT NULL DEFAULT nextval('admin_admin_id_seq'::regclass),
@@ -11,11 +11,12 @@ CREATE TABLE IF NOT EXISTS public.admin
         INCLUDE(admin_id)
 );
 
+CREATE SEQUENCE client_Client_id_seq AS integer;
 CREATE TABLE IF NOT EXISTS public.client
 (
     subscriptiontype character varying(20) COLLATE pg_catalog."default",
     user_id integer,
-    client_id integer NOT NULL DEFAULT nextval('"client_Client_id_seq"'::regclass),
+    client_id integer NOT NULL DEFAULT nextval('client_Client_id_seq'::regclass),
     CONSTRAINT client_pkey PRIMARY KEY (client_id)
         INCLUDE(client_id)
 );
@@ -35,7 +36,7 @@ CREATE TABLE IF NOT EXISTS public.encryption
     CONSTRAINT "Encryption_pkey" PRIMARY KEY (encryption_type)
 );
 
-CREATE TABLE IF NOT EXISTS public.file
+CREATE TABLE IF NOT EXISTS public.filetable
 (
     file_id uuid NOT NULL DEFAULT gen_random_uuid(),
     folder_id integer,
@@ -54,10 +55,10 @@ CREATE TABLE IF NOT EXISTS public.file_log
 (
     file_id uuid,
     folder_id integer,
-    filename character varying COLLATE pg_catalog."default",
-    filetype character varying COLLATE pg_catalog."default",
+    filename character varying(50) COLLATE pg_catalog."default",
+    filetype character varying(50) COLLATE pg_catalog."default",
     numberofparts integer,
-    encryptiontype character varying COLLATE pg_catalog."default",
+    encryptiontype character varying(50) COLLATE pg_catalog."default",
     client_id integer,
     file_version_id uuid,
     uploadtime timestamp with time zone,
@@ -114,9 +115,10 @@ CREATE TABLE IF NOT EXISTS public.fileversion
     CONSTRAINT fileversion_pkey PRIMARY KEY (file_version_id)
 );
 
-CREATE TABLE IF NOT EXISTS public.folder
+CREATE SEQUENCE folder_Folder_id_seq AS integer;
+CREATE TABLE IF NOT EXISTS public.foldertable
 (
-    folder_id integer NOT NULL DEFAULT nextval('"client_Client_id_seq"'::regclass),
+    folder_id integer NOT NULL DEFAULT nextval('folder_Folder_id_seq'::regclass),
     client_id integer,
     file_id uuid,
     foldername character varying(50) COLLATE pg_catalog."default",
@@ -135,6 +137,7 @@ CREATE TABLE IF NOT EXISTS public.folder_logs
     delete_time timestamp with time zone
 );
 
+CREATE SEQUENCE folderfiles_folder_files_id_seq AS integer;
 CREATE TABLE IF NOT EXISTS public.folderfiles
 (
     folder_files_id integer NOT NULL DEFAULT nextval('folderfiles_folder_files_id_seq'::regclass),
@@ -144,6 +147,7 @@ CREATE TABLE IF NOT EXISTS public.folderfiles
     CONSTRAINT folderfiles_pkey PRIMARY KEY (folder_files_id)
 );
 
+CREATE SEQUENCE foldersharehistory_share_id_seq AS integer;
 CREATE TABLE IF NOT EXISTS public.foldersharehistory
 (
     share_id integer NOT NULL DEFAULT nextval('foldersharehistory_share_id_seq'::regclass),
@@ -235,6 +239,7 @@ CREATE TABLE IF NOT EXISTS public.server4_logs
     delete_time timestamp with time zone
 );
 
+CREATE SEQUENCE sharedfileaccess_share_id_seq AS integer;
 CREATE TABLE IF NOT EXISTS public.sharedfileaccess
 (
     file_id uuid NOT NULL,
@@ -246,6 +251,7 @@ CREATE TABLE IF NOT EXISTS public.sharedfileaccess
     CONSTRAINT sharedfileaccess_pkey PRIMARY KEY (share_id)
 );
 
+CREATE SEQUENCE sharedfolderaccess_share_id_seq AS integer;
 CREATE TABLE IF NOT EXISTS public.sharedfolderaccess
 (
     folder_id integer,
@@ -266,9 +272,10 @@ CREATE TABLE IF NOT EXISTS public.subscription
     CONSTRAINT "Subscription_pkey" PRIMARY KEY (subscriptiontype)
 );
 
+CREATE SEQUENCE User_User_id_seq AS integer;
 CREATE TABLE IF NOT EXISTS public.users
 (
-    user_id integer NOT NULL DEFAULT nextval('"User_User_id_seq"'::regclass),
+    user_id integer NOT NULL DEFAULT nextval('User_User_id_seq'::regclass),
     username character varying(50) COLLATE pg_catalog."default" NOT NULL,
     pssword character varying(50) COLLATE pg_catalog."default" NOT NULL,
     f_name character varying(50) COLLATE pg_catalog."default" NOT NULL,
@@ -277,13 +284,13 @@ CREATE TABLE IF NOT EXISTS public.users
     CONSTRAINT "User_pkey" PRIMARY KEY (user_id)
 );
 
-ALTER TABLE IF EXISTS public.admin
+ALTER TABLE IF EXISTS public.admintable
     ADD CONSTRAINT "User" FOREIGN KEY (user_id)
     REFERENCES public.users (user_id) MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
 
-COMMENT ON CONSTRAINT "User" ON public.admin
+COMMENT ON CONSTRAINT "User" ON public.admintable
     IS 'referencing user';
 
 
@@ -303,7 +310,7 @@ ALTER TABLE IF EXISTS public.client
     NOT VALID;
 
 
-ALTER TABLE IF EXISTS public.file
+ALTER TABLE IF EXISTS public.filetable
     ADD CONSTRAINT "File_encryptionType_fkey" FOREIGN KEY (encryptiontype)
     REFERENCES public.encryption (encryption_type) MATCH SIMPLE
     ON UPDATE NO ACTION
@@ -311,15 +318,15 @@ ALTER TABLE IF EXISTS public.file
     NOT VALID;
 
 
-ALTER TABLE IF EXISTS public.file
+ALTER TABLE IF EXISTS public.filetable
     ADD CONSTRAINT "File_folder_id_fkey" FOREIGN KEY (folder_id)
-    REFERENCES public.folder (folder_id) MATCH SIMPLE
+    REFERENCES public.foldertable (folder_id) MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION
     NOT VALID;
 
 
-ALTER TABLE IF EXISTS public.file
+ALTER TABLE IF EXISTS public.filetable
     ADD CONSTRAINT file_client_id_fkey FOREIGN KEY (client_id)
     REFERENCES public.client (client_id) MATCH SIMPLE
     ON UPDATE NO ACTION
@@ -327,7 +334,7 @@ ALTER TABLE IF EXISTS public.file
     NOT VALID;
 
 
-ALTER TABLE IF EXISTS public.file
+ALTER TABLE IF EXISTS public.filetable
     ADD CONSTRAINT file_file_version_id_fkey FOREIGN KEY (file_version_id)
     REFERENCES public.fileversion (file_version_id) MATCH SIMPLE
     ON UPDATE NO ACTION
@@ -337,7 +344,7 @@ ALTER TABLE IF EXISTS public.file
 
 ALTER TABLE IF EXISTS public.fileparts
     ADD CONSTRAINT fileparts_file_id_fkey FOREIGN KEY (file_id)
-    REFERENCES public.file (file_id) MATCH SIMPLE
+    REFERENCES public.filetable (file_id) MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION
     NOT VALID;
@@ -361,7 +368,7 @@ ALTER TABLE IF EXISTS public.filesharehistory
 
 ALTER TABLE IF EXISTS public.fileversion
     ADD CONSTRAINT fileversion_file_id_fkey FOREIGN KEY (file_version_id)
-    REFERENCES public.file (file_id) MATCH SIMPLE
+    REFERENCES public.filetable (file_id) MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION
     NOT VALID;
@@ -369,7 +376,7 @@ CREATE INDEX IF NOT EXISTS fileversion_pkey
     ON public.fileversion(file_version_id);
 
 
-ALTER TABLE IF EXISTS public.folder
+ALTER TABLE IF EXISTS public.foldertable
     ADD CONSTRAINT folder_client_id_fkey FOREIGN KEY (client_id)
     REFERENCES public.client (client_id) MATCH SIMPLE
     ON UPDATE NO ACTION
@@ -377,23 +384,23 @@ ALTER TABLE IF EXISTS public.folder
     NOT VALID;
 
 
-ALTER TABLE IF EXISTS public.folder
+ALTER TABLE IF EXISTS public.foldertable
     ADD CONSTRAINT folder_file_id_fkey FOREIGN KEY (file_id)
-    REFERENCES public.file (file_id) MATCH SIMPLE
+    REFERENCES public.filetable (file_id) MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
 
 
 ALTER TABLE IF EXISTS public.folderfiles
     ADD CONSTRAINT folderfiles_file_id_fkey FOREIGN KEY (file_id)
-    REFERENCES public.file (file_id) MATCH SIMPLE
+    REFERENCES public.filetable (file_id) MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
 
 
 ALTER TABLE IF EXISTS public.folderfiles
     ADD CONSTRAINT folderfiles_folder_id_fkey FOREIGN KEY (folder_id)
-    REFERENCES public.folder (folder_id) MATCH SIMPLE
+    REFERENCES public.foldertable (folder_id) MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
 
@@ -463,7 +470,7 @@ ALTER TABLE IF EXISTS public.sharedfileaccess
 
 ALTER TABLE IF EXISTS public.sharedfileaccess
     ADD CONSTRAINT sharedfileaccess_file_id_fkey FOREIGN KEY (file_id)
-    REFERENCES public.file (file_id) MATCH SIMPLE
+    REFERENCES public.filetable (file_id) MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION
     NOT VALID;
@@ -487,7 +494,7 @@ ALTER TABLE IF EXISTS public.sharedfolderaccess
 
 ALTER TABLE IF EXISTS public.sharedfolderaccess
     ADD CONSTRAINT sharedfolderaccess_folder_id_fkey FOREIGN KEY (folder_id)
-    REFERENCES public.folder (folder_id) MATCH SIMPLE
+    REFERENCES public.foldertable (folder_id) MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION
     NOT VALID;
