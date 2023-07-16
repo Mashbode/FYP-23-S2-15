@@ -121,6 +121,7 @@ const Register = () => {
         email: email,
         username: username,
         status: "activated",
+        type: "user",
         timeStamp: serverTimestamp(),
       });
 
