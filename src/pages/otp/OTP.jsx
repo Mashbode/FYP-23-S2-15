@@ -89,6 +89,7 @@ const OTP = () => {
         setDoc(doc(db, "users", user.uid), {
           phoneNumber: user.phoneNumber,
           status: "activated",
+          type: "user",
           timeStamp: serverTimestamp(),
         });
 
