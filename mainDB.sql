@@ -3,7 +3,7 @@
 BEGIN;
 
 CREATE SEQUENCE admin_admin_id_seq AS integer;
-CREATE TABLE IF NOT EXISTS public.admintable
+CREATE TABLE IF NOT EXISTS public.admintab
 (
     user_id integer,
     admin_id integer NOT NULL DEFAULT nextval('admin_admin_id_seq'::regclass),
@@ -26,8 +26,8 @@ CREATE TABLE IF NOT EXISTS public.delete_folder_file_logs
     folder_files_id integer,
     file_id uuid,
     folder_id integer,
-    creation_time timestamp with time zone,
-    delete_time timestamp with time zone
+    creation_time timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+    delete_time timestamp with time zone DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS public.encryption
@@ -46,8 +46,8 @@ CREATE TABLE IF NOT EXISTS public.filetable
     encryptiontype character varying(20) COLLATE pg_catalog."default",
     client_id integer,
     file_version_id uuid,
-    last_change timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
-    uploadtime timestamp with time zone,
+    last_change timestamp with time zone,
+    uploadtime timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT "File_pkey" PRIMARY KEY (file_id)
 );
 
@@ -63,33 +63,32 @@ CREATE TABLE IF NOT EXISTS public.file_log
     file_version_id uuid,
     uploadtime timestamp with time zone,
     last_change timestamp with time zone,
-    delete_time timestamp with time zone
+    delete_time timestamp with time zone DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS public.file_parts_log
 (
     file_part_id uuid,
     part_number integer,
-    file_version_id uuid,
-    last_change timestamp with time zone,
     file_id uuid,
-    delete_time timestamp with time zone
+    file_version_id uuid,
+    last_change timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+    delete_time timestamp with time zone DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS public.file_version_log
 (
     file_version_id uuid,
-    last_change timestamp with time zone,
     file_id uuid,
-    file_version integer,
-    delete_time timestamp with time zone
+    version_file integer,
+    last_change timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+    delete_time timestamp with time zone DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS public.fileparts
 (
     file_part_id uuid NOT NULL DEFAULT gen_random_uuid(),
     part_number integer,
-    server_name character varying(50) COLLATE pg_catalog."default",
     file_id uuid,
     file_version_id uuid,
     last_change timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
@@ -129,12 +128,13 @@ CREATE TABLE IF NOT EXISTS public.foldertable
 
 CREATE TABLE IF NOT EXISTS public.folder_logs
 (
-    folder_id integer,
+    folder_id integer DEFAULT nextval('folder_Folder_id_seq'::regclass),
     client_id integer,
+    file_id uuid,
     foldername character varying(20) COLLATE pg_catalog."default",
-    creation_time timestamp with time zone,
+    creation_time timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
     last_change timestamp with time zone,
-    delete_time timestamp with time zone
+    delete_time timestamp with time zone DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE SEQUENCE folderfiles_folder_files_id_seq AS integer;
@@ -143,7 +143,7 @@ CREATE TABLE IF NOT EXISTS public.folderfiles
     folder_files_id integer NOT NULL DEFAULT nextval('folderfiles_folder_files_id_seq'::regclass),
     file_id uuid,
     folder_id integer,
-    time_added timestamp with time zone,
+    creation_time timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT folderfiles_pkey PRIMARY KEY (folder_files_id)
 );
 
@@ -284,13 +284,13 @@ CREATE TABLE IF NOT EXISTS public.users
     CONSTRAINT "User_pkey" PRIMARY KEY (user_id)
 );
 
-ALTER TABLE IF EXISTS public.admintable
+ALTER TABLE IF EXISTS public.admintab
     ADD CONSTRAINT "User" FOREIGN KEY (user_id)
     REFERENCES public.users (user_id) MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION;
 
-COMMENT ON CONSTRAINT "User" ON public.admintable
+COMMENT ON CONSTRAINT "User" ON public.admintab
     IS 'referencing user';
 
 
@@ -506,5 +506,6 @@ ALTER TABLE IF EXISTS public.sharedfolderaccess
     ON UPDATE NO ACTION
     ON DELETE NO ACTION
     NOT VALID;
+
 
 END;
