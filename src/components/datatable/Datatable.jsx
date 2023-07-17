@@ -16,7 +16,7 @@ import {
 } from "firebase/firestore";
 import { ref, deleteObject } from "firebase/storage";
 import { db, storage } from "../../firebase";
-import { userColumns, fileColumns, enquiryColumns } from "../../datatablesource";
+import { userColumns, fileColumns, sharedFileColumns, deletedFileColumns, enquiryColumns } from "../../datatablesource";
 
 const userRows = [
   {
@@ -227,6 +227,70 @@ const Datatable = ({ type }) => {
     },
   ];
 
+  const actionSharedFileColumn = [
+    {
+      field: "action",
+      headerName: "Action",
+      width: 400,
+      renderCell: (params) => {
+        return (
+          <div className="cellAction">
+            {/* <Link to="/files/test" style={{ textDecoration: "none" }}>
+              <div className="firstActionButton">Download</div>
+            </Link> */}
+            <a href={params.row.file} className="firstActionButton" download>
+              Download
+            </a>
+            <div
+              className="firstActionButton"
+              // onClick={() => }
+            >
+              Manage Sharing
+            </div>
+            <div
+              className="deleteButton"
+              onClick={() => handleFileDelete(params)}
+            >
+              Delete
+            </div>
+          </div>
+        );
+      },
+    },
+  ];
+
+  const actionDeletedFileColumn = [
+    {
+      field: "action",
+      headerName: "Action",
+      width: 250,
+      renderCell: (params) => {
+        return (
+          <div className="cellAction">
+            {/* <Link to="/files/test" style={{ textDecoration: "none" }}>
+              <div className="firstActionButton">Download</div>
+            </Link> */}
+            {/* <a href={params.row.file} className="firstActionButton" download>
+              Download
+            </a> */}
+            <div
+              className="firstActionButton"
+              // onClick={() => handleFileDownload(params)}
+            >
+              Restore
+            </div>
+            <div
+              className="deleteButton"
+              onClick={() => handleFileDelete(params)}
+            >
+              Permanetly Delete
+            </div>
+          </div>
+        );
+      },
+    },
+  ];
+
   const actionEnquiryColumn = [
     {
       field: "action",
@@ -260,6 +324,14 @@ const Datatable = ({ type }) => {
     case "files":
       columns = fileColumns;
       actionColumn = actionFileColumn;
+      break;
+    case "shared":
+      columns = sharedFileColumns;
+      actionColumn = actionSharedFileColumn;
+      break;
+    case "trash":
+      columns = deletedFileColumns;
+      actionColumn = actionDeletedFileColumn;
       break;
     case "enquiries":
       columns = enquiryColumns;

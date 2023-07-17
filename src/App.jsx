@@ -8,6 +8,7 @@ import Single from "./pages/single/Single";
 import New from "./pages/new/New";
 import NewFile from "./pages/new/NewFile";
 import OTP from "./pages/otp/OTP";
+import MyDrive from "./pages/mydrive/MyDrive";
 
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
@@ -184,6 +185,58 @@ function App() {
                 }
               />
             </Route>
+            <Route path="files-shared">
+              <Route
+                index
+                element={
+                  <RequireAuth>
+                    <List type="shared" />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path=":fileId"
+                element={
+                  <RequireAuth>
+                    <Single />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="new"
+                element={
+                  <RequireAuth>
+                    <NewFile title="Add New File" />
+                  </RequireAuth>
+                }
+              />
+            </Route>
+            <Route path="files-deleted">
+              <Route
+                index
+                element={
+                  <RequireAuth>
+                    <List type="trash" />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path=":fileId"
+                element={
+                  <RequireAuth>
+                    <Single />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="new"
+                element={
+                  <RequireAuth>
+                    <NewFile title="Add New File" />
+                  </RequireAuth>
+                }
+              />
+            </Route>
             <Route path="enquiries">
               <Route
                 index
@@ -194,6 +247,7 @@ function App() {
                 }
               />
             </Route>
+            <Route path="my-drive" element={<MyDrive />} />
             {/* <Route path="products">
               <Route
                 index
