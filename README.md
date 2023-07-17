@@ -90,12 +90,11 @@ Steps \
 Under the existing server right click -> register -> server \
 Enter a name for the server  
 Under connections \
-Host : (testdb.c9ybbr2jzshu.ap-southeast-1.rds.amazonaws.com)    
+Host : testdb.c9ybbr2jzshu.ap-southeast-1.rds.amazonaws.com    
 Port : 5432 \
 Maintenance : postgres \
-(hold on first for username and password, having some issues with permissions) \
-Username : teamates1 \
-password : pass \
+Username : postgres \
+password : passcanliao \
 Click save and you will connect to AWS RDS, under database there will be a postgres (default db by postgres DO NOT DELETE OR ALTER ANYTHING), rdsAdmin (AWS STUFF u will not be able to access)   
 metadatadb - this will be our main db \
 fileserver - this will be where we store the file parts 
