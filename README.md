@@ -73,7 +73,7 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
 ## AWS email
 fyps215@gmail.com \
 bMHRKwU-P9MCq \
-This is just a burner email for this project.\
+This is just a burner email for this project.
 ## postgres (still being modified)
 maindb.sql - this is our db schema that is for holding the metadata of files and everything else like admin, folder .etc \
 fileserver.sql - this is our db schema that holds the file data \
@@ -83,20 +83,20 @@ Pgadmin4 will be the software that allows you to view the db, the tables, data i
 This will be required for you to connect to our server instance in AWS RDS as it is the only way to view the DB\ 
 ### Before connecting to AWS 
 Check ur ip address  https://whatismyipaddress.com/  \
-Take the ipv4 and send to Ken or dian, need to allow connection from your ip-address if not you will not be able to connect at all \
+Take the ipv4 and send to Ken or dian, need to allow connection from your ip-address if not you will not be able to connect at all 
 ### Connecting to AWS 
 Follow from connecting to rds instance : https://adamtheautomator.com/rds-postgres/
-Steps\
-Under the existing server right click -> register -> server\
-Enter a name for the server \ 
+Steps \
+Under the existing server right click -> register -> server \
+Enter a name for the server  
 Under connections \
-Host : testdb.c9ybbr2jzshu.ap-southeast-1.rds.amazonaws.com \ 
+Host : (testdb.c9ybbr2jzshu.ap-southeast-1.rds.amazonaws.com)    
 Port : 5432 \
 Maintenance : postgres \
-(hold on first for this, having some issues with permissions) \ 
+(hold on first for username and password, having some issues with permissions) \
 Username : teamates1 \
 password : pass \
-Click save and you will connect to AWS RDS, under database there will be a postgres (default db by postgres DO NOT DELETE OR ALTER ANYTHING), rdsAdmin (AWS STUFF u will not be able to access)  \ 
-metadatadb - this will be our main db \ 
-fileserver - this will be where we store the file parts \ 
+Click save and you will connect to AWS RDS, under database there will be a postgres (default db by postgres DO NOT DELETE OR ALTER ANYTHING), rdsAdmin (AWS STUFF u will not be able to access)   
+metadatadb - this will be our main db \
+fileserver - this will be where we store the file parts 
 
