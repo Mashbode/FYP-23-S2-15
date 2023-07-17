@@ -127,8 +127,10 @@ const Sidebar = () => {
             <span>Notifications</span>
           </li>
           <li>
-            <SupportAgentIcon className="icon" />
-            <span>Enqueries</span>
+            <Link to="/enquiries" style={{ textDecoration: "none" }}>
+                <SupportAgentIcon className="icon" />
+                <span>Enquiries</span>
+              </Link>
           </li>
           {/* <li>
             <PsychologyOutlinedIcon className="icon" />

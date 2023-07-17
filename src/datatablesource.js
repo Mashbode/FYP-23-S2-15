@@ -76,3 +76,33 @@ export const fileColumns = [
     },
   },
 ];
+
+export const enquiryColumns = [
+  { field: "id", headerName: "ID", width: 100 },
+  {
+    field: "enquiryTitle",
+    headerName: "Enquiry Title",
+    width: 350,
+  },
+  {
+    field: "name",
+    headerName: "Enquirer",
+    width: 150,
+  },
+  {
+    field: "timeStamp",
+    headerName: "Last Modified",
+    width: 150,
+    renderCell: (params) => {
+      let lastModifiedDate = new Date(
+        params.row.timeStamp.toDate() // Returns Date object (Firebase)
+      ).toDateString(); // Into readable string (React JS)
+      return <div className="cellWithLastModified">{lastModifiedDate}</div>;
+    },
+  },
+  {
+    field: "enquiryStatus",
+    headerName: "Status",
+    width: 150,
+  }
+];

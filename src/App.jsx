@@ -150,10 +150,10 @@ function App() {
                 }
               />
               <Route
-                path="new"
+                path="edit"
                 element={
                   <RequireAuth>
-                    <New inputs={userInputs} title="Add New User" />
+                    <New inputs={userInputs} title="Edit Account" />
                   </RequireAuth>
                 }
               />
@@ -180,6 +180,16 @@ function App() {
                 element={
                   <RequireAuth>
                     <NewFile title="Add New File" />
+                  </RequireAuth>
+                }
+              />
+            </Route>
+            <Route path="enquiries">
+              <Route
+                index
+                element={
+                  <RequireAuth>
+                    <List type="enquiries" />
                   </RequireAuth>
                 }
               />
