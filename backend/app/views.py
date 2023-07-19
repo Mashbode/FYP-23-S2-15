@@ -91,6 +91,34 @@ class RetrieveEditFile(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = FileSerializer
 
 
+#FileVersion -> got error!
+class ListCreateFileVer(generics.ListCreateAPIView):
+    queryset = Fileversion.objects.all()
+    serializer_class = FileVersionSerializer
+
+
+#File_parts -> not sure
+class ListCreateFilePart(generics.ListCreateAPIView):
+    queryset = Fileparts.objects.all()
+    serializer_class = FilePartsSerializer
+#retrieveeditdelete
+class RetrieveEditFilePart(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Fileparts.objects.all()
+    serializer_class = FilePartsSerializer
+
+
+#Deletedfilelog
+class ListDeletedFile(generics.ListAPIView):
+    queryset = FileLog.objects.all()
+    serializer_class = FileLogSerializer
+
+#Deletefilepartlog
+class ListDeletedFileParts(generics.ListAPIView):
+    queryset = FilePartsLog.objects.all()
+    serializer_class = FilePartsLogSerializer
+
+
+
 #Folder
 #list and create folders
 class ListCreateFolder(generics.ListCreateAPIView):
@@ -103,3 +131,35 @@ class RetrieveEditFolder(generics.RetrieveUpdateDestroyAPIView):
     queryset = Foldertable.objects.all()
     serializer_class = FolderSerializer
 
+#deletedfolderlog
+class ListDeletedFolder(generics.ListAPIView):
+    queryset = FolderLogs.objects.all()
+    serializer_class = FolderLogSerializer
+
+
+#FolderFiles
+class ListCreateFolderFile(generics.ListCreateAPIView):
+    queryset = Folderfiles.objects.all()
+    serializer_class = FolderFilesSerializer
+
+class RetrieveEditFolderFile(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Folderfiles.objects.all()
+    serializer_class = FolderFilesSerializer
+
+
+#deletedfolderfiles
+class ListDeletedFolderFile(generics.ListAPIView):
+    queryset = DeleteFolderFileLogs.objects.all()
+    serializer_class = DelFolderFileLogsSerializer
+
+
+#Permissions - create, edit, view, 
+#create, view
+class ListCreatePerm(generics.ListCreateAPIView):
+    queryset = Permission.objects.all()
+    serializer_class = PermissionSerializer
+
+#edit, delete
+class RetrieveEditPerm(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Permission.objects.all()
+    serializer_class = PermissionSerializer
