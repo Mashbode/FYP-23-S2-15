@@ -14,10 +14,11 @@ import SettingsSystemDaydreamOutlinedIcon from "@mui/icons-material/SettingsSyst
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import SupportAgentIcon from "@mui/icons-material/SupportAgent";
 // import {DashboardIcon, PersonOutlineIcon} from "@mui/icons-material"; // -> Upper can be abbreviated
-import StorageIcon from '@mui/icons-material/Storage';
-import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined';
-import DeleteIcon from '@mui/icons-material/Delete';
-import LinearProgress from '@mui/joy/LinearProgress';
+
+import StorageIcon from "@mui/icons-material/Storage";
+import PeopleAltOutlinedIcon from "@mui/icons-material/PeopleAltOutlined";
+import DeleteIcon from "@mui/icons-material/Delete";
+import LinearProgress from "@mui/joy/LinearProgress";
 
 import { Link, useNavigate } from "react-router-dom";
 import { DarkModeContext } from "../../context/darkModeContext";
@@ -68,32 +69,35 @@ const Sidebar = () => {
           <Link to="/" style={{ textDecoration: "none" }}>
             <span className="logo">Secure File Sharing</span>
           </Link>
-        </div>)}
+        </div>
+      )}
       {admin && (
         <div className="top">
           <Link to="/" style={{ textDecoration: "none" }}>
             <span className="logo">File System Admin</span>
           </Link>
-        </div>)}
+        </div>
+      )}
       <hr />
       <div className="center">
         <ul>
           <p className="title">MAIN</p>
           <li>
             <Link to="/home" style={{ textDecoration: "none" }}>
-                <DashboardIcon className="icon" />
-                <span>Dashboard</span>
+              <DashboardIcon className="icon" />
+              <span>Dashboard</span>
             </Link>
           </li>
-        {!admin && (
-          <li>
-            {/* <StorageIcon className='icon' />
+          {!admin && (
+            <li>
+              {/* <StorageIcon className='icon' />
             <a href="/my-drive">My Drive</a> */}
-            <Link to="/my-drive" style={{ textDecoration: "none" }}>
+              <Link to="/my-drive" style={{ textDecoration: "none" }}>
                 <StorageIcon className="icon" />
                 <span>My Drive</span>
-            </Link>
-          </li>)}
+              </Link>
+            </li>
+          )}
           <p className="title">LISTS</p>
           {admin && (
             <li>
@@ -121,14 +125,16 @@ const Sidebar = () => {
                 <PeopleAltOutlinedIcon className="icon" />
                 <span>Shared</span>
               </Link>
-            </li>)}
+            </li>
+          )}
           {!admin && (
             <li>
               <Link to="/files-deleted" style={{ textDecoration: "none" }}>
                 <DeleteIcon className="icon" />
                 <span>Trash</span>
               </Link>
-            </li>)}
+            </li>
+          )}
           {/* <li>
             <CreditCardIcon className="icon" />
             <span>Orders</span>
@@ -179,8 +185,10 @@ const Sidebar = () => {
           </li> */}
           <p className="title">USER</p>
           <li>
-            <AccountCircleOutlinedIcon className="icon" />
-            <span>Profile</span>
+            <Link to="/users/test" style={{ textDecoration: "none" }}>
+              <AccountCircleOutlinedIcon className="icon" />
+              <span>Profile</span>
+            </Link>
           </li>
           <li>
             <Link
@@ -207,10 +215,11 @@ const Sidebar = () => {
       {!admin && (
         <div>
           <div className="bottom">
-            <LinearProgress color="neutral" determinate size="md" value={30} />  
+            <LinearProgress color="neutral" determinate size="md" value={30} />
           </div>
           <div className="barComment">5 GB of 20 GB used</div>
-        </div>)}
+        </div>
+      )}
     </div>
   );
 };

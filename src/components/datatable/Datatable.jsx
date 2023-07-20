@@ -16,7 +16,14 @@ import {
 } from "firebase/firestore";
 import { ref, deleteObject } from "firebase/storage";
 import { db, storage } from "../../firebase";
-import { userColumns, fileColumns, sharedFileColumns, deletedFileColumns, enquiryColumns } from "../../datatablesource";
+
+import {
+  userColumns,
+  fileColumns,
+  sharedFileColumns,
+  deletedFileColumns,
+  enquiryColumns,
+} from "../../datatablesource";
 
 const userRows = [
   {
@@ -227,6 +234,29 @@ const Datatable = ({ type }) => {
     },
   ];
 
+  const actionEnquiryColumn = [
+    {
+      field: "action",
+      headerName: "Action",
+      width: 200,
+      renderCell: (params) => {
+        return (
+          <div className="cellAction">
+            <Link to="/users/test" style={{ textDecoration: "none" }}>
+              <div className="firstActionButton">Reply</div>
+            </Link>
+            <div
+              className="deleteButton"
+              onClick={() => handleUserDelete(params.row.id)}
+            >
+              Delete
+            </div>
+          </div>
+        );
+      },
+    },
+  ];
+
   const actionSharedFileColumn = [
     {
       field: "action",
@@ -284,29 +314,6 @@ const Datatable = ({ type }) => {
               onClick={() => handleFileDelete(params)}
             >
               Permanetly Delete
-            </div>
-          </div>
-        );
-      },
-    },
-  ];
-
-  const actionEnquiryColumn = [
-    {
-      field: "action",
-      headerName: "Action",
-      width: 200,
-      renderCell: (params) => {
-        return (
-          <div className="cellAction">
-            <Link to="/users/test" style={{ textDecoration: "none" }}>
-              <div className="firstActionButton">Reply</div>
-            </Link>
-            <div
-              className="deleteButton"
-              onClick={() => handleUserDelete(params.row.id)}
-            >
-              Delete
             </div>
           </div>
         );
