@@ -154,7 +154,7 @@ function App() {
                 path="new"
                 element={
                   <RequireAuth>
-                    <New inputs={userInputs} title="Add New User" />
+                    <New inputs={userInputs} title="Edit Account" />
                   </RequireAuth>
                 }
               /> */}

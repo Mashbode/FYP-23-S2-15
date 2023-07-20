@@ -75,7 +75,7 @@ const MenuItem = styled.a`
 
 const Button = styled.button`
   border: 2px solid white;
-  padding: 10px 15px;
+  padding: 10px 10px;
   background-color: crimson;
   color: white;
   font-weight: bold;
@@ -171,9 +171,11 @@ const Navbar = () => {
           <Link to="/login">
             <Button>LOGIN</Button>
           </Link>
-          <Link to="/register">
-            <Button>JOIN TODAY</Button>
-          </Link>
+          <div style={{marginLeft:10+'px'}}>
+            <Link to="/register">
+              <Button>JOIN TODAY</Button>
+            </Link>
+          </div>
         </Right>
       </Wrapper>
     </Container>
