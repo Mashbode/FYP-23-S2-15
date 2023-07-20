@@ -14,6 +14,11 @@ import SettingsSystemDaydreamOutlinedIcon from "@mui/icons-material/SettingsSyst
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import SupportAgentIcon from "@mui/icons-material/SupportAgent";
 // import {DashboardIcon, PersonOutlineIcon} from "@mui/icons-material"; // -> Upper can be abbreviated
+import StorageIcon from "@mui/icons-material/Storage";
+import PeopleAltOutlinedIcon from "@mui/icons-material/PeopleAltOutlined";
+import DeleteIcon from "@mui/icons-material/Delete";
+import LinearProgress from "@mui/joy/LinearProgress";
+
 import { Link, useNavigate } from "react-router-dom";
 import { DarkModeContext } from "../../context/darkModeContext";
 import { AuthContext } from "../../context/AuthContext";
@@ -58,19 +63,40 @@ const Sidebar = () => {
 
   return (
     <div className="sidebar">
-      <div className="top">
-        <Link to="/" style={{ textDecoration: "none" }}>
-          <span className="logo">filesystemadmin</span>
-        </Link>
-      </div>
+      {!admin && (
+        <div className="top">
+          <Link to="/" style={{ textDecoration: "none" }}>
+            <span className="logo">Secure File Sharing</span>
+          </Link>
+        </div>
+      )}
+      {admin && (
+        <div className="top">
+          <Link to="/" style={{ textDecoration: "none" }}>
+            <span className="logo">File System Admin</span>
+          </Link>
+        </div>
+      )}
       <hr />
       <div className="center">
         <ul>
           <p className="title">MAIN</p>
           <li>
-            <DashboardIcon className="icon" />
-            <span>Dashboard</span>
+            <Link to="/home" style={{ textDecoration: "none" }}>
+              <DashboardIcon className="icon" />
+              <span>Dashboard</span>
+            </Link>
           </li>
+          {!admin && (
+            <li>
+              {/* <StorageIcon className='icon' />
+            <a href="/my-drive">My Drive</a> */}
+              <Link to="/my-drive" style={{ textDecoration: "none" }}>
+                <StorageIcon className="icon" />
+                <span>My Drive</span>
+              </Link>
+            </li>
+          )}
           <p className="title">LISTS</p>
           {admin && (
             <li>
@@ -92,6 +118,22 @@ const Sidebar = () => {
               <span>Files</span>
             </Link>
           </li>
+          {!admin && (
+            <li>
+              <Link to="/files-shared" style={{ textDecoration: "none" }}>
+                <PeopleAltOutlinedIcon className="icon" />
+                <span>Shared</span>
+              </Link>
+            </li>
+          )}
+          {!admin && (
+            <li>
+              <Link to="/files-deleted" style={{ textDecoration: "none" }}>
+                <DeleteIcon className="icon" />
+                <span>Trash</span>
+              </Link>
+            </li>
+          )}
           {/* <li>
             <CreditCardIcon className="icon" />
             <span>Orders</span>
@@ -127,8 +169,10 @@ const Sidebar = () => {
             <span>Notifications</span>
           </li>
           <li>
-            <SupportAgentIcon className="icon" />
-            <span>Enqueries</span>
+            <Link to="/enquiries" style={{ textDecoration: "none" }}>
+              <SupportAgentIcon className="icon" />
+              <span>Enquiries</span>
+            </Link>
           </li>
           {/* <li>
             <PsychologyOutlinedIcon className="icon" />
@@ -140,8 +184,10 @@ const Sidebar = () => {
           </li> */}
           <p className="title">USER</p>
           <li>
-            <AccountCircleOutlinedIcon className="icon" />
-            <span>Profile</span>
+            <Link to="/users/test" style={{ textDecoration: "none" }}>
+              <AccountCircleOutlinedIcon className="icon" />
+              <span>Profile</span>
+            </Link>
           </li>
           <li>
             <Link
@@ -155,7 +201,7 @@ const Sidebar = () => {
           </li>
         </ul>
       </div>
-      <div className="bottom">
+      <div className="middle">
         <div
           className="colorOption"
           onClick={() => dispatchDarkMode({ type: "LIGHT" })}
@@ -165,6 +211,14 @@ const Sidebar = () => {
           onClick={() => dispatchDarkMode({ type: "DARK" })}
         ></div>
       </div>
+      {!admin && (
+        <div>
+          <div className="bottom">
+            <LinearProgress color="neutral" determinate size="md" value={30} />
+          </div>
+          <div className="barComment">5 GB of 20 GB used</div>
+        </div>
+      )}
     </div>
   );
 };
