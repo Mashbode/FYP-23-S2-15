@@ -1,22 +1,22 @@
 import "./register.scss";
 import FormInput from "../../components/forminput/FormInput";
+import PhoneInput from "react-phone-input-2";
+import CircularProgress from "@mui/material/CircularProgress";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { auth, db } from "../../firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
-import CircularProgress from "@mui/material/CircularProgress";
 
 const Register = () => {
-  // const [username, setUsername] = useState("");
   const [values, setValues] = useState({
     username: "",
     email: "",
-    birthday: "",
+    phone: "",
     password: "",
     confirmPassword: "",
-  }); // Handle multiple input
-  const [registering, setRegistering] = useState(false);
+  }); // Handle multiple input at once
+  const [registering, setRegistering] = useState(false); // For loading icon
   const [errorMsg, setErrorMsg] = useState("");
 
   const formInputs = [
@@ -40,16 +40,16 @@ const Register = () => {
       label: "Email",
       required: true,
     },
+    // {
+    //   id: 3,
+    //   name: "birthday",
+    //   type: "date",
+    //   placeholder: "Birthday",
+    //   label: "Birthday",
+    //   required: true,
+    // },
     {
       id: 3,
-      name: "birthday",
-      type: "date",
-      placeholder: "Birthday",
-      label: "Birthday",
-      required: true,
-    },
-    {
-      id: 4,
       name: "password",
       type: "password",
       placeholder: "Password",
@@ -60,7 +60,7 @@ const Register = () => {
       required: true,
     },
     {
-      id: 5,
+      id: 4,
       name: "confirmPassword",
       type: "password",
       placeholder: "Confirm Password",
@@ -71,10 +71,6 @@ const Register = () => {
     },
   ];
 
-  // console.log(username);
-  // console.log("re-rendered"); // Keeps re-rendering whenever the user types something inside a input: 1. useRef() 2. Object FormData
-  // 1. const usernameRef = useRef();
-
   const navigate = useNavigate();
 
   const onChange = async (e) => {
@@ -83,30 +79,9 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log(values);
     setRegistering(true);
-    // 1. console.log(usernameRef);
-    // 2. const data = new FormData(e.target);
-    // 2. console.log(data);
-    // 2. console.log(Object.fromEntries(data.entries()));
 
-    // await createUserWithEmailAndPassword(auth, values.email, values.password)
-    //   .then(() => {
-    //     // // Signed in
-    //     // const user = userCredential.user;
-    //     // // ...
-    //     console.log("success");
-    //   })
-    //   .catch((error) => {
-    //     // const errorCode = error.code;
-    //     // const errorMessage = error.message;
-    //     // // ..
-    //     console.log(error);
-    //   });
-
-    //   await setDoc(doc(db, "users", res.user.uid), {
-    //     ...data,
-    //     timeStamp: serverTimestamp(),
-    //   });
     try {
       const result = await createUserWithEmailAndPassword(
         auth,
@@ -114,18 +89,17 @@ const Register = () => {
         values.password
       );
 
-      const { birthday, email, username } = values;
+      const { email, username, phone } = values;
 
       await setDoc(doc(db, "users", result.user.uid), {
-        birthday: birthday,
         email: email,
         username: username,
+        phone: "+" + phone,
         status: "activated",
         type: "user",
         timeStamp: serverTimestamp(),
       });
 
-      // setRegistering(false);
       navigate("/login", { replace: true });
     } catch (error) {
       switch (error.code) {
@@ -155,15 +129,27 @@ const Register = () => {
             />
           );
         })}
-        {/* <FormInput
-          placeholder="Username"
-          // setUsername={setUsername}
-          // 1. refer={usernameRef}
-          name="username"
-          />
-          <FormInput name="email" placeholder="Email" />
-          <FormInput name="fullname" placeholder="Full Name" />
-          <FormInput name="sth" placeholder="Sth else" /> */}
+        <label style={{ fontSize: "13px", color: "gray" }}>Phone Number</label>
+        <PhoneInput
+          containerClass={"formInput"}
+          country={"sg"}
+          inputProps={{ name: "phone", required: true }}
+          containerStyle={{ margin: "10px 0px" }}
+          inputStyle={{
+            height: "49.33px",
+            width: "250px",
+            borderRadius: "10px",
+            border: "1px solid gray",
+          }}
+          buttonStyle={{
+            borderTopLeftRadius: "10px",
+            borderBottomLeftRadius: "10px",
+            border: "1px solid gray",
+            borderRight: "none",
+          }}
+          value={values["phone"]}
+          onChange={(phone) => setValues({ ...values, ["phone"]: phone })}
+        />
         <button>
           {registering ? (
             <CircularProgress color="inherit" size={20} />

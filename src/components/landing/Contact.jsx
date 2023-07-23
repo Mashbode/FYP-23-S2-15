@@ -3,13 +3,6 @@ import Map from "../../img/map.png";
 import Phone from "../../img/phone.png";
 import Send from "../../img/send.png";
 
-import FormInput from "../forminput/FormInput";
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { db } from "../../firebase";
-import { doc, setDoc, collection, addDoc, serverTimestamp, getDocs } from "firebase/firestore";
-import CircularProgress from "@mui/material/CircularProgress";
-
 const Container = styled.div`
   height: 90%; // 10% is for Footer.jsx
   background: url("https://www.toptal.com/designers/subtlepatterns/uploads/webb.png"); // Below url is not available -> Click download btn w/ shift
@@ -146,91 +139,6 @@ const Text = styled.span`
 `;
 
 const Contact = () => {
-    // const [values, setValues] = useState({
-  //   username: "",
-  //   email: "",
-  //   enquiryTitle: "",
-  //   enquiryMessage: "",
-  // });
-
-  // const [enquirying, setEnquirying] = useState(false);
-
-  // const formInputs = [
-  //   {
-  //     id: 1,
-  //     name: "username",
-  //     type: "text",
-  //     placeholder: "Your Name"
-  //   },
-  //   {
-  //     id: 2,
-  //     name: "email",
-  //     type: "email",
-  //     placeholder: "Your Email Address"
-  //   },
-  //   {
-  //     id: 3,
-  //     name: "enquiryTitle",
-  //     type: "text",
-  //     placeholder: "Enter Enquiry Title"
-  //   },
-  //   {
-  //     id: 4,
-  //     name: "enquiryMessage",
-  //     type: "text",
-  //     placeholder: "Enter Enquiry Message"
-  //   }
-  // ]
-
-  // const onChange = async (e) => {
-  //   setValues({ ...values, [e.target.name]: e.target.value });
-  // };
-
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   setEnquirying(true);
-
-  //   const docRef = await addDoc(collection(db, "enquiries"), {
-  //     username: "David Smith",
-  //     email: "davidSmith@gmail.com",
-  //   });
-
-  //   const { username, email, enquiryTitle, enquiryMessage } = values;
-
-  //   const docData = {
-  //     username: username,
-  //     email: email,
-  //     enquiryTitle: enquiryTitle,
-  //     enquiryMessage: enquiryMessage,
-  //     timeStamp: serverTimestamp()
-  //   };
-
-  //   await setDoc(doc(db, "enquiries", "id"), docData);
-  // };
-  
-  const [newName, setNewName] = useState("");
-  const [newEmail, setNewEmail] = useState("");
-  const [newEnquiryTitle, setNewEnquiryTitle] = useState("");
-  const [newEnquiryMessage, setNewEnquiryMessage] = useState("");
-
-  const enquiriesCollectionRef = collection(db, "enquiries");
-
-  const createEnquiry = async () => {
-    await addDoc(enquiriesCollectionRef, 
-      {name: newName, email: newEmail, 
-        enquiryTitle: newEnquiryTitle, enquiryMessage: newEnquiryMessage, 
-        timeStamp: serverTimestamp(), enquiryStatus: "Not Answered"});
-  };
-
-  const handleSubmit = event => {
-    event.preventDefault();
-
-    setNewName('');
-    setNewEmail('');
-    setNewEnquiryTitle('');
-    setNewEnquiryMessage('');
-  }
-
   return (
     <Container id="contact">
       <Wrapper>
@@ -238,43 +146,15 @@ const Contact = () => {
           <Title>
             Questions? <br /> Let's Get In Touch
           </Title>
-          <Form onSubmit={handleSubmit}>
+          <Form>
             <LeftForm>
-              {/* <Input placeholder="Your Name" />
+              <Input placeholder="Your Name" />
               <Input placeholder="Your Email" />
-              <Input placeholder="Subject" /> */}
-              {/* {formInputs.map((formInput) => {
-                return (
-                  <form onSubmit={handleSubmit}>
-                  <FormInput
-                    key={formInput.id}
-                    {...formInput}
-                    values={values[formInput.name]}
-                    onChange={onChange}
-                  />
-                  </form>
-                );
-              })} */}
-              <Input placeholder="Name"
-              onChange={(event) => {setNewName(event.target.value);}} required />
-              <Input type="email" placeholder="Email" 
-              onChange={(event) => {setNewEmail(event.target.value);}} required />
-              <Input placeholder="Enquiry Title"
-              onChange={(event) => {setNewEnquiryTitle(event.target.value);}} required />
+              <Input placeholder="Subject" />
             </LeftForm>
             <RightForm>
-              {/* <TextArea placeholder="Your Message" />
-              <Button>Send</Button> */}
-              {/* <button>
-                {enquirying ? (
-                  <CircularProgress color="inherit" size={20} />
-                ) : (
-                  "Submit"
-                )}
-              </button> */}
-              <TextArea placeholder="Leave the Enquiry Message Here..."
-              onChange={(event) => {setNewEnquiryMessage(event.target.value);}} required />
-              <Button onClick={createEnquiry}>Submit</Button>
+              <TextArea placeholder="Your Message" />
+              <Button>Send</Button>
             </RightForm>
           </Form>
         </FormContainer>
