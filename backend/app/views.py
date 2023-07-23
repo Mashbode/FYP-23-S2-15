@@ -9,10 +9,6 @@ class ListCreateUsers(generics.ListCreateAPIView):
     queryset = Users.objects.all()
     serializer_class = UsersSerializer
 
-#class ListUsers(generics.ListAPIView):
-#    queryset = Users.objects.all()
-#    serializer_class = UsersSerializer
-
 class RetrieveEditUsers(generics.RetrieveUpdateDestroyAPIView):
     queryset = Users.objects.all()
     serializer_class = UsersSerializer
@@ -29,21 +25,12 @@ class ListClients(generics.ListCreateAPIView):
     queryset = Client.objects.all()
     serializer_class = ClientSerializer
 
-    #def get_queryset(self):
-    #    queryset = Client.objects.all()
-    #    auser = self.request.query_params.get('auser')
-    #    if auser is not None:
-    #        queryset = queryset.filter(user=auser)
-
-
-
 class RetrieveEditClient(generics.RetrieveUpdateDestroyAPIView):
     queryset = Client.objects.all()
     serializer_class = ClientSerializer
 
 
-#Subscription
-
+#SUBCRIPTIONS
 #List -> for all users
 class ListSubscriptins(generics.ListAPIView):
     queryset = Subscription.objects.all()
@@ -61,7 +48,7 @@ class DeleteSubs(generics.RetrieveDestroyAPIView):
 
     
 
-#Encryption
+#ENCRYPTION
 #list ->  for all users
 class ListEncryp(generics.ListAPIView):
     queryset = Encryption.objects.all()
@@ -78,7 +65,24 @@ class DeleteEncryp(generics.RetrieveDestroyAPIView):
     serializer_class = EncryptionSerializer
 
 
-#File
+#INVOICE
+#List -> for all users
+class ListInvoice(generics.ListAPIView):
+    queryset = Invoice.objects.all()
+    serializer_class = InvoiceSerializer
+
+#create -> we create
+class CreateInvoice(generics.CreateAPIView):
+    queryset = Invoice.objects.all()
+    serializer_class = InvoiceSerializer
+
+#delete
+class DeleteInvoice(generics.RetrieveDestroyAPIView):
+    queryset = Invoice.objects.all()
+    serializer_class = InvoiceSerializer
+
+
+#FILETABLE
 #list
 class ListCreateFile(generics.ListCreateAPIView):
     queryset = Filetable.objects.all()
@@ -91,35 +95,51 @@ class RetrieveEditFile(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = FileSerializer
 
 
-#FileVersion -> got error!
+#FILE VERSION
 class ListCreateFileVer(generics.ListCreateAPIView):
     queryset = Fileversion.objects.all()
     serializer_class = FileVersionSerializer
 
+#retrive to delete
+class RetrieveEditFileVer(generics.RetrieveDestroyAPIView):
+    queryset = Fileversion.objects.all()
+    serializer_class = FileVersionSerializer
 
-#File_parts -> not sure
+#list deletedfileversion
+class ListDeletedFileVer(generics.ListAPIView):
+    queryset = FileVersionLog.objects.all()
+    serializer_class = FileVersionLogSerializer
+
+
+#FILE PART
 class ListCreateFilePart(generics.ListCreateAPIView):
     queryset = Fileparts.objects.all()
     serializer_class = FilePartsSerializer
+
 #retrieveeditdelete
 class RetrieveEditFilePart(generics.RetrieveUpdateDestroyAPIView):
     queryset = Fileparts.objects.all()
     serializer_class = FilePartsSerializer
 
 
-#Deletedfilelog
+#FILE LOG - deleted files
 class ListDeletedFile(generics.ListAPIView):
     queryset = FileLog.objects.all()
     serializer_class = FileLogSerializer
 
-#Deletefilepartlog
+#FILE PART LOG - deleted file parts
 class ListDeletedFileParts(generics.ListAPIView):
     queryset = FilePartsLog.objects.all()
     serializer_class = FilePartsLogSerializer
 
+#FILE VERSION LOG - deleted file version
+class ListDeletedFileVer(generics.ListAPIView):
+    queryset = FileVersionLog.objects.all()
+    serializer_class = FileVersionLogSerializer
 
 
-#Folder
+
+#FOLDER
 #list and create folders
 class ListCreateFolder(generics.ListCreateAPIView):
     queryset = Foldertable.objects.all()
@@ -131,13 +151,13 @@ class RetrieveEditFolder(generics.RetrieveUpdateDestroyAPIView):
     queryset = Foldertable.objects.all()
     serializer_class = FolderSerializer
 
-#deletedfolderlog
+#FOLDER LOG - deleted folders
 class ListDeletedFolder(generics.ListAPIView):
     queryset = FolderLogs.objects.all()
     serializer_class = FolderLogSerializer
 
 
-#FolderFiles
+#FOLDER FILES
 class ListCreateFolderFile(generics.ListCreateAPIView):
     queryset = Folderfiles.objects.all()
     serializer_class = FolderFilesSerializer
@@ -147,13 +167,76 @@ class RetrieveEditFolderFile(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = FolderFilesSerializer
 
 
-#deletedfolderfiles
+#deletedfolderfileslog
 class ListDeletedFolderFile(generics.ListAPIView):
     queryset = DeleteFolderFileLogs.objects.all()
     serializer_class = DelFolderFileLogsSerializer
 
 
-#Permissions - create, edit, view, 
+#SERVER 1
+class Server1CreateList(generics.ListCreateAPIView):
+    queryset = Server1.objects.all()
+    serializer_class = Server1Serializer
+
+class RetrieveServer1(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Server1.objects.all()
+    serializer_class = Server1Serializer
+
+#SERVER1 LOG - deleted files in server1
+class ListDeletedServer1(generics.ListAPIView):
+    queryset = Server1Logs.objects.all()
+    serializer_class = Server1LogSerializer
+
+
+#SERVER 2
+class Server2CreateList(generics.ListCreateAPIView):
+    queryset = Server2.objects.all()
+    serializer_class = Server2Serializer
+
+class RetrieveServer2(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Server2.objects.all()
+    serializer_class = Server2Serializer
+
+#SERVER2 LOG - deleted files in server2
+class ListDeletedServer2(generics.ListAPIView):
+    queryset = Server2Logs.objects.all()
+    serializer_class = Server2LogSerializer
+
+
+
+#SERVER 3
+class Server3CreateList(generics.ListCreateAPIView):
+    queryset = Server3.objects.all()
+    serializer_class = Server3Serializer
+
+class RetrieveServer3(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Server3.objects.all()
+    serializer_class = Server3Serializer
+
+#SERVER3 LOG - deleted files in server3
+class ListDeletedServer3(generics.ListAPIView):
+    queryset = Server3Logs.objects.all()
+    serializer_class = Server3LogSerializer
+
+
+
+#SERVER 4
+class Server4CreateList(generics.ListCreateAPIView):
+    queryset = Server4.objects.all()
+    serializer_class = Server4Serializer
+
+class RetrieveServer4(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Server4.objects.all()
+    serializer_class = Server4Serializer
+
+#SERVER4 LOG - deleted files in server4
+class ListDeletedServer4(generics.ListAPIView):
+    queryset = Server4Logs.objects.all()
+    serializer_class = Server4LogSerializer
+
+
+
+#PERMISSIONS
 #create, view
 class ListCreatePerm(generics.ListCreateAPIView):
     queryset = Permission.objects.all()
@@ -163,3 +246,36 @@ class ListCreatePerm(generics.ListCreateAPIView):
 class RetrieveEditPerm(generics.RetrieveUpdateDestroyAPIView):
     queryset = Permission.objects.all()
     serializer_class = PermissionSerializer
+
+
+#SHAREDFOLDERACCESS
+#view the access
+class ListSharedFolder(generics.ListAPIView):
+    queryset = Sharedfolderaccess.objects.all()
+    serializer_class = ShareFolderAccessSerializer
+
+#delete access
+class DeleteSharedFolder(generics.RetrieveDestroyAPIView):
+    queryset = Sharedfolderaccess.objects.all()
+    serializer_class = ShareFolderAccessSerializer
+
+#temporary create
+class CreateSharedFolder(generics.CreateAPIView):
+    queryset = Sharedfolderaccess.objects.all()
+    serializer_class = ShareFolderAccessSerializer
+
+
+#SHAREDFILEACESS
+class ListSharedFile(generics.ListAPIView):
+    queryset = Sharedfileaccess.objects.all()
+    serializer_class = ShareFileAccessSerializer
+
+#delete access
+class DeleteSharedFile(generics.RetrieveDestroyAPIView):
+    queryset = Sharedfileaccess.objects.all()
+    serializer_class = ShareFileAccessSerializer
+
+#temporary create
+class CreateSharedFile(generics.CreateAPIView):
+    queryset = Sharedfileaccess.objects.all()
+    serializer_class = ShareFileAccessSerializer
