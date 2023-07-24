@@ -11,7 +11,8 @@
 
         // Select and style only if the value of the <input> element is invalid
         // ~ general sibiling selector
-        // [attribute*=value] Selector
+        // [attribute*=value] selector
+        // https://developer.mozilla.org/en-US/docs/Web/CSS/:invalid
         &:invalid[focused="true"] ~ span {
             // https://morioh.com/p/82d24895598e
             display: block;
