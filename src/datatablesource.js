@@ -156,5 +156,10 @@ export const enquiryColumns = [
     field: "enquiryStatus",
     headerName: "Status",
     width: 150,
+<<<<<<< HEAD
   }
 ];
+=======
+  },
+];
+>>>>>>> main

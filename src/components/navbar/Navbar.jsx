@@ -7,6 +7,7 @@ import NotificationsNoneOutlinedIcon from "@mui/icons-material/NotificationsNone
 import ChatBubbleOutlineOutlinedIcon from "@mui/icons-material/ChatBubbleOutlineOutlined";
 import ListOutlinedIcon from "@mui/icons-material/ListOutlined";
 
+<<<<<<< HEAD
 import React from 'react';
 import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
@@ -20,6 +21,21 @@ import Tooltip from '@mui/material/Tooltip';
 import PersonAdd from '@mui/icons-material/PersonAdd';
 import Settings from '@mui/icons-material/Settings';
 import Logout from '@mui/icons-material/Logout';
+=======
+import React from "react";
+import Box from "@mui/material/Box";
+import Avatar from "@mui/material/Avatar";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import Divider from "@mui/material/Divider";
+import IconButton from "@mui/material/IconButton";
+import Typography from "@mui/material/Typography";
+import Tooltip from "@mui/material/Tooltip";
+import PersonAdd from "@mui/icons-material/PersonAdd";
+import Settings from "@mui/icons-material/Settings";
+import Logout from "@mui/icons-material/Logout";
+>>>>>>> main
 
 import { DarkModeContext } from "../../context/darkModeContext";
 import { useContext } from "react";
@@ -77,9 +93,20 @@ const Navbar = () => {
                 className="avatar"
               />
             </Link> */}
+<<<<<<< HEAD
 
             <React.Fragment>
               <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
+=======
+            <React.Fragment>
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  textAlign: "center",
+                }}
+              >
+>>>>>>> main
                 {/* <Typography sx={{ minWidth: 100 }}>Contact</Typography>
                 <Typography sx={{ minWidth: 100 }}>Profile</Typography> */}
                 <Tooltip title="Account settings">
@@ -87,9 +114,15 @@ const Navbar = () => {
                     onClick={handleClick}
                     size="small"
                     sx={{ ml: 0 }}
+<<<<<<< HEAD
                     aria-controls={open ? 'account-menu' : undefined}
                     aria-haspopup="true"
                     aria-expanded={open ? 'true' : undefined}
+=======
+                    aria-controls={open ? "account-menu" : undefined}
+                    aria-haspopup="true"
+                    aria-expanded={open ? "true" : undefined}
+>>>>>>> main
                   >
                     <Avatar sx={{ width: 32, height: 32 }}>M</Avatar>
                   </IconButton>
@@ -104,40 +137,72 @@ const Navbar = () => {
                 PaperProps={{
                   elevation: 0,
                   sx: {
+<<<<<<< HEAD
                     overflow: 'visible',
                     filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
                     mt: 1.5,
                     '& .MuiAvatar-root': {
+=======
+                    overflow: "visible",
+                    filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
+                    mt: 1.5,
+                    "& .MuiAvatar-root": {
+>>>>>>> main
                       width: 32,
                       height: 32,
                       ml: -0.5,
                       mr: 1,
                     },
+<<<<<<< HEAD
                     '&:before': {
                       content: '""',
                       display: 'block',
                       position: 'absolute',
+=======
+                    "&:before": {
+                      content: '""',
+                      display: "block",
+                      position: "absolute",
+>>>>>>> main
                       top: 0,
                       right: 14,
                       width: 10,
                       height: 10,
+<<<<<<< HEAD
                       bgcolor: 'background.paper',
                       transform: 'translateY(-50%) rotate(45deg)',
+=======
+                      bgcolor: "background.paper",
+                      transform: "translateY(-50%) rotate(45deg)",
+>>>>>>> main
                       zIndex: 0,
                     },
                   },
                 }}
+<<<<<<< HEAD
                 transformOrigin={{ horizontal: 'right', vertical: 'top' }}
                 anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
               >
                 <Link to="/users/test" style={{ textDecoration: "none"}}>
                   <MenuItem onClick={handleClose} sx={{fontSize:15}}>
+=======
+                transformOrigin={{ horizontal: "right", vertical: "top" }}
+                anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+              >
+                <Link to="/users/test" style={{ textDecoration: "none", color: "black" }}>
+                  <MenuItem onClick={handleClose} sx={{ fontSize: 15 }}>
+>>>>>>> main
                     <Avatar /> Full Name
                   </MenuItem>
                 </Link>
                 <MenuItem>
                   Username1
+<<<<<<< HEAD
                   <br/>user1@example.com
+=======
+                  <br />
+                  user1@example.com
+>>>>>>> main
                 </MenuItem>
                 <Divider />
                 {/* <MenuItem onClick={handleClose} sx={{fontSize:15}}>
@@ -147,14 +212,22 @@ const Navbar = () => {
                   Add another account
                 </MenuItem> */}
                 <Link to="/users/edit" style={{ textDecoration: "none" }}>
+<<<<<<< HEAD
                   <MenuItem onClick={handleClose} sx={{fontSize:15}}>
+=======
+                  <MenuItem onClick={handleClose} sx={{ fontSize: 15 }}>
+>>>>>>> main
                     <ListItemIcon>
                       <Settings fontSize="small" />
                     </ListItemIcon>
                     Settings
                   </MenuItem>
                 </Link>
+<<<<<<< HEAD
                 <MenuItem onClick={handleClose} sx={{fontSize:15}}>
+=======
+                <MenuItem onClick={handleClose} sx={{ fontSize: 15 }}>
+>>>>>>> main
                   <ListItemIcon>
                     <Logout fontSize="small" />
                   </ListItemIcon>

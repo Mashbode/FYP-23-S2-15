@@ -3,6 +3,7 @@ import Map from "../../img/map.png";
 import Phone from "../../img/phone.png";
 import Send from "../../img/send.png";
 
+<<<<<<< HEAD
 import FormInput from "../forminput/FormInput";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -10,6 +11,8 @@ import { db } from "../../firebase";
 import { doc, setDoc, collection, addDoc, serverTimestamp, getDocs } from "firebase/firestore";
 import CircularProgress from "@mui/material/CircularProgress";
 
+=======
+>>>>>>> main
 const Container = styled.div`
   height: 90%; // 10% is for Footer.jsx
   background: url("https://www.toptal.com/designers/subtlepatterns/uploads/webb.png"); // Below url is not available -> Click download btn w/ shift
@@ -146,6 +149,7 @@ const Text = styled.span`
 `;
 
 const Contact = () => {
+<<<<<<< HEAD
     // const [values, setValues] = useState({
   //   username: "",
   //   email: "",
@@ -231,6 +235,8 @@ const Contact = () => {
     setNewEnquiryMessage('');
   }
 
+=======
+>>>>>>> main
   return (
     <Container id="contact">
       <Wrapper>
@@ -238,6 +244,7 @@ const Contact = () => {
           <Title>
             Questions? <br /> Let's Get In Touch
           </Title>
+<<<<<<< HEAD
           <Form onSubmit={handleSubmit}>
             <LeftForm>
               {/* <Input placeholder="Your Name" />
@@ -275,6 +282,17 @@ const Contact = () => {
               <TextArea placeholder="Leave the Enquiry Message Here..."
               onChange={(event) => {setNewEnquiryMessage(event.target.value);}} required />
               <Button onClick={createEnquiry}>Submit</Button>
+=======
+          <Form>
+            <LeftForm>
+              <Input placeholder="Your Name" />
+              <Input placeholder="Your Email" />
+              <Input placeholder="Subject" />
+            </LeftForm>
+            <RightForm>
+              <TextArea placeholder="Your Message" />
+              <Button>Send</Button>
+>>>>>>> main
             </RightForm>
           </Form>
         </FormContainer>

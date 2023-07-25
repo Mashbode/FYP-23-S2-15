@@ -63,6 +63,7 @@ const userInputs = [
   },
 ];
 
+<<<<<<< HEAD
 const productInputs = [
   {
     id: 1,
@@ -95,6 +96,40 @@ const productInputs = [
     placeholder: "in stock",
   },
 ];
+=======
+// const productInputs = [
+//   {
+//     id: 1,
+//     label: "Title",
+//     type: "text",
+//     placeholder: "Apple Macbook Pro",
+//   },
+//   {
+//     id: 2,
+//     label: "Description",
+//     type: "text",
+//     placeholder: "Description",
+//   },
+//   {
+//     id: 3,
+//     label: "Category",
+//     type: "text",
+//     placeholder: "Computers",
+//   },
+//   {
+//     id: 4,
+//     label: "Price",
+//     type: "text",
+//     placeholder: "100",
+//   },
+//   {
+//     id: 5,
+//     label: "Stock",
+//     type: "text",
+//     placeholder: "in stock",
+//   },
+// ];
+>>>>>>> main
 
 function App() {
   const { darkMode } = useContext(DarkModeContext);
@@ -150,6 +185,17 @@ function App() {
                   </RequireAuth>
                 }
               />
+<<<<<<< HEAD
+=======
+              {/* <Route
+                path="new"
+                element={
+                  <RequireAuth>
+                    <New inputs={userInputs} title="Add New User" />
+                  </RequireAuth>
+                }
+              /> */}
+>>>>>>> main
               <Route
                 path="edit"
                 element={

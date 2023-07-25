@@ -11,6 +11,10 @@
 
             .left {
                 flex: 1;
+<<<<<<< HEAD
+=======
+                flex: 20%;
+>>>>>>> main
                 -webkit-box-shadow: 2px 4px 10px 1px rgba(0, 0, 0, 0.47);
                 box-shadow: 2px 4px 10px 1px rgba(201, 201, 201, 0.47);
                 padding: 20px;
@@ -33,6 +37,10 @@
                     display: flex;
                     justify-content: center;
                     padding: 5px;
+<<<<<<< HEAD
+=======
+                    margin-top: 20px;
+>>>>>>> main
                     border-radius: 5px;
                     border: none;
                     font-size: 12px;
@@ -53,6 +61,11 @@
                     }
 
                     .details {
+<<<<<<< HEAD
+=======
+                        margin-left: 20px;
+
+>>>>>>> main
                         .itemTitle {
                             margin-bottom: 10px;
                             color: #555;
@@ -77,6 +90,15 @@
             }
             .right {
                 flex: 2;
+<<<<<<< HEAD
+=======
+                -webkit-box-shadow: 2px 4px 10px 1px rgba(0, 0, 0, 0.47);
+                box-shadow: 2px 4px 10px 1px rgba(201, 201, 201, 0.47);
+                padding: 20px;
+
+                // Pie Chart deco
+                
+>>>>>>> main
             }
         }
 
@@ -84,6 +106,10 @@
             -webkit-box-shadow: 2px 4px 10px 1px rgba(0, 0, 0, 0.47);
             box-shadow: 2px 4px 10px 1px rgba(201, 201, 201, 0.47);
             padding: 20px;
+<<<<<<< HEAD
+=======
+            padding-bottom: 30px;
+>>>>>>> main
             margin: 10px 20px; // top-bottom, right-left
         }
 

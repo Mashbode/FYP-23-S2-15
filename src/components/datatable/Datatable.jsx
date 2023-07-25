@@ -16,7 +16,17 @@ import {
 } from "firebase/firestore";
 import { ref, deleteObject } from "firebase/storage";
 import { db, storage } from "../../firebase";
+<<<<<<< HEAD
 import { userColumns, fileColumns, sharedFileColumns, deletedFileColumns, enquiryColumns } from "../../datatablesource";
+=======
+import {
+  userColumns,
+  fileColumns,
+  sharedFileColumns,
+  deletedFileColumns,
+  enquiryColumns,
+} from "../../datatablesource";
+>>>>>>> main
 
 const userRows = [
   {
@@ -227,6 +237,32 @@ const Datatable = ({ type }) => {
     },
   ];
 
+<<<<<<< HEAD
+=======
+  const actionEnquiryColumn = [
+    {
+      field: "action",
+      headerName: "Action",
+      width: 200,
+      renderCell: (params) => {
+        return (
+          <div className="cellAction">
+            <Link to="/users/test" style={{ textDecoration: "none" }}>
+              <div className="firstActionButton">Reply</div>
+            </Link>
+            <div
+              className="deleteButton"
+              onClick={() => handleUserDelete(params.row.id)}
+            >
+              Delete
+            </div>
+          </div>
+        );
+      },
+    },
+  ];
+
+>>>>>>> main
   const actionSharedFileColumn = [
     {
       field: "action",
@@ -291,6 +327,7 @@ const Datatable = ({ type }) => {
     },
   ];
 
+<<<<<<< HEAD
   const actionEnquiryColumn = [
     {
       field: "action",
@@ -314,6 +351,8 @@ const Datatable = ({ type }) => {
     },
   ];
 
+=======
+>>>>>>> main
   let columns;
   let actionColumn;
   switch (type) {

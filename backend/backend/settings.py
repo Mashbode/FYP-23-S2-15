@@ -118,7 +118,11 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "en-us"
 
+<<<<<<< HEAD
 TIME_ZONE = "UTC"
+=======
+TIME_ZONE = "Asia/Singapore"
+>>>>>>> main
 
 USE_I18N = True
 

@@ -20,6 +20,23 @@ urlpatterns = [
     path('api/Filelist',  ListCreateFile.as_view()),
     path('api/Filelist/<uuid:pk>', RetrieveEditFile.as_view()),
 
+<<<<<<< HEAD
     path('api/Folder',  ListCreateFolder.as_view()),
     path('api/Folder/<int:pk>', RetrieveEditFolder.as_view()),
+=======
+    path('api/Filepartlist',  ListCreateFilePart.as_view()),
+    path('api/Filepartlist/<uuid:pk>', RetrieveEditFilePart.as_view()),
+    path('api/Fileverlist',  ListCreateFileVer.as_view()),
+
+    path('api/DeletedFiles',  ListDeletedFile.as_view()),
+    path('api/DeletedFilesPart',  ListDeletedFileParts.as_view()),
+
+    path('api/Folder',  ListCreateFolder.as_view()),
+    path('api/Folder/<int:pk>', RetrieveEditFolder.as_view()),
+
+    path('api/DeletedFolderFile',  ListDeletedFolderFile.as_view()),
+
+    path('api/Permission',  ListCreatePerm.as_view()),
+    path('api/Permission/<pk>', RetrieveEditPerm.as_view()),
+>>>>>>> main
 ]

@@ -14,10 +14,17 @@ import SettingsSystemDaydreamOutlinedIcon from "@mui/icons-material/SettingsSyst
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import SupportAgentIcon from "@mui/icons-material/SupportAgent";
 // import {DashboardIcon, PersonOutlineIcon} from "@mui/icons-material"; // -> Upper can be abbreviated
+<<<<<<< HEAD
 import StorageIcon from '@mui/icons-material/Storage';
 import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined';
 import DeleteIcon from '@mui/icons-material/Delete';
 import LinearProgress from '@mui/joy/LinearProgress';
+=======
+import StorageIcon from "@mui/icons-material/Storage";
+import PeopleAltOutlinedIcon from "@mui/icons-material/PeopleAltOutlined";
+import DeleteIcon from "@mui/icons-material/Delete";
+import LinearProgress from "@mui/joy/LinearProgress";
+>>>>>>> main
 
 import { Link, useNavigate } from "react-router-dom";
 import { DarkModeContext } from "../../context/darkModeContext";
@@ -68,19 +75,30 @@ const Sidebar = () => {
           <Link to="/" style={{ textDecoration: "none" }}>
             <span className="logo">Secure File Sharing</span>
           </Link>
+<<<<<<< HEAD
         </div>)}
+=======
+        </div>
+      )}
+>>>>>>> main
       {admin && (
         <div className="top">
           <Link to="/" style={{ textDecoration: "none" }}>
             <span className="logo">File System Admin</span>
           </Link>
+<<<<<<< HEAD
         </div>)}
+=======
+        </div>
+      )}
+>>>>>>> main
       <hr />
       <div className="center">
         <ul>
           <p className="title">MAIN</p>
           <li>
             <Link to="/home" style={{ textDecoration: "none" }}>
+<<<<<<< HEAD
                 <DashboardIcon className="icon" />
                 <span>Dashboard</span>
             </Link>
@@ -94,6 +112,22 @@ const Sidebar = () => {
                 <span>My Drive</span>
             </Link>
           </li>)}
+=======
+              <DashboardIcon className="icon" />
+              <span>Dashboard</span>
+            </Link>
+          </li>
+          {!admin && (
+            <li>
+              {/* <StorageIcon className='icon' />
+            <a href="/my-drive">My Drive</a> */}
+              <Link to="/my-drive" style={{ textDecoration: "none" }}>
+                <StorageIcon className="icon" />
+                <span>My Drive</span>
+              </Link>
+            </li>
+          )}
+>>>>>>> main
           <p className="title">LISTS</p>
           {admin && (
             <li>
@@ -121,14 +155,24 @@ const Sidebar = () => {
                 <PeopleAltOutlinedIcon className="icon" />
                 <span>Shared</span>
               </Link>
+<<<<<<< HEAD
             </li>)}
+=======
+            </li>
+          )}
+>>>>>>> main
           {!admin && (
             <li>
               <Link to="/files-deleted" style={{ textDecoration: "none" }}>
                 <DeleteIcon className="icon" />
                 <span>Trash</span>
               </Link>
+<<<<<<< HEAD
             </li>)}
+=======
+            </li>
+          )}
+>>>>>>> main
           {/* <li>
             <CreditCardIcon className="icon" />
             <span>Orders</span>
@@ -179,8 +223,15 @@ const Sidebar = () => {
           </li> */}
           <p className="title">USER</p>
           <li>
+<<<<<<< HEAD
             <AccountCircleOutlinedIcon className="icon" />
             <span>Profile</span>
+=======
+            <Link to="/users/test" style={{ textDecoration: "none" }}>
+              <AccountCircleOutlinedIcon className="icon" />
+              <span>Profile</span>
+            </Link>
+>>>>>>> main
           </li>
           <li>
             <Link
@@ -207,10 +258,18 @@ const Sidebar = () => {
       {!admin && (
         <div>
           <div className="bottom">
+<<<<<<< HEAD
             <LinearProgress color="neutral" determinate size="md" value={30} />  
           </div>
           <div className="barComment">5 GB of 20 GB used</div>
         </div>)}
+=======
+            <LinearProgress color="neutral" determinate size="md" value={30} />
+          </div>
+          <div className="barComment">5 GB of 20 GB used</div>
+        </div>
+      )}
+>>>>>>> main
     </div>
   );
 };

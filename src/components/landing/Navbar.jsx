@@ -75,7 +75,11 @@ const MenuItem = styled.a`
 
 const Button = styled.button`
   border: 2px solid white;
+<<<<<<< HEAD
   padding: 10px 10px;
+=======
+  padding: 10px 15px;
+>>>>>>> main
   background-color: crimson;
   color: white;
   font-weight: bold;
@@ -171,11 +175,17 @@ const Navbar = () => {
           <Link to="/login">
             <Button>LOGIN</Button>
           </Link>
+<<<<<<< HEAD
           <div style={{marginLeft:10+'px'}}>
             <Link to="/register">
               <Button>JOIN TODAY</Button>
             </Link>
           </div>
+=======
+          <Link to="/register">
+            <Button>JOIN TODAY</Button>
+          </Link>
+>>>>>>> main
         </Right>
       </Wrapper>
     </Container>

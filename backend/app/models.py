@@ -7,6 +7,10 @@
 # Feel free to rename the models, but don't rename db_table values or field names.
 from django.db import models
 import uuid
+<<<<<<< HEAD
+=======
+from django.utils import timezone
+>>>>>>> main
 
 class Admintab(models.Model):
     user = models.ForeignKey('Users', models.DO_NOTHING, blank=True, null=True)
@@ -26,6 +30,7 @@ class Client(models.Model):
         managed = False
         db_table = 'client'
 
+<<<<<<< HEAD
 
 class DeleteFolderFileLogs(models.Model):
     folder_files_id = models.IntegerField(blank=True, null=True)
@@ -33,12 +38,23 @@ class DeleteFolderFileLogs(models.Model):
     folder_id = models.IntegerField(blank=True, null=True)
     creation_time = models.DateTimeField(auto_now_add=True)
     delete_time = models.DateTimeField(blank=True, null=True)
+=======
+class DeleteFolderFileLogs(models.Model):
+    folder_files_id = models.AutoField(primary_key=True)
+    file = models.ForeignKey('Filetable', models.DO_NOTHING, blank=True, null=True) #change -> it cannot be null
+    folder = models.ForeignKey('Foldertable', models.DO_NOTHING, blank=True, null=True) #change -> it cannot be null
+    creation_time = models.DateTimeField(auto_now_add=True)
+    delete_time = models.DateTimeField(auto_now_add=True)
+>>>>>>> main
 
     class Meta:
         managed = False
         db_table = 'delete_folder_file_logs'
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> main
 class Encryption(models.Model):
     encryption_type = models.CharField(primary_key=True, max_length=20)
 
@@ -47,6 +63,7 @@ class Encryption(models.Model):
         db_table = 'encryption'
 
 
+<<<<<<< HEAD
 class FileLog(models.Model):
     file_id = models.UUIDField(blank=True, null=True)
     folder_id = models.IntegerField(blank=True, null=True)
@@ -59,6 +76,21 @@ class FileLog(models.Model):
     uploadtime = models.DateTimeField(auto_now_add=True)
     last_change = models.DateTimeField(auto_now=True)
     delete_time = models.DateTimeField(blank=True, null=True)
+=======
+#fileabc_log tables are auto generated when a file is deleted
+class FileLog(models.Model):
+    file_id = models.UUIDField(primary_key=True, default = uuid.uuid4, editable = False)
+    folder = models.ForeignKey('Foldertable', models.DO_NOTHING, blank=True, null=True)
+    filename = models.CharField(max_length=50, blank=True, null=True)
+    filetype = models.CharField(max_length=50, blank=True, null=True)
+    numberofparts = models.IntegerField(blank=True, null=True)
+    encryptiontype = models.ForeignKey(Encryption, models.DO_NOTHING, db_column='encryptiontype', blank=True, null=True)
+    client = models.ForeignKey(Client, models.DO_NOTHING, blank=True, null=True)
+    #file_version=  models.ForeignKey('Fileversion', models.DO_NOTHING, blank=True, null=True)
+    uploadtime = models.DateTimeField(auto_now_add=True)
+    last_change = models.DateTimeField(auto_now=True)
+    delete_time = models.DateTimeField(auto_now_add=True)
+>>>>>>> main
 
     class Meta:
         managed = False
@@ -66,12 +98,21 @@ class FileLog(models.Model):
 
 
 class FilePartsLog(models.Model):
+<<<<<<< HEAD
     file_part_id = models.UUIDField(blank=True, null=True)
     part_number = models.IntegerField(blank=True, null=True)
     file_version_id = models.UUIDField(blank=True, null=True)
     last_change = models.DateTimeField(blank=True, null=True)
     file_id = models.UUIDField(blank=True, null=True)
     delete_time = models.DateTimeField(blank=True, null=True)
+=======
+    file_part_id = models.UUIDField(primary_key=True, default = uuid.uuid4, editable = False)
+    part_number = models.IntegerField(blank=True, null=True)
+    file = models.ForeignKey('Filetable', models.DO_NOTHING, blank=True, null=True)
+    file_version =  models.ForeignKey('Fileversion', models.DO_NOTHING, blank=True, null=True)
+    last_change = models.DateTimeField(auto_now_add=True)
+    delete_time = models.DateTimeField(auto_now_add=True)
+>>>>>>> main
 
     class Meta:
         managed = False
@@ -79,11 +120,19 @@ class FilePartsLog(models.Model):
 
 
 class FileVersionLog(models.Model):
+<<<<<<< HEAD
     file_version_id = models.UUIDField(blank=True, null=True)
     last_change = models.DateTimeField(blank=True, null=True)
     file_id = models.UUIDField(blank=True, null=True)
     file_version = models.IntegerField(blank=True, null=True)
     delete_time = models.DateTimeField(blank=True, null=True)
+=======
+    file_version_id = models.UUIDField(primary_key=True, default = uuid.uuid4, editable = False)
+    file = models.ForeignKey('Filetable', models.DO_NOTHING)
+    version_file = models.IntegerField(blank=True, null=True)
+    last_change = models.DateTimeField(auto_now_add=True)
+    delete_time = models.DateTimeField(auto_now_add=True)
+>>>>>>> main
 
     class Meta:
         managed = False
@@ -91,12 +140,20 @@ class FileVersionLog(models.Model):
 
 
 class Fileparts(models.Model):
+<<<<<<< HEAD
     file_part_id = models.UUIDField(primary_key=True)
     part_number = models.IntegerField(blank=True, null=True)
     server_name = models.CharField(max_length=50, blank=True, null=True)
     file = models.ForeignKey('Filetable', models.DO_NOTHING, blank=True, null=True)
     file_version = models.ForeignKey('Fileversion', models.DO_NOTHING, blank=True, null=True)
     last_change = models.DateTimeField(blank=True, null=True)
+=======
+    file_part_id = models.UUIDField(primary_key=True,  default = uuid.uuid4, editable = False)
+    part_number = models.IntegerField(blank=True, null=True)
+    file = models.ForeignKey('Filetable', models.DO_NOTHING, blank=True, null=True)
+    file_version = models.ForeignKey('Fileversion', models.DO_NOTHING, blank=True, null=True)
+    last_change = models.DateTimeField(auto_now_add=True)
+>>>>>>> main
 
     class Meta:
         managed = False
@@ -124,7 +181,11 @@ class Filetable(models.Model):
     numberofparts = models.IntegerField(blank=True, null=True)
     encryptiontype = models.ForeignKey(Encryption, models.DO_NOTHING, db_column='encryptiontype', blank=True, null=True)
     client = models.ForeignKey(Client, models.DO_NOTHING, blank=True, null=True)
+<<<<<<< HEAD
     file_version = models.ForeignKey('Fileversion', models.DO_NOTHING, blank=True, null=True)
+=======
+    #file_version = models.ForeignKey('Fileversion', models.DO_NOTHING, blank=True, null=True)
+>>>>>>> main
     last_change = models.DateTimeField(auto_now=True)
     uploadtime = models.DateTimeField(auto_now_add=True)
 
@@ -134,10 +195,17 @@ class Filetable(models.Model):
 
 
 class Fileversion(models.Model):
+<<<<<<< HEAD
     file_version = models.OneToOneField(Filetable, models.DO_NOTHING, primary_key=True)
     file_id = models.UUIDField(blank=True, null=True)
     file_version_0 = models.IntegerField(db_column='file_version', blank=True, null=True)  # Field renamed because of name conflict.
     last_change = models.DateTimeField(blank=True, null=True)
+=======
+    file_version_id = models.UUIDField(primary_key=True, default = uuid.uuid4, editable = False)
+    file = models.ForeignKey('Filetable', models.DO_NOTHING)
+    version_file = models.IntegerField(blank=True, null=True)
+    last_change = models.DateTimeField(auto_now_add=True)
+>>>>>>> main
 
     class Meta:
         managed = False
@@ -145,12 +213,22 @@ class Fileversion(models.Model):
 
 
 class FolderLogs(models.Model):
+<<<<<<< HEAD
     folder_id = models.IntegerField(blank=True, null=True)
     client_id = models.IntegerField(blank=True, null=True)
     foldername = models.CharField(max_length=20, blank=True, null=True)
     creation_time = models.DateTimeField(blank=True, null=True)
     last_change = models.DateTimeField(blank=True, null=True)
     delete_time = models.DateTimeField(blank=True, null=True)
+=======
+    folder_id = models.AutoField(primary_key=True)
+    client = models.ForeignKey(Client, models.DO_NOTHING, blank=True, null=True)
+    file = models.ForeignKey(Filetable, models.DO_NOTHING, blank=True, null=True)
+    foldername = models.CharField(max_length=50, blank=True, null=True)
+    creation_time = models.DateTimeField(auto_now_add=True)
+    last_change = models.DateTimeField(auto_now=True)
+    delete_time = models.DateTimeField(auto_now_add=True)
+>>>>>>> main
 
     class Meta:
         managed = False
@@ -161,7 +239,11 @@ class Folderfiles(models.Model):
     folder_files_id = models.AutoField(primary_key=True)
     file = models.ForeignKey('Filetable', models.DO_NOTHING, blank=True, null=True)
     folder = models.ForeignKey('Foldertable', models.DO_NOTHING, blank=True, null=True)
+<<<<<<< HEAD
     time_added = models.DateTimeField(blank=True, null=True)
+=======
+    creation_time = models.DateTimeField(auto_now_add=True)
+>>>>>>> main
 
     class Meta:
         managed = False
@@ -174,7 +256,11 @@ class Foldersharehistory(models.Model):
     folder_id = models.IntegerField()
     permission_type = models.CharField(max_length=20, blank=True, null=True)
     shared_client_id = models.IntegerField(blank=True, null=True)
+<<<<<<< HEAD
     create_time = models.DateTimeField(auto_now_add=True)
+=======
+    create_time = models.DateTimeField( primary_key=True, auto_now_add=True)
+>>>>>>> main
 
     class Meta:
         managed = False

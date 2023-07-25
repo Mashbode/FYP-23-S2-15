@@ -1,10 +1,17 @@
 import "./register.scss";
 import FormInput from "../../components/forminput/FormInput";
+<<<<<<< HEAD
+=======
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
+import CircularProgress from "@mui/material/CircularProgress";
+>>>>>>> main
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { auth, db } from "../../firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
+<<<<<<< HEAD
 import CircularProgress from "@mui/material/CircularProgress";
 
 const Register = () => {
@@ -18,6 +25,19 @@ const Register = () => {
   }); // Handle multiple input
   const [registering, setRegistering] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+=======
+
+const Register = () => {
+  const [values, setValues] = useState({
+    username: "",
+    email: "",
+    phone: "",
+    password: "",
+    confirmPassword: "",
+  }); // Handle multiple input at once
+  const [registering, setRegistering] = useState(false); // Spinner icon
+  const [errorMsg, setErrorMsg] = useState(""); // Error msg on register
+>>>>>>> main
 
   const formInputs = [
     {
@@ -40,6 +60,7 @@ const Register = () => {
       label: "Email",
       required: true,
     },
+<<<<<<< HEAD
     {
       id: 3,
       name: "birthday",
@@ -50,6 +71,18 @@ const Register = () => {
     },
     {
       id: 4,
+=======
+    // {
+    //   id: 3,
+    //   name: "birthday",
+    //   type: "date",
+    //   placeholder: "Birthday",
+    //   label: "Birthday",
+    //   required: true,
+    // },
+    {
+      id: 3,
+>>>>>>> main
       name: "password",
       type: "password",
       placeholder: "Password",
@@ -60,7 +93,11 @@ const Register = () => {
       required: true,
     },
     {
+<<<<<<< HEAD
       id: 5,
+=======
+      id: 4,
+>>>>>>> main
       name: "confirmPassword",
       type: "password",
       placeholder: "Confirm Password",
@@ -71,6 +108,7 @@ const Register = () => {
     },
   ];
 
+<<<<<<< HEAD
   // console.log(username);
   // console.log("re-rendered"); // Keeps re-rendering whenever the user types something inside a input: 1. useRef() 2. Object FormData
   // 1. const usernameRef = useRef();
@@ -108,12 +146,28 @@ const Register = () => {
     //     timeStamp: serverTimestamp(),
     //   });
     try {
+=======
+  const navigate = useNavigate();
+
+  const onChange = (e) => {
+    setValues({ ...values, [e.target.name]: e.target.value });
+  };
+
+  // async includes await funciton
+  const handleSubmit = async (e) => {
+    e.preventDefault(); // This is to prevent refreshing
+    setRegistering(true);
+
+    try {
+      // Provided by Firebase (Authentication)
+>>>>>>> main
       const result = await createUserWithEmailAndPassword(
         auth,
         values.email,
         values.password
       );
 
+<<<<<<< HEAD
       const { birthday, email, username } = values;
 
       await setDoc(doc(db, "users", result.user.uid), {
@@ -126,13 +180,32 @@ const Register = () => {
       });
 
       // setRegistering(false);
+=======
+      const { email, username, phone } = values;
+
+      // Provided by Firebase (Database)
+      await setDoc(doc(db, "users", result.user.uid), {
+        email: email,
+        username: username,
+        phone: "+" + phone, // "+" is required in order to reflect country code
+        status: "activated", // status will be "deactivated" when the account is deleted
+        type: "user", // Added to differentiate the sidebar
+        timeStamp: serverTimestamp(),
+      });
+      setRegistering(false);
+
+>>>>>>> main
       navigate("/login", { replace: true });
     } catch (error) {
       switch (error.code) {
         case "auth/email-already-in-use":
           setErrorMsg("Provided email is already in use!");
           break;
+<<<<<<< HEAD
         default:
+=======
+        default: // All the other errors
+>>>>>>> main
           setErrorMsg(`Contact admin: ${error.code}`);
           break;
       }
@@ -148,13 +221,18 @@ const Register = () => {
         {formInputs.map((formInput) => {
           return (
             <FormInput
+<<<<<<< HEAD
               key={formInput.id}
+=======
+              key={formInput.id} // Required to uniquely distinguish each item
+>>>>>>> main
               {...formInput}
               values={values[formInput.name]}
               onChange={onChange}
             />
           );
         })}
+<<<<<<< HEAD
         {/* <FormInput
           placeholder="Username"
           // setUsername={setUsername}
@@ -166,12 +244,44 @@ const Register = () => {
           <FormInput name="sth" placeholder="Sth else" /> */}
         <button>
           {registering ? (
+=======
+        <label style={{ fontSize: "13px", color: "gray" }}>Phone Number</label>
+        <PhoneInput
+          country="sg"
+          inputProps={{ name: "phone", required: true }}
+          containerStyle={{ margin: "10px 0px" }}
+          inputStyle={{
+            height: "49.33px",
+            width: "250px",
+            borderRadius: "10px",
+            border: "1px solid gray",
+            fontSize: "13px",
+          }}
+          buttonStyle={{
+            background: "none",
+            padding: "5px",
+            borderTopLeftRadius: "10px",
+            borderBottomLeftRadius: "10px",
+            border: "1px solid gray",
+            borderRight: "none",
+          }}
+          dropdownStyle={{ width: "250px", fontSize: "13px" }}
+          value={values["phone"]}
+          onChange={(phone) => setValues({ ...values, phone: phone })} // Cannot use onChange alr defined / https://eslint.org/docs/latest/rules/no-useless-computed-key
+        />
+        <button>
+          {registering ? ( // registering (true) = spinner will appear
+>>>>>>> main
             <CircularProgress color="inherit" size={20} />
           ) : (
             "Submit"
           )}
         </button>
+<<<<<<< HEAD
         {<span className="registerErr">{errorMsg}</span>}
+=======
+        <span className="registerErr">{errorMsg}</span>
+>>>>>>> main
       </form>
     </div>
   );
