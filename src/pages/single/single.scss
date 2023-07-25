@@ -11,6 +11,7 @@
 
             .left {
                 flex: 1;
+                flex: 20%;
                 -webkit-box-shadow: 2px 4px 10px 1px rgba(0, 0, 0, 0.47);
                 box-shadow: 2px 4px 10px 1px rgba(201, 201, 201, 0.47);
                 padding: 20px;
@@ -27,7 +28,7 @@
                     cursor: pointer;
                     border-radius: 0px 0px 0px 5px;
                 }
-
+              
                 .item {
                     display: flex;
                     flex-wrap: wrap; // https://css-tricks.com/snippets/css/a-guide-to-flexbox/#aa-flex-wrap
@@ -41,6 +42,8 @@
                     }
 
                     .details {
+                        margin-left: 20px;
+
                         .itemTitle {
                             margin-bottom: 10px;
                             color: #555;

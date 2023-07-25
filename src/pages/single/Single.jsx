@@ -62,6 +62,9 @@ const Single = () => {
       return;
     }
   };
+  const handleStorageIncrease = async () => {
+    
+  }
 
   const handleStorageIncrease = () => {};
   const handleStorageDecrease = () => {};
@@ -74,7 +77,6 @@ const Single = () => {
         <Navbar />
         <div className="top">
           <div className="left">
-            <div className="editButton">Edit</div>
             <Link to="/users/edit" style={{ textDecoration: "none" }}>
               <div className="editButton">Edit</div>
             </Link>
@@ -104,6 +106,14 @@ const Single = () => {
                   <span className="itemKey">Phone:</span>
                   <span className="itemValue">+65 8888 9999</span>
                 </div>
+                {/* <div className="detailItem">
+                  <span className="itemKey">Birthday:</span>
+                  <span className="itemValue">01 Jan 1990</span>
+                </div>
+                <div className="detailItem">
+                  <span className="itemKey">Address:</span>
+                  <span className="itemValue">1 Main Street Singapore 123456</span>
+                </div> */}
               </div>
               <div className="deleteButton" onClick={handleUserDelete}>
                 Delete Account
