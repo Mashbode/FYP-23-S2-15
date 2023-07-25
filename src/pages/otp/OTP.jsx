@@ -69,6 +69,7 @@ const OTP = () => {
   };
 
   // Getting the users document that has a phone field that matches with the user's phone input
+  // https://firebase.google.com/docs/firestore/query-data/get-data#get_multiple_documents_from_a_collection
   const getUser = async () => {
     const q = query(collection(db, "users"), where("phone", "==", "+" + phone));
     const querySnapshot = await getDocs(q);
