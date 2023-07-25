@@ -28,22 +28,10 @@
                     border-radius: 0px 0px 0px 5px;
                 }
 
-                .deleteButton {
-                    // width: 100%;
-                    display: flex;
-                    justify-content: center;
-                    padding: 5px;
-                    border-radius: 5px;
-                    border: none;
-                    font-size: 12px;
-                    background-color: rgba(255, 0, 0, 0.05);
-                    color: red;
-                    cursor: pointer;
-                }
-
                 .item {
                     display: flex;
-                    gap: 20px;
+                    flex-wrap: wrap; // https://css-tricks.com/snippets/css/a-guide-to-flexbox/#aa-flex-wrap
+                    gap: 40px;
 
                     .itemImg {
                         width: 100px;
@@ -73,17 +61,34 @@
                             }
                         }
                     }
+
+                    .deleteButton {
+                        width: 100%;
+                        display: flex;
+                        flex-wrap: wrap;
+                        justify-content: center;
+                        padding: 5px;
+                        border-radius: 5px;
+                        border: none;
+                        font-size: 12px;
+                        background-color: rgba(255, 0, 0, 0.05);
+                        color: red;
+                        cursor: pointer;
+                    }
                 }
             }
             .right {
-                flex: 2;
+                flex: 1;
+                -webkit-box-shadow: 2px 4px 10px 1px rgba(0, 0, 0, 0.47);
+                box-shadow: 2px 4px 10px 1px rgba(201, 201, 201, 0.47);
+                padding: 20px;
             }
         }
 
         .bottom {
             -webkit-box-shadow: 2px 4px 10px 1px rgba(0, 0, 0, 0.47);
             box-shadow: 2px 4px 10px 1px rgba(201, 201, 201, 0.47);
-            padding: 20px;
+            padding: 10px;
             margin: 10px 20px; // top-bottom, right-left
         }
 

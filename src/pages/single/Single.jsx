@@ -3,16 +3,29 @@ import Sidebar from "../../components/sidebar/Sidebar";
 import Navbar from "../../components/navbar/Navbar";
 import Chart from "../../components/chart/chart/Chart";
 import List from "../../components/table/Table";
+import Pie from "../../components/chart/pie/Pie";
+import Datatable from "../../components/datatable/Datatable";
 
 import { AuthContext } from "../../context/AuthContext";
-import { useContext } from "react";
-
-import { doc, updateDoc } from "firebase/firestore";
-import { db } from "../../firebase";
-
+import { useContext, useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { toast, Toaster } from "react-hot-toast";
 
+import { doc, updateDoc, collection, getDocs } from "firebase/firestore";
+import { db } from "../../firebase";
+
 const Single = () => {
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    const getUsers = async () => {
+      const data = await getDocs(collection(db, "users"));
+      setUsers(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+    };
+
+    getUsers();
+  }, []);
+
   const { dispatch } = useContext(AuthContext);
 
   const handleUserDelete = async () => {
@@ -50,6 +63,9 @@ const Single = () => {
     }
   };
 
+  const handleStorageIncrease = () => {};
+  const handleStorageDecrease = () => {};
+
   return (
     <div className="single">
       <Toaster toastOptions={{ duration: 2000 }} />
@@ -59,6 +75,9 @@ const Single = () => {
         <div className="top">
           <div className="left">
             <div className="editButton">Edit</div>
+            <Link to="/users/edit" style={{ textDecoration: "none" }}>
+              <div className="editButton">Edit</div>
+            </Link>
             <h1 className="title">Information</h1>
             {/* Not gg to use users as a class name -> item would be more general */}
             <div className="item">
@@ -70,36 +89,41 @@ const Single = () => {
               <div className="details">
                 <h1 className="itemTitle">Jane Doe</h1>
                 <div className="detailItem">
+                  <span className="itemKey">Username:</span>
+                  <span className="itemValue">jane1</span>
+                </div>
+                <div className="detailItem">
                   <span className="itemKey">Email:</span>
-                  <span className="itemValue">janedoe@gmail.com</span>
+                  <span className="itemValue">jane1@gmail.com</span>
+                </div>
+                <div className="detailItem">
+                  <span className="itemKey">Registered Date:</span>
+                  <span className="itemValue">01 Jan 2023</span>
                 </div>
                 <div className="detailItem">
                   <span className="itemKey">Phone:</span>
-                  <span className="itemValue">+1 2345 67 89</span>
-                </div>
-                <div className="detailItem">
-                  <span className="itemKey">Address:</span>
-                  <span className="itemValue">
-                    Elton St. 234 Garden Yd. NewYork
-                  </span>
-                </div>
-                <div className="detailItem">
-                  <span className="itemKey">Country:</span>
-                  <span className="itemValue">USA</span>
+                  <span className="itemValue">+65 8888 9999</span>
                 </div>
               </div>
-            </div>
-            <div className="deleteButton" onClick={handleUserDelete}>
-              Delete Account
+              <div className="deleteButton" onClick={handleUserDelete}>
+                Delete Account
+              </div>
             </div>
           </div>
           <div className="right">
-            <Chart aspect={3 / 1} title={"User Spending (Last 6 Months)"} />
+            {/* <Chart aspect={3 / 1} title={"Storage Usage"} /> */}
+            <h1 className="title">Storage Usage</h1>
+            <Pie />
+            <div className="increaseButton" onClick={handleStorageIncrease}>
+              Increase Storage
+            </div>
+            <div className="decreaseButton" onClick={handleStorageDecrease}>
+              Decrease Storage
+            </div>
           </div>
         </div>
         <div className="bottom">
-          <h1 className="title">Last Transactions</h1>
-          <List />
+          <Datatable type={"files"} />
         </div>
       </div>
     </div>
