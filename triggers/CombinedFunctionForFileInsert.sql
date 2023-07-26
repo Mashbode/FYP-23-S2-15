@@ -12,24 +12,24 @@ BEGIN
 	VALUES(NEW.file_id, 1);
 	
 	--INSERT INTO fileparts
-	INSERT INTO fileparts(part_number,server_name ,file_id,file_version_id)
-	values(1, 'server1', NEW.file_id, (SELECT file_version_id FROM fileversion where file_id=NEW.file_id)),
-	(2, 'server2', NEW.file_id, (SELECT file_version_id FROM fileversion where file_id=NEW.file_id)),
-	(3, 'server3', NEW.file_id, (SELECT file_version_id FROM fileversion where file_id=NEW.file_id)),
-	(4, 'server4', NEW.file_id, (SELECT file_version_id FROM fileversion where file_id=NEW.file_id));
+	INSERT INTO fileparts(part_number,file_id,file_version_id, server_name)
+	values(1, NEW.file_id, (SELECT file_version_id FROM fileversion where file_id=NEW.file_id), 'server1'),
+	(2, NEW.file_id, (SELECT file_version_id FROM fileversion where file_id=NEW.file_id), 'server2'),
+	(3, NEW.file_id, (SELECT file_version_id FROM fileversion where file_id=NEW.file_id), 'server3'),
+	(4, NEW.file_id, (SELECT file_version_id FROM fileversion where file_id=NEW.file_id), 'server4');
 	
 	--INSERT INTO Server 
-	INSERT INTO server1(file_id,file_part_id,file_version_id)
-	values(NEW.file_id,(SELECT file_part_id FROM fileparts WHERE file_id=NEW.file_id and part_number=1), (SELECT file_version_id FROM fileversion where file_id=NEW.file_id));
+	INSERT INTO server1(file_id,file_version_id,file_part_id)
+	values(NEW.file_id, (SELECT file_version_id FROM fileversion where file_id=NEW.file_id), (SELECT file_part_id FROM fileparts WHERE file_id=NEW.file_id and part_number=1));
 	
-	INSERT INTO server2(file_id,file_part_id,file_version_id)
-	values(NEW.file_id,(SELECT file_part_id FROM fileparts WHERE file_id=NEW.file_id and part_number=2), (SELECT file_version_id FROM fileversion where file_id=NEW.file_id));
+	INSERT INTO server2(file_id,file_version_id,file_part_id)
+	values(NEW.file_id, (SELECT file_version_id FROM fileversion where file_id=NEW.file_id), (SELECT file_part_id FROM fileparts WHERE file_id=NEW.file_id and part_number=2));
 	
-	INSERT INTO server3(file_id,file_part_id,file_version_id)
-	values(NEW.file_id,(SELECT file_part_id FROM fileparts WHERE file_id=NEW.file_id and part_number=3), (SELECT file_version_id FROM fileversion where file_id=NEW.file_id));
+	INSERT INTO server3(file_id,file_version_id,file_part_id)
+	values(NEW.file_id, (SELECT file_version_id FROM fileversion where file_id=NEW.file_id), (SELECT file_part_id FROM fileparts WHERE file_id=NEW.file_id and part_number=3));
 	
-	INSERT INTO server4(file_id,file_part_id,file_version_id)
-	values(NEW.file_id,(SELECT file_part_id FROM fileparts WHERE file_id=NEW.file_id and part_number=4), (SELECT file_version_id FROM fileversion where file_id=NEW.file_id));
+	INSERT INTO server4(file_id,file_version_id,file_part_id)
+	values(NEW.file_id, (SELECT file_version_id FROM fileversion where file_id=NEW.file_id), (SELECT file_part_id FROM fileparts WHERE file_id=NEW.file_id and part_number=4));
 	
 	Return NEW;
 END;

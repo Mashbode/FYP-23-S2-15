@@ -1,6 +1,3 @@
--- FUNCTION: public.file_update_combine()
-
--- DROP FUNCTION IF EXISTS public.file_update_combine();
 
 CREATE OR REPLACE FUNCTION public.file_update_combine()
     RETURNS trigger

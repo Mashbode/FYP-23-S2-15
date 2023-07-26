@@ -4,6 +4,6 @@
 
 CREATE TRIGGER folder_delete_logs
     BEFORE DELETE
-    ON public.foldertab
+    ON public.foldertable
     FOR EACH ROW
     EXECUTE FUNCTION public.folder_log_combined_insert();

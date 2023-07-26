@@ -10,7 +10,7 @@ BEGIN
 	-- When deleting folder 
 	-- file_version_log
 	INSERT INTO folder_logs(folder_id, client_id, foldername, creation_time, last_change)
-	SELECT folder_id, client_id, foldername, creation_time, last_change FROM foldertab WHERE folder_id = OLD.folder_id;
+	SELECT folder_id, client_id, foldername, creation_time, last_change FROM foldertable WHERE folder_id = OLD.folder_id;
 	-- folder file log 
 	INSERT INTO delete_folder_file_logs(folder_files_id, file_id, folder_id, creation_time)
 	SELECT folder_files_id, file_id, folder_id, time_added FROM folderfiles WHERE folder_id = OLD.folder_id;

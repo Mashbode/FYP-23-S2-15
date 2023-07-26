@@ -163,3 +163,109 @@ class ListCreatePerm(generics.ListCreateAPIView):
 class RetrieveEditPerm(generics.RetrieveUpdateDestroyAPIView):
     queryset = Permission.objects.all()
     serializer_class = PermissionSerializer
+
+
+
+## my stufff 
+# Create your views here.
+#view all users 
+class userList(generics.ListAPIView):
+    queryset = Users.objects.all()
+    serializer_class = UsersSerializer 
+#view individual user to edit   
+class EdituserDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Users.objects.all()
+    serializer_class = UsersSerializer
+
+# view Admin
+class adminList(generics.ListAPIView):
+    queryset = Admintab.objects.all()
+    serializer_class = AdminSerializer
+
+# view admin to edit 
+class EditAdminDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Admintab.objects.all()
+    serializer_class = AdminSerializer
+
+#view clients
+class clientList(generics.ListAPIView):
+    queryset = Client.objects.all()
+    serializer_class = ClientSerializer
+
+# view client to edit 
+class EditClientDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Client.objects.all()
+    serializer_class = ClientSerializer
+
+class deleteclient(generics.RetrieveDestroyAPIView):
+    queryset = Client.objects.all()
+    serializer_class = ClientSerializer
+#view all file info 
+class fileList(generics.ListAPIView):
+    queryset = Filetable.objects.all()
+    serializer_class = FileSerializer
+#view single file
+class fileview(generics.RetrieveAPIView):
+    queryset = Filetable.objects.all()
+    serializer_class = FileSerializer
+#update file info 
+class fileEdit(generics.RetrieveUpdateAPIView):
+    queryset = Filetable.objects.all()
+    serializer_class = FileSerializer
+#creating file 
+class fileAdd(generics.ListCreateAPIView):
+    queryset = Filetable.objects.all()
+    serializer_class = FileSerializer
+
+#deletingfile
+class fileDelete(generics.RetrieveDestroyAPIView):
+    serializer_class = FileSerializer
+    queryset = Filetable.objects.all()
+
+#view file version
+class fileversionview(generics.ListAPIView):
+    queryset = Fileversion.objects.all()
+    serializer_class = FileVersionSerializer
+#add fil version 
+class fileVersionAdd(generics.CreateAPIView):
+    queryset = Fileversion.objects.all()
+    serializer_class = FileVersionSerializer
+
+#update file version
+class fileVersionUpdate(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Fileversion.objects.all()
+    serializer_class= FileVersionSerializer
+
+class splitFilesIntoServer(generics.CreateAPIView):
+    queryset = Server1.objects.all()
+
+
+#view folders 
+class folderview(generics.ListAPIView):
+    queryset = Foldertable.objects.all()
+    serializer_class = FolderSerializer
+#folder create 
+class folderCreate(generics.ListCreateAPIView):
+    queryset = Foldertable.objects.all()
+    serializer_class = FolderSerializer
+#folder delete 
+class folderDelete(generics.RetrieveDestroyAPIView):
+    queryset = Foldertable.objects.all()
+    serializer_class = FolderSerializer
+
+#view folderfiles 
+class folderfilesview(generics.ListAPIView):
+    queryset = Folderfiles.objects.all()
+    serializer_class = FolderFilesSerializer
+#create 
+class folderfileCreate(generics.ListCreateAPIView):
+    queryset = Folderfiles.objects.all()
+    serializer_class = FolderFilesSerializer
+#delete 
+class folderfileDelete(generics.RetrieveDestroyAPIView):
+    queryset= Folderfiles.objects.all()
+    serializer_class = FolderFilesSerializer
+
+class folderfilelogs(generics.ListAPIView):
+    queryset = DeleteFolderFileLogs.objects.all()
+    serializer_class = DeleteFolderFileLogs

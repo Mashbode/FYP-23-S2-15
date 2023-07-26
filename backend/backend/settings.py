@@ -86,8 +86,8 @@ DATABASES = {
     "default": {
        "ENGINE": "django.db.backends.postgresql",
         "NAME": "metadatadb",
-        "USER": "teamates1",
-        "PASSWORD": "pass",
+        "USER": "postgres",
+        "PASSWORD": "passcanliao",
         "HOST": "testdb.c9ybbr2jzshu.ap-southeast-1.rds.amazonaws.com",
         "PORT": "5432",
     }

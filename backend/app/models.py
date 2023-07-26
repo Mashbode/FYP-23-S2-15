@@ -28,11 +28,11 @@ class Client(models.Model):
         db_table = 'client'
 
 class DeleteFolderFileLogs(models.Model):
-    folder_files_id = models.AutoField(primary_key=True)
-    file = models.ForeignKey('Filetable', models.DO_NOTHING, blank=True, null=True) #change -> it cannot be null
-    folder = models.ForeignKey('Foldertable', models.DO_NOTHING, blank=True, null=True) #change -> it cannot be null
-    creation_time = models.DateTimeField(auto_now_add=True)
-    delete_time = models.DateTimeField(auto_now_add=True)
+    folder_files_id = models.IntegerField(primary_key = True, blank=True)
+    file_id = models.UUIDField(blank=True, null=True)
+    folder_id = models.IntegerField(blank=True, null=True)
+    creation_time = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    delete_time = models.DateTimeField(auto_now_add=True, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -48,16 +48,15 @@ class Encryption(models.Model):
 
 #fileabc_log tables are auto generated when a file is deleted
 class FileLog(models.Model):
-    file_id = models.UUIDField(primary_key=True, default = uuid.uuid4, editable = False)
-    folder = models.ForeignKey('Foldertable', models.DO_NOTHING, blank=True, null=True)
+    file_id = models.UUIDField(primary_key=True)
     filename = models.CharField(max_length=50, blank=True, null=True)
     filetype = models.CharField(max_length=50, blank=True, null=True)
     numberofparts = models.IntegerField(blank=True, null=True)
-    encryptiontype = models.ForeignKey(Encryption, models.DO_NOTHING, db_column='encryptiontype', blank=True, null=True)
-    client = models.ForeignKey(Client, models.DO_NOTHING, blank=True, null=True)
-    #file_version=  models.ForeignKey('Fileversion', models.DO_NOTHING, blank=True, null=True)
-    uploadtime = models.DateTimeField(auto_now_add=True)
-    last_change = models.DateTimeField(auto_now=True)
+    encryptiontype = models.CharField(max_length=50, blank=True, null=True)
+    client_id = models.IntegerField(blank=True, null=True)
+    file_version_id = models.UUIDField(blank=True, null=True)
+    uploadtime = models.DateTimeField(blank=True, null=True)
+    last_change = models.DateTimeField(blank=True, null=True)
     delete_time = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -66,12 +65,13 @@ class FileLog(models.Model):
 
 
 class FilePartsLog(models.Model):
-    file_part_id = models.UUIDField(primary_key=True, default = uuid.uuid4, editable = False)
+    file_part_id = models.UUIDField(primary_key=True)
     part_number = models.IntegerField(blank=True, null=True)
-    file = models.ForeignKey('Filetable', models.DO_NOTHING, blank=True, null=True)
-    file_version =  models.ForeignKey('Fileversion', models.DO_NOTHING, blank=True, null=True)
-    last_change = models.DateTimeField(auto_now_add=True)
-    delete_time = models.DateTimeField(auto_now_add=True)
+    file_id = models.UUIDField(blank=True, null=True)
+    file_version_id = models.UUIDField(blank=True, null=True)
+    last_change = models.DateTimeField(blank=True, null=True)
+    server_name = models.CharField(blank=True, null=True)
+    delete_time = models.DateTimeField(auto_now_add=True, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -79,8 +79,8 @@ class FilePartsLog(models.Model):
 
 
 class FileVersionLog(models.Model):
-    file_version_id = models.UUIDField(primary_key=True, default = uuid.uuid4, editable = False)
-    file = models.ForeignKey('Filetable', models.DO_NOTHING)
+    file_version_id = models.UUIDField(primary_key=True)
+    file_id = models.UUIDField(blank=True, null=True)
     version_file = models.IntegerField(blank=True, null=True)
     last_change = models.DateTimeField(auto_now_add=True)
     delete_time = models.DateTimeField(auto_now_add=True)
@@ -96,7 +96,7 @@ class Fileparts(models.Model):
     file = models.ForeignKey('Filetable', models.DO_NOTHING, blank=True, null=True)
     file_version = models.ForeignKey('Fileversion', models.DO_NOTHING, blank=True, null=True)
     last_change = models.DateTimeField(auto_now_add=True)
-
+    server_name = models.CharField(blank=True, null=True)
     class Meta:
         managed = False
         db_table = 'fileparts'
@@ -117,7 +117,6 @@ class Filesharehistory(models.Model):
 
 class Filetable(models.Model):
     file_id = models.UUIDField(primary_key=True, default = uuid.uuid4, editable = False)
-    folder = models.ForeignKey('Foldertable', models.DO_NOTHING, blank=True, null=True)
     filename = models.CharField(max_length=50, blank=True, null=True)
     filetype = models.CharField(max_length=50, blank=True, null=True)
     numberofparts = models.IntegerField(blank=True, null=True)
@@ -134,8 +133,8 @@ class Filetable(models.Model):
 
 class Fileversion(models.Model):
     file_version_id = models.UUIDField(primary_key=True, default = uuid.uuid4, editable = False)
-    file = models.ForeignKey('Filetable', models.DO_NOTHING)
-    version_file = models.IntegerField(blank=True, null=True)
+    file = models.ForeignKey(Filetable, models.DO_NOTHING)
+    file_version = models.IntegerField(blank=True, null=True)
     last_change = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -144,13 +143,12 @@ class Fileversion(models.Model):
 
 
 class FolderLogs(models.Model):
-    folder_id = models.AutoField(primary_key=True)
-    client = models.ForeignKey(Client, models.DO_NOTHING, blank=True, null=True)
-    file = models.ForeignKey(Filetable, models.DO_NOTHING, blank=True, null=True)
+    folder_id = models.IntegerField(primary_key=True)
+    client_id = models.IntegerField(blank=True, null=True)
     foldername = models.CharField(max_length=50, blank=True, null=True)
-    creation_time = models.DateTimeField(auto_now_add=True)
-    last_change = models.DateTimeField(auto_now=True)
-    delete_time = models.DateTimeField(auto_now_add=True)
+    creation_time = models.DateTimeField(blank=True, null=True)
+    last_change = models.DateTimeField(blank=True, null=True)
+    delete_time = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -161,7 +159,7 @@ class Folderfiles(models.Model):
     folder_files_id = models.AutoField(primary_key=True)
     file = models.ForeignKey('Filetable', models.DO_NOTHING, blank=True, null=True)
     folder = models.ForeignKey('Foldertable', models.DO_NOTHING, blank=True, null=True)
-    creation_time = models.DateTimeField(auto_now_add=True)
+    time_added = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         managed = False
@@ -185,7 +183,6 @@ class Foldersharehistory(models.Model):
 class Foldertable(models.Model):
     folder_id = models.AutoField(primary_key=True)
     client = models.ForeignKey(Client, models.DO_NOTHING, blank=True, null=True)
-    file = models.ForeignKey(Filetable, models.DO_NOTHING, blank=True, null=True)
     foldername = models.CharField(max_length=50, blank=True, null=True)
     creation_time = models.DateTimeField(auto_now_add=True)
     last_change = models.DateTimeField(auto_now=True)
@@ -207,6 +204,17 @@ class Invoice(models.Model):
         managed = False
         db_table = 'invoice'
 
+class InvoiceLog(models.Model):
+    invoice_id = models.AutoField(primary_key=True)
+    subscriptiontype = models.CharField(max_length=50, blank=True, null=True)
+    price = models.IntegerField(blank=True, null=True)
+    client_id = models.IntegerField(blank=True, null=True)
+    date = models.DateTimeField(blank=True, null=True)
+    pay_date = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'invoice_log'
 
 class Permission(models.Model):
     permission_type = models.CharField(primary_key=True, max_length=50)
@@ -217,17 +225,18 @@ class Permission(models.Model):
 
 
 class Server1(models.Model):
-    file_id = models.UUIDField()
-    file_part = models.ForeignKey(Fileparts, models.DO_NOTHING, blank=True, null=True)
-    file_version_id = models.UUIDField(primary_key=True)
+    server1_id = models.AutoField(primary_key=True)
+    file_id = models.ForeignKey(Filetable, models.DO_NOTHING)
+    file_version = models.ForeignKey(Fileversion, models.DO_NOTHING)
+    file_part = models.ForeignKey(Fileparts, models.DO_NOTHING)
 
     class Meta:
         managed = False
         db_table = 'server1'
-        unique_together = (('file_version_id', 'file_id'),)
 
 
 class Server1Logs(models.Model):
+    server1_id = models.IntegerField(primary_key=True, blank=True)
     file_version_id = models.UUIDField(blank=True, null=True)
     file_id = models.UUIDField(blank=True, null=True)
     file_part_id = models.UUIDField(blank=True, null=True)
@@ -239,9 +248,10 @@ class Server1Logs(models.Model):
 
 
 class Server2(models.Model):
-    file_id = models.UUIDField()
-    file_version_id = models.UUIDField(blank=True, null=True)
-    file_part = models.ForeignKey(Fileparts, models.DO_NOTHING, blank=True, null=True)
+    server2_id = models.AutoField(primary_key=True)
+    file_id = models.ForeignKey(Filetable, models.DO_NOTHING)
+    file_version = models.ForeignKey(Fileversion, models.DO_NOTHING)
+    file_part = models.ForeignKey(Fileparts, models.DO_NOTHING)
 
     class Meta:
         managed = False
@@ -249,8 +259,9 @@ class Server2(models.Model):
 
 
 class Server2Logs(models.Model):
-    file_version_id = models.UUIDField(blank=True, null=True)
+    server2_id = models.IntegerField(primary_key=True, blank=True)
     file_id = models.UUIDField(blank=True, null=True)
+    file_version_id = models.UUIDField(blank=True, null=True)
     file_part_id = models.UUIDField(blank=True, null=True)
     delete_time = models.DateTimeField(auto_now_add=True)
 
@@ -260,8 +271,9 @@ class Server2Logs(models.Model):
 
 
 class Server3(models.Model):
-    file_id = models.UUIDField()
-    file_version_id = models.UUIDField(primary_key=True)
+    server3_id = models.AutoField(primary_key=True)
+    file_id =models.ForeignKey(Filetable, models.DO_NOTHING)
+    file_version = models.ForeignKey(Fileversion, models.DO_NOTHING)
     file_part = models.ForeignKey(Fileparts, models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
@@ -271,6 +283,7 @@ class Server3(models.Model):
 
 
 class Server3Logs(models.Model):
+    server3_id = models.IntegerField(primary_key= True, blank=True)
     file_version_id = models.UUIDField(blank=True, null=True)
     file_id = models.UUIDField(blank=True, null=True)
     file_part_id = models.UUIDField(blank=True, null=True)
@@ -282,8 +295,9 @@ class Server3Logs(models.Model):
 
 
 class Server4(models.Model):
-    file_id = models.UUIDField(primary_key=True)
-    file_version_id = models.UUIDField()
+    server4_id = models.AutoField(primary_key=True)
+    file_id = models.ForeignKey(Filetable, models.DO_NOTHING)
+    file_version = models.ForeignKey(Fileversion, models.DO_NOTHING)
     file_part = models.ForeignKey(Fileparts, models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
@@ -293,6 +307,7 @@ class Server4(models.Model):
 
 
 class Server4Logs(models.Model):
+    server4_id = models.IntegerField(primary_key=True, blank=True)
     file_version_id = models.UUIDField(blank=True, null=True)
     file_id = models.UUIDField(blank=True, null=True)
     file_part_id = models.UUIDField(blank=True, null=True)
