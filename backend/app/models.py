@@ -5,6 +5,7 @@
 #   * Make sure each ForeignKey and OneToOneField has `on_delete` set to the desired behavior
 #   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
 # Feel free to rename the models, but don't rename db_table values or field names.
+from django.contrib.auth.hashers import make_password
 from django.db import models
 import uuid
 from django.utils import timezone
@@ -364,6 +365,10 @@ class Users(models.Model):
     f_name = models.CharField(max_length=50)
     l_name = models.CharField(max_length=50)
     email = models.CharField(max_length=50)
+   
+    def save(self, *args, **kwargs):
+        self.pssword = make_password(self.pssword)
+        super(Users, self).save(*args, **kwargs)
 
     class Meta:
         managed = False
