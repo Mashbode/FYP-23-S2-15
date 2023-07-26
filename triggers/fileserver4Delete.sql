@@ -2,7 +2,7 @@
 
 -- DROP FUNCTION IF EXISTS public.fileserver1_delete();
 
-CREATE OR REPLACE FUNCTION public.fileserver1_delete()
+CREATE OR REPLACE FUNCTION public.fileserver4_delete()
     RETURNS trigger
     LANGUAGE 'plpgsql'
 AS $BODY$
