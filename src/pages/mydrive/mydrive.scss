@@ -1,32 +1,6 @@
-@import "../../../node_modules/@syncfusion/ej2-base/styles/material.css";
-@import "../../../node_modules/@syncfusion/ej2-icons/styles/material.css";
-@import "../../../node_modules/@syncfusion/ej2-inputs/styles/material.css";
-@import "../../../node_modules/@syncfusion/ej2-popups/styles/material.css";
-@import "../../../node_modules/@syncfusion/ej2-buttons/styles/material.css";
-@import "../../../node_modules/@syncfusion/ej2-splitbuttons/styles/material.css";
-@import "../../../node_modules/@syncfusion/ej2-navigations/styles/material.css";
-@import "../../../node_modules/@syncfusion/ej2-layouts/styles/material.css";
-@import "../../../node_modules/@syncfusion/ej2-grids/styles/material.css";
-@import "../../../node_modules/@syncfusion/ej2-react-filemanager/styles/material.css";
-
 .myDrive {
     display: flex;
     .myDriveContainer {
-        flex: 6;
-
-        .myDriveContents {
-            height: 600px;
-            padding: 20px;
-
-            .myDriveTitle {
-                width: 100%;
-                font-size: 24px;
-                color: gray;
-                margin-bottom: 10px;
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-            }
-        }
+        flex: 6; // https://css-tricks.com/almanac/properties/f/flex/
     }
 }

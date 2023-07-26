@@ -1,10 +1,11 @@
 import "./restore.scss";
 import FormInput from "../../components/forminput/FormInput";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "../../firebase";
 import CircularProgress from "@mui/material/CircularProgress";
-import AlertDialog from "../../components/dialog/AlertDialog";
+import { toast, Toaster } from "react-hot-toast";
 
 const Restore = () => {
   const [errorMsg, setErrorMsg] = useState("");
@@ -12,7 +13,7 @@ const Restore = () => {
     email: "",
   });
   const [restoring, setRestoring] = useState(false);
-  const [alertDialog, setAlertDialog] = useState(false);
+  const navigate = useNavigate();
 
   const formInputs = [
     {
@@ -28,20 +29,27 @@ const Restore = () => {
 
   // Its possible to set this function to onClick inside a <button>
   const handleRestore = (e) => {
-    e.preventDefault(); // Its to prevent refreshing
+    e.preventDefault(); // This is to prevent refreshing
     setRestoring(true);
 
+    // https://firebase.google.com/docs/auth/web/manage-users#send_a_password_reset_email
     sendPasswordResetEmail(auth, values.email) // auth is exported from firebase.js
       .then(() => {
+        // When sending email succeed
         setRestoring(false);
-        setAlertDialog(true);
+        toast.success("We sent an email with the link to your account.");
+        setTimeout(() => {
+          // Navigate to login page after the toast message
+          navigate("/login");
+        }, 3000);
       })
       .catch((error) => {
+        // When sending email failed
         switch (error.code) {
           case "auth/user-not-found": // Email X Pwd O/X
             setErrorMsg("User is not found with provided email!");
             break;
-          default:
+          default: // All the other errors
             setErrorMsg(`Contact admin: ${error.code}`);
             break;
         }
@@ -55,6 +63,8 @@ const Restore = () => {
 
   return (
     <div className="restore">
+      {/* https://react-hot-toast.com/ */}
+      <Toaster toastOptions={{ duration: 3000 }} />
       <form onSubmit={handleRestore}>
         <h1>Restore</h1>
         {formInputs.map((formInput) => {
@@ -67,34 +77,15 @@ const Restore = () => {
             />
           );
         })}
-        {/* <input
-          type="email"
-          placeholder="email"
-          onChange={(e) => setEmail(e.target.value)}
-          />
-          <input
-          type="password"
-          placeholder="password"
-          onChange={(e) => {
-            setPassword(e.target.value);
-          }}
-        /> */}
         <button>
-          {restoring ? (
+          {restoring ? ( // restoring (true) = spinner will appear
             <CircularProgress color="inherit" size={20} />
           ) : (
             "Restore"
           )}
         </button>
-        {<span className="restoreErr">{errorMsg}</span>}
+        <span className="restoreErr">{errorMsg}</span>
       </form>
-      {alertDialog && (
-        <AlertDialog
-          title="Check your device"
-          description="We sent an email to your account. Check the mail app and click the link inside."
-          link="/login"
-        />
-      )}
     </div>
   );
 };

@@ -1,3 +1,8 @@
+// ***************************************************************************
+// To prevent abuse, new projects currently have an SMS daily quota of 50/day.
+// Make sure to add Phone numbers for testing
+// ***************************************************************************
+
 import "./otp.scss";
 
 import CircularProgress from "@mui/material/CircularProgress";
@@ -28,7 +33,7 @@ const OTP = () => {
 
   // https://firebase.google.com/docs/auth/web/phone-auth#use-invisible-recaptcha
   // https://firebase.google.com/docs/auth/web/phone-auth#optional:-specify-recaptcha-parameters
-  const onReCaptchaVerify = () => {
+  const handleReCaptchaVerify = () => {
     if (!window.recaptchaVerifier) {
       window.recaptchaVerifier = new RecaptchaVerifier(
         "recaptcha-container", // id of empty <div> to contain ReCaptcha
@@ -36,7 +41,7 @@ const OTP = () => {
           size: "invisible",
           callback: () => {
             // reCAPTCHA solved, allow signInWithPhoneNumber.
-            onSignIn();
+            handleSignIn();
           },
           "expired-callback": () => {
             // Response expired. Ask user to solve reCAPTCHA again.
@@ -48,9 +53,9 @@ const OTP = () => {
   };
 
   // https://firebase.google.com/docs/auth/web/phone-auth#send-a-verification-code-to-the-users-phone
-  const onSignIn = () => {
+  const handleSignIn = () => {
     setProgressing(true);
-    onReCaptchaVerify();
+    handleReCaptchaVerify();
 
     const appVerifier = window.recaptchaVerifier;
     signInWithPhoneNumber(auth, "+" + phone, appVerifier)
@@ -81,7 +86,7 @@ const OTP = () => {
   };
 
   // https://firebase.google.com/docs/auth/web/phone-auth#sign-in-the-user-with-the-verification-code
-  const onOTPVerify = () => {
+  const handleOTPVerify = () => {
     setProgressing(true);
 
     window.confirmationResult
@@ -140,8 +145,8 @@ const OTP = () => {
                 disabled={false}
                 autoFocus
                 className="otpContainer"
-              ></OtpInput>
-              <button id="verify-button" onClick={onOTPVerify}>
+              />
+              <button id="verify-button" onClick={handleOTPVerify}>
                 {progressing ? (
                   <CircularProgress color="inherit" size={20} />
                 ) : (
@@ -162,7 +167,8 @@ const OTP = () => {
                 inputProps={{ name: "phone", required: true }}
                 containerStyle={{ margin: "10px 0px" }}
                 inputStyle={{
-                  height: "49.33px",
+                  height: "48px",
+                  width: "100%",
                   borderRadius: "10px",
                   border: "1px solid gray",
                   fontSize: "13px",
@@ -179,7 +185,7 @@ const OTP = () => {
                 value={phone}
                 onChange={setPhone}
               />
-              <button onClick={onSignIn}>
+              <button onClick={handleSignIn}>
                 {progressing ? ( // progressing (true) = spinner will appear
                   <CircularProgress color="inherit" size={20} />
                 ) : (
