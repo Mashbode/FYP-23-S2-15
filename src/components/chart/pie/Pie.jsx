@@ -1,15 +1,14 @@
-import * as React from 'react';
-import { PieChart } from '@mui/x-charts/PieChart';
+import { PieChart } from "@mui/x-charts/PieChart";
 
-export default function Pie() {
+const Pie = () => {
   return (
     <PieChart
       series={[
         {
           data: [
-            { id: 0, value: 10, label: 'series A' },
-            { id: 1, value: 15, label: 'series B' },
-            { id: 2, value: 20, label: 'series C' },
+            { id: 0, value: 10, label: "series A" },
+            { id: 1, value: 15, label: "series B" },
+            { id: 2, value: 20, label: "series C" },
           ],
           innerRadius: 70,
           outerRadius: 100,
@@ -23,7 +22,9 @@ export default function Pie() {
       ]}
       width={550}
       height={220}
-      margin = {{right: 100}}
+      margin={{ right: 100 }}
     />
   );
-}
+};
+
+export default Pie;

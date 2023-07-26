@@ -9,22 +9,24 @@
 @import "../../../node_modules/@syncfusion/ej2-grids/styles/material.css";
 @import "../../../node_modules/@syncfusion/ej2-react-filemanager/styles/material.css";
 
-.home {
+.myDrive {
     display: flex;
-    .homeContainer {
+    .myDriveContainer {
         flex: 6;
 
-        h1 {
+        .myDriveContents {
+            height: 600px;
             padding: 20px;
-        }
 
-        .files {
-            position: relative;
-
-            display: flex;
-            align-items: center;
-
-            padding: 20px;
+            .myDriveTitle {
+                width: 100%;
+                font-size: 24px;
+                color: gray;
+                margin-bottom: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
         }
     }
 }

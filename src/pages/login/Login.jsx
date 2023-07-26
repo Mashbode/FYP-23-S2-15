@@ -10,15 +10,12 @@ import CircularProgress from "@mui/material/CircularProgress";
 // import ReCAPTCHA from "react-google-recaptcha";
 
 const Login = () => {
-  const [errorMsg, setErrorMsg] = useState("");
-  // const [email, setEmail] = useState("");
-  // const [password, setPassword] = useState("");
   const [values, setValues] = useState({
     email: "",
     password: "",
-  });
-  const [loggingIn, setLoggingIn] = useState(false);
-  // const [loginDisabled, setLoginDisabled] = useState(true);
+  }); // Handle multiple input at once
+  const [loggingIn, setLoggingIn] = useState(false); // Spinner icon
+  const [errorMsg, setErrorMsg] = useState(""); // Error msg on register
 
   const { dispatch } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -48,18 +45,20 @@ const Login = () => {
 
   // Its possible to set this function to onClick inside a <button>
   const handleLogin = (e) => {
-    e.preventDefault(); // Its to prevent refreshing
+    e.preventDefault(); // This is to prevent refreshing
     setLoggingIn(true);
 
+    // Provided by Firebase (Authentication)
     signInWithEmailAndPassword(auth, values.email, values.password) // auth is exported from firebase.js
       .then((userCredential) => {
+        // When signin succeed
         // Signed in
         const user = userCredential.user;
-        // console.log(user);
         dispatch({ type: "LOGIN", payload: user });
         navigate("/home");
       })
       .catch((error) => {
+        // When signin failed
         switch (error.code) {
           case "auth/user-not-found": // Email X Pwd O/X
             setErrorMsg("User is not found with provided email!");
@@ -67,7 +66,7 @@ const Login = () => {
           case "auth/wrong-password": // Email O Pwd X
             setErrorMsg("Provided password is wrong!");
             break;
-          default:
+          default: // All the other errors
             setErrorMsg(`Contact admin: ${error.code}`);
             break;
         }
@@ -94,18 +93,6 @@ const Login = () => {
             />
           );
         })}
-        {/* <input
-          type="email"
-          placeholder="email"
-          onChange={(e) => setEmail(e.target.value)}
-          />
-          <input
-          type="password"
-          placeholder="password"
-          onChange={(e) => {
-            setPassword(e.target.value);
-          }}
-        /> */}
         {/* <ReCAPTCHA // Version 2
           sitekey="6LepZvgmAAAAADAKbms268rK5jJFAy28Z3yV6f3H" // 체크표시
           // sitekey="6Ld6Cv4mAAAAAF1crKvlaFevtmpgpHZoJvkW7jXE" // 표시되지 않는
@@ -115,16 +102,15 @@ const Login = () => {
           }}
         /> */}
         <div className="buttons">
-          <button
-          // disabled={loginDisabled}
-          >
-            {loggingIn ? (
+          <button>
+            {loggingIn ? ( // loggingIn (true) = spinner will appear
               <CircularProgress color="inherit" size={20} />
             ) : (
               "Login"
             )}
           </button>
-          <Link style={{ textDecoration: "none" }} to="/otp">
+          <hr className="hrText" dataContent="or" />
+          <Link style={{ textDecoration: "none" }} to={`/otp`}>
             <button>Login with OTP</button>
           </Link>
         </div>
@@ -132,7 +118,7 @@ const Login = () => {
           <Link to={`/register`}>Don't have an account?</Link>
           <Link to={`/restore`}>Forgot password?</Link>
         </div>
-        {<span className="loginErr">{errorMsg}</span>}
+        <span className="loginErr">{errorMsg}</span>
       </form>
     </div>
   );

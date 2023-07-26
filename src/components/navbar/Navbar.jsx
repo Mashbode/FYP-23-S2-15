@@ -135,7 +135,10 @@ const Navbar = () => {
                 transformOrigin={{ horizontal: "right", vertical: "top" }}
                 anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
               >
-                <Link to="/users/test" style={{ textDecoration: "none", color: "black" }}>
+                <Link
+                  to="/users/test"
+                  style={{ textDecoration: "none", color: "black" }}
+                >
                   <MenuItem onClick={handleClose} sx={{ fontSize: 15 }}>
                     <Avatar /> Full Name
                   </MenuItem>

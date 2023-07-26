@@ -4,29 +4,23 @@ import Navbar from "../../components/navbar/Navbar";
 import Chart from "../../components/chart/chart/Chart";
 import List from "../../components/table/Table";
 import Pie from "../../components/chart/pie/Pie";
-import Datatable from "../../components/datatable/Datatable"
+import Datatable from "../../components/datatable/Datatable";
 
 import { AuthContext } from "../../context/AuthContext";
-import { useContext } from "react";
-
-import { doc, updateDoc } from "firebase/firestore";
-import { db } from "../../firebase";
-
+import { useContext, useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { toast, Toaster } from "react-hot-toast";
 
-import { useState, useEffect } from "react";
-import { collection, getDocs } from "firebase/firestore";
-
-import { Link } from "react-router-dom";
+import { doc, updateDoc, collection, getDocs } from "firebase/firestore";
+import { db } from "../../firebase";
 
 const Single = () => {
   const [users, setUsers] = useState([]);
-  const usersCollectionRef = collection(db, "users");
 
   useEffect(() => {
     const getUsers = async () => {
-      const data = await getDocs(usersCollectionRef);
-      setUsers(data.docs.map((doc) => ({...doc.data(), id: doc.id})));
+      const data = await getDocs(collection(db, "users"));
+      setUsers(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
     };
 
     getUsers();
@@ -72,6 +66,9 @@ const Single = () => {
     
   }
 
+  const handleStorageIncrease = () => {};
+  const handleStorageDecrease = () => {};
+
   return (
     <div className="single">
       <Toaster toastOptions={{ duration: 2000 }} />
@@ -103,9 +100,7 @@ const Single = () => {
                 </div>
                 <div className="detailItem">
                   <span className="itemKey">Registered Date:</span>
-                  <span className="itemValue">
-                    01 Jan 2023
-                  </span>
+                  <span className="itemValue">01 Jan 2023</span>
                 </div>
                 <div className="detailItem">
                   <span className="itemKey">Phone:</span>
@@ -120,9 +115,9 @@ const Single = () => {
                   <span className="itemValue">1 Main Street Singapore 123456</span>
                 </div> */}
               </div>
-            </div>
-            <div className="deleteButton" onClick={handleUserDelete}>
-              Delete Account
+              <div className="deleteButton" onClick={handleUserDelete}>
+                Delete Account
+              </div>
             </div>
           </div>
           <div className="right">
@@ -138,9 +133,7 @@ const Single = () => {
           </div>
         </div>
         <div className="bottom">
-          {/* <h1 className="title">Files</h1>
-          <List /> */}
-          <Datatable type={"files"} /> {}
+          <Datatable type={"files"} />
         </div>
       </div>
     </div>

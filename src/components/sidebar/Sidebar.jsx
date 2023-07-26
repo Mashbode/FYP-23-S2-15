@@ -66,7 +66,9 @@ const Sidebar = () => {
       {!admin && (
         <div className="top">
           <Link to="/" style={{ textDecoration: "none" }}>
-            <span className="logo">Secure File Sharing</span>
+            {/* <span className="logo"> */}
+            <img src="./logo.png" height={"50px"} />
+            {/* </span> */}
           </Link>
         </div>
       )}
