@@ -4,7 +4,7 @@ import Navbar from "../../components/navbar/Navbar";
 import Chart from "../../components/chart/chart/Chart";
 import List from "../../components/table/Table";
 import Pie from "../../components/chart/pie/Pie";
-import Datatable from "../../components/datatable/Datatable";
+import FileManager from "../../components/filemananger/FileManager";
 
 import { AuthContext } from "../../context/AuthContext";
 import { useContext, useState, useEffect } from "react";
@@ -62,9 +62,6 @@ const Single = () => {
       return;
     }
   };
-  const handleStorageIncrease = async () => {
-    
-  }
 
   const handleStorageIncrease = () => {};
   const handleStorageDecrease = () => {};
@@ -106,14 +103,6 @@ const Single = () => {
                   <span className="itemKey">Phone:</span>
                   <span className="itemValue">+65 8888 9999</span>
                 </div>
-                {/* <div className="detailItem">
-                  <span className="itemKey">Birthday:</span>
-                  <span className="itemValue">01 Jan 1990</span>
-                </div>
-                <div className="detailItem">
-                  <span className="itemKey">Address:</span>
-                  <span className="itemValue">1 Main Street Singapore 123456</span>
-                </div> */}
               </div>
               <div className="deleteButton" onClick={handleUserDelete}>
                 Delete Account
@@ -133,7 +122,7 @@ const Single = () => {
           </div>
         </div>
         <div className="bottom">
-          <Datatable type={"files"} />
+          <FileManager title="Files" />
         </div>
       </div>
     </div>

@@ -255,7 +255,14 @@ function App() {
                 }
               />
             </Route>
-            <Route path="my-drive" element={<MyDrive />} />
+            <Route
+              path="my-drive"
+              element={
+                <RequireAuth>
+                  <MyDrive />
+                </RequireAuth>
+              }
+            />
             {/* <Route path="products">
               <Route
                 index

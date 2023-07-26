@@ -78,7 +78,7 @@ const Register = () => {
     setValues({ ...values, [e.target.name]: e.target.value });
   };
 
-  // async includes await funciton
+  // async includes await function
   const handleSubmit = async (e) => {
     e.preventDefault(); // This is to prevent refreshing
     setRegistering(true);
@@ -139,8 +139,8 @@ const Register = () => {
           inputProps={{ name: "phone", required: true }}
           containerStyle={{ margin: "10px 0px" }}
           inputStyle={{
-            height: "49.33px",
-            width: "250px",
+            height: "48px",
+            width: "100%",
             borderRadius: "10px",
             border: "1px solid gray",
             fontSize: "13px",
