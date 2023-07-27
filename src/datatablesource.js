@@ -76,3 +76,85 @@ export const fileColumns = [
     },
   },
 ];
+
+export const sharedFileColumns = [
+  { field: "id", headerName: "ID", width: 100 },
+  {
+    field: "filename",
+    headerName: "File Name",
+    width: 300,
+  },
+  {
+    field: "username",
+    headerName: "Shared by",
+    width: 230,
+  },
+
+  {
+    field: "timeStamp",
+    headerName: "Last Modified",
+    width: 150,
+    renderCell: (params) => {
+      let lastModifiedDate = new Date(
+        params.row.timeStamp.toDate() // Returns Date object (Firebase)
+      ).toDateString(); // Into readable string (React JS)
+      return <div className="cellWithLastModified">{lastModifiedDate}</div>;
+    },
+  },
+];
+
+export const deletedFileColumns = [
+  { field: "id", headerName: "ID", width: 250 },
+  {
+    field: "filename",
+    headerName: "File Name",
+    width: 300,
+  },
+  {
+    field: "username",
+    headerName: "Uploader",
+    width: 230,
+  },
+
+  {
+    field: "timeStamp",
+    headerName: "Last Modified",
+    width: 150,
+    renderCell: (params) => {
+      let lastModifiedDate = new Date(
+        params.row.timeStamp.toDate() // Returns Date object (Firebase)
+      ).toDateString(); // Into readable string (React JS)
+      return <div className="cellWithLastModified">{lastModifiedDate}</div>;
+    },
+  },
+];
+
+export const enquiryColumns = [
+  { field: "id", headerName: "ID", width: 100 },
+  {
+    field: "enquiryTitle",
+    headerName: "Enquiry Title",
+    width: 350,
+  },
+  {
+    field: "name",
+    headerName: "Enquirer",
+    width: 150,
+  },
+  {
+    field: "timeStamp",
+    headerName: "Last Modified",
+    width: 150,
+    renderCell: (params) => {
+      let lastModifiedDate = new Date(
+        params.row.timeStamp.toDate() // Returns Date object (Firebase)
+      ).toDateString(); // Into readable string (React JS)
+      return <div className="cellWithLastModified">{lastModifiedDate}</div>;
+    },
+  },
+  {
+    field: "enquiryStatus",
+    headerName: "Status",
+    width: 150,
+  },
+];

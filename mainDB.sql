@@ -507,4 +507,5 @@ ALTER TABLE IF EXISTS public.sharedfolderaccess
     ON DELETE NO ACTION
     NOT VALID;
 
+
 END;

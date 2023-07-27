@@ -1,23 +1,24 @@
 import "./register.scss";
 import FormInput from "../../components/forminput/FormInput";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
+import CircularProgress from "@mui/material/CircularProgress";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { auth, db } from "../../firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
-import CircularProgress from "@mui/material/CircularProgress";
 
 const Register = () => {
-  // const [username, setUsername] = useState("");
   const [values, setValues] = useState({
     username: "",
     email: "",
-    birthday: "",
+    phone: "",
     password: "",
     confirmPassword: "",
-  }); // Handle multiple input
-  const [registering, setRegistering] = useState(false);
-  const [errorMsg, setErrorMsg] = useState("");
+  }); // Handle multiple input at once
+  const [registering, setRegistering] = useState(false); // Spinner icon
+  const [errorMsg, setErrorMsg] = useState(""); // Error msg on register
 
   const formInputs = [
     {
@@ -40,16 +41,16 @@ const Register = () => {
       label: "Email",
       required: true,
     },
+    // {
+    //   id: 3,
+    //   name: "birthday",
+    //   type: "date",
+    //   placeholder: "Birthday",
+    //   label: "Birthday",
+    //   required: true,
+    // },
     {
       id: 3,
-      name: "birthday",
-      type: "date",
-      placeholder: "Birthday",
-      label: "Birthday",
-      required: true,
-    },
-    {
-      id: 4,
       name: "password",
       type: "password",
       placeholder: "Password",
@@ -60,7 +61,7 @@ const Register = () => {
       required: true,
     },
     {
-      id: 5,
+      id: 4,
       name: "confirmPassword",
       type: "password",
       placeholder: "Confirm Password",
@@ -71,67 +72,45 @@ const Register = () => {
     },
   ];
 
-  // console.log(username);
-  // console.log("re-rendered"); // Keeps re-rendering whenever the user types something inside a input: 1. useRef() 2. Object FormData
-  // 1. const usernameRef = useRef();
-
   const navigate = useNavigate();
 
-  const onChange = async (e) => {
+  const onChange = (e) => {
     setValues({ ...values, [e.target.name]: e.target.value });
   };
 
+  // async includes await function
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault(); // This is to prevent refreshing
     setRegistering(true);
-    // 1. console.log(usernameRef);
-    // 2. const data = new FormData(e.target);
-    // 2. console.log(data);
-    // 2. console.log(Object.fromEntries(data.entries()));
 
-    // await createUserWithEmailAndPassword(auth, values.email, values.password)
-    //   .then(() => {
-    //     // // Signed in
-    //     // const user = userCredential.user;
-    //     // // ...
-    //     console.log("success");
-    //   })
-    //   .catch((error) => {
-    //     // const errorCode = error.code;
-    //     // const errorMessage = error.message;
-    //     // // ..
-    //     console.log(error);
-    //   });
-
-    //   await setDoc(doc(db, "users", res.user.uid), {
-    //     ...data,
-    //     timeStamp: serverTimestamp(),
-    //   });
     try {
+      // Provided by Firebase (Authentication)
       const result = await createUserWithEmailAndPassword(
         auth,
         values.email,
         values.password
       );
 
-      const { birthday, email, username } = values;
+      const { email, username, phone } = values;
 
+      // Provided by Firebase (Database)
       await setDoc(doc(db, "users", result.user.uid), {
-        birthday: birthday,
         email: email,
         username: username,
-        status: "activated",
+        phone: "+" + phone, // "+" is required in order to reflect country code
+        status: "activated", // status will be "deactivated" when the account is deleted
+        type: "user", // Added to differentiate the sidebar
         timeStamp: serverTimestamp(),
       });
+      setRegistering(false);
 
-      // setRegistering(false);
       navigate("/login", { replace: true });
     } catch (error) {
       switch (error.code) {
         case "auth/email-already-in-use":
           setErrorMsg("Provided email is already in use!");
           break;
-        default:
+        default: // All the other errors
           setErrorMsg(`Contact admin: ${error.code}`);
           break;
       }
@@ -147,30 +126,45 @@ const Register = () => {
         {formInputs.map((formInput) => {
           return (
             <FormInput
-              key={formInput.id}
+              key={formInput.id} // Required to uniquely distinguish each item
               {...formInput}
               values={values[formInput.name]}
               onChange={onChange}
             />
           );
         })}
-        {/* <FormInput
-          placeholder="Username"
-          // setUsername={setUsername}
-          // 1. refer={usernameRef}
-          name="username"
-          />
-          <FormInput name="email" placeholder="Email" />
-          <FormInput name="fullname" placeholder="Full Name" />
-          <FormInput name="sth" placeholder="Sth else" /> */}
+        <label style={{ fontSize: "13px", color: "gray" }}>Phone Number</label>
+        <PhoneInput
+          country="sg"
+          inputProps={{ name: "phone", required: true }}
+          containerStyle={{ margin: "10px 0px" }}
+          inputStyle={{
+            height: "48px",
+            width: "100%",
+            borderRadius: "10px",
+            border: "1px solid gray",
+            fontSize: "13px",
+          }}
+          buttonStyle={{
+            background: "none",
+            padding: "5px",
+            borderTopLeftRadius: "10px",
+            borderBottomLeftRadius: "10px",
+            border: "1px solid gray",
+            borderRight: "none",
+          }}
+          dropdownStyle={{ width: "250px", fontSize: "13px" }}
+          value={values["phone"]}
+          onChange={(phone) => setValues({ ...values, phone: phone })} // Cannot use onChange alr defined / https://eslint.org/docs/latest/rules/no-useless-computed-key
+        />
         <button>
-          {registering ? (
+          {registering ? ( // registering (true) = spinner will appear
             <CircularProgress color="inherit" size={20} />
           ) : (
             "Submit"
           )}
         </button>
-        {<span className="registerErr">{errorMsg}</span>}
+        <span className="registerErr">{errorMsg}</span>
       </form>
     </div>
   );
