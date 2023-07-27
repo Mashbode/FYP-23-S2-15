@@ -71,7 +71,7 @@ class FilePartsLog(models.Model):
     file_id = models.UUIDField(blank=True, null=True)
     file_version_id = models.UUIDField(blank=True, null=True)
     last_change = models.DateTimeField(blank=True, null=True)
-    server_name = models.CharField(blank=True, null=True)
+    server_name = models.CharField(max_length=20, blank=True, null=True)
     delete_time = models.DateTimeField(auto_now_add=True, blank=True, null=True)
 
     class Meta:
@@ -97,7 +97,7 @@ class Fileparts(models.Model):
     file = models.ForeignKey('Filetable', models.DO_NOTHING, blank=True, null=True)
     file_version = models.ForeignKey('Fileversion', models.DO_NOTHING, blank=True, null=True)
     last_change = models.DateTimeField(auto_now_add=True)
-    server_name = models.CharField(blank=True, null=True)
+    server_name = models.CharField(max_length= 20, blank=True, null=True)
     class Meta:
         managed = False
         db_table = 'fileparts'
@@ -365,6 +365,7 @@ class Users(models.Model):
     f_name = models.CharField(max_length=50)
     l_name = models.CharField(max_length=50)
     email = models.CharField(max_length=50)
+    phone_number = models.CharField(max_length=20, blank=True, null=True)
    
     def save(self, *args, **kwargs):
         self.pssword = make_password(self.pssword)
