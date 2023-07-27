@@ -31,7 +31,7 @@ BEGIN
 	SELECT server3_id, file_id, file_version_id, file_part_id FROM server3 where file_id = OLD.file_id;
 	
 	INSERT INTO server4_logs(server4_id, file_id, file_version_id, file_part_id)
-	SELECT server3_id, file_id, file_version_id, file_part_id FROM server4 where file_id = OLD.file_id;
+	SELECT server4_id, file_id, file_version_id, file_part_id FROM server4 where file_id = OLD.file_id;
 	
 	--folder files
 	INSERT INTO delete_folder_file_logs(folder_files_id, file_id, folder_id, creation_time)
