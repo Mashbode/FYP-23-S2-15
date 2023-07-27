@@ -9,7 +9,8 @@ const List = ({ type }) => {
       <Sidebar />
       <div className="listContainer">
         <Navbar />
-        <Datatable type={type} /> {/* Added type prop */}
+        <Datatable type={type} />
+        {/* Type prop allows the either "user" or "files" (Not in use as of now) */}
       </div>
     </div>
   );

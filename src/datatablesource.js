@@ -1,35 +1,55 @@
 export const userColumns = [
   { field: "id", headerName: "ID", width: 280 },
   {
-    field: "user",
-    headerName: "User",
-    width: 230,
-    // Refer to the doc.
-    // params are from data
+    field: "type",
+    headerName: "Type",
+    width: 110,
+    // https://mui.com/x/react-data-grid/
+    // params are from rows={data} as a prop of <DataGrid></DataGrid>
     // valueGetter
     renderCell: (params) => {
       return (
-        <div className="cellWithImg">
-          <img className="cellImg" src={params.row.img} alt="avatar" />
-          {params.row.username}
+        // className written on purpose to differentiat the style of admin (yellow) and user (green)
+        <div className={`cellWithType ${params.row.type}`}>
+          {/* First letter of the user type will be changed to upper case */}
+          {params.row.type.replace(/^./, params.row.type[0].toUpperCase())}
         </div>
       );
     },
   },
   {
-    field: "email",
-    headerName: "Email",
-    width: 230,
+    field: "username",
+    headerName: "Username",
+    width: 130,
+    // https://mui.com/x/react-data-grid/
+    // params are from rows={data} as a prop of <DataGrid></DataGrid>
+    // valueGetter
+    // renderCell: (params) => {
+    //   return (
+    //     <div className="cellWithImg">
+    //       <img className="cellImg" src={params.row.img} alt="avatar" />
+    //       {params.row.username}
+    //     </div>
+    //   );
+    // },
   },
   {
-    field: "birthday",
-    headerName: "Birthday",
+    field: "email",
+    headerName: "Email",
+    width: 200,
+  },
+  {
+    field: "phone",
+    headerName: "Phone",
     width: 130,
   },
   {
     field: "timeStamp",
     headerName: "Registered",
-    width: 130,
+    width: 140,
+    // https://mui.com/x/react-data-grid/
+    // params are from rows={data} as a prop of <DataGrid></DataGrid>
+    // valueGetter
     renderCell: (params) => {
       let lastModifiedDate = new Date(
         params.row.timeStamp.toDate() // Returns Date object (Firebase)
@@ -71,7 +91,7 @@ export const fileColumns = [
     renderCell: (params) => {
       let lastModifiedDate = new Date(
         params.row.timeStamp.toDate() // Returns Date object (Firebase)
-      ).toDateString(); // Into readable string (React JS)
+      ).toDateString(); // turns Data object into readable string (React)
       return <div className="cellWithLastModified">{lastModifiedDate}</div>;
     },
   },
@@ -148,7 +168,7 @@ export const enquiryColumns = [
     renderCell: (params) => {
       let lastModifiedDate = new Date(
         params.row.timeStamp.toDate() // Returns Date object (Firebase)
-      ).toDateString(); // Into readable string (React JS)
+      ).toDateString(); // turns Data object into readable string (React)
       return <div className="cellWithLastModified">{lastModifiedDate}</div>;
     },
   },
