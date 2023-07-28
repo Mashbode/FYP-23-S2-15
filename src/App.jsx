@@ -6,7 +6,6 @@ import Restore from "./pages/restore/Restore";
 import List from "./pages/list/List";
 import Single from "./pages/single/Single";
 import New from "./pages/new/New";
-import NewFile from "./pages/new/NewFile";
 import OTP from "./pages/otp/OTP";
 import MyDrive from "./pages/mydrive/MyDrive";
 
@@ -184,14 +183,14 @@ function App() {
                   </RequireAuth>
                 }
               />
-              <Route
+              {/* <Route
                 path="new"
                 element={
                   <RequireAuth>
                     <NewFile title="Add New File" />
                   </RequireAuth>
                 }
-              />
+              /> */}
             </Route>
             <Route path="files-shared">
               <Route
@@ -210,14 +209,6 @@ function App() {
                   </RequireAuth>
                 }
               />
-              <Route
-                path="new"
-                element={
-                  <RequireAuth>
-                    <NewFile title="Add New File" />
-                  </RequireAuth>
-                }
-              />
             </Route>
             <Route path="files-deleted">
               <Route
@@ -233,14 +224,6 @@ function App() {
                 element={
                   <RequireAuth>
                     <Single />
-                  </RequireAuth>
-                }
-              />
-              <Route
-                path="new"
-                element={
-                  <RequireAuth>
-                    <NewFile title="Add New File" />
                   </RequireAuth>
                 }
               />
@@ -263,32 +246,6 @@ function App() {
                 </RequireAuth>
               }
             />
-            {/* <Route path="products">
-              <Route
-                index
-                element={
-                  <RequireAuth>
-                    <List />
-                  </RequireAuth>
-                }
-              />
-              <Route
-                path=":productId"
-                element={
-                  <RequireAuth>
-                    <Single />
-                  </RequireAuth>
-                }
-              />
-              <Route
-                path="new"
-                element={
-                  <RequireAuth>
-                    <New inputs={productInputs} title="Add New Product" />
-                  </RequireAuth>
-                }
-              />
-            </Route> */}
           </Route>
         </Routes>
       </BrowserRouter>

@@ -93,15 +93,18 @@ const Register = () => {
 
       const { email, username, phone } = values;
 
+      // ************** Connect with Django (setDoc) **************
       // Provided by Firebase (Database)
+      // "users" -> table name / result.user.uid -> id of the table
       await setDoc(doc(db, "users", result.user.uid), {
+        // {email: emailValue, phone: phoneValue ...}
         email: email,
         username: username,
         phone: "+" + phone, // "+" is required in order to reflect country code
-        status: "activated", // status will be "deactivated" when the account is deleted
         type: "user", // Added to differentiate the sidebar
         timeStamp: serverTimestamp(),
       });
+      // **********************************************************
       setRegistering(false);
 
       navigate("/login", { replace: true });
