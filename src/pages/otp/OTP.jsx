@@ -114,7 +114,7 @@ const OTP = () => {
         setTimeout(() => {
           // Refresh after the toast message
           window.location.reload();
-        }, 1000);
+        }, 2000);
       });
   };
 
