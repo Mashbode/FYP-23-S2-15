@@ -366,6 +366,8 @@ class Users(models.Model):
     l_name = models.CharField(max_length=50)
     email = models.CharField(max_length=50)
     phone_number = models.CharField(max_length=20, blank=True, null=True)
+    usertype = models.CharField(max_length=10, blank=True, null=True)
+    
    
     def save(self, *args, **kwargs):
         self.pssword = make_password(self.pssword)
