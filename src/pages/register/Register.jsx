@@ -94,6 +94,17 @@ const Register = () => {
       const { email, username, phone } = values;
 
       // ************** Connect with Django (setDoc) **************
+      // instance is an object from axios_config.js
+      // with the url of api
+      await instance.post("Users", {
+        username: username,
+        email: email,
+        phone: "+" + phone,
+        type: "user"
+      })
+      .then(res => console.log(res))
+      .catch(err=> console.error(err));
+
       // Provided by Firebase (Database)
       // "users" -> table name / result.user.uid -> id of the table
       await setDoc(doc(db, "users", result.user.uid), {
