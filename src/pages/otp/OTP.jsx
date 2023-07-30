@@ -66,14 +66,18 @@ const OTP = () => {
         setProgressing(false);
         setShowOtp(true);
       })
-      .catch((error) => {
+      .catch(() => {
         // Error; SMS not sent
         window.location.reload(); // Refresh the page when there is an error
         setProgressing(false);
       });
   };
 
-  // Getting the users document that has a phone field that matches with the user's phone input
+  // *************************************************** Connect with Django ***************************************************
+  // Getting the user document that has a phone field that matches with the user's phone input - MAKE SURE IT FETCHES ONLY ONE
+  // Include error handling e.g., There is no phone match
+  // 1. Get the user data (Make sure it contains user id)
+  // 2. setUser should not be deleted
   // https://firebase.google.com/docs/firestore/query-data/get-data#get_multiple_documents_from_a_collection
   const getUser = async () => {
     const q = query(collection(db, "users"), where("phone", "==", "+" + phone));
@@ -84,6 +88,7 @@ const OTP = () => {
       setUser({ uid: doc.id, ...doc.data() });
     });
   };
+  // ***************************************************************************************************************************
 
   // https://firebase.google.com/docs/auth/web/phone-auth#sign-in-the-user-with-the-verification-code
   const handleOTPVerify = () => {
