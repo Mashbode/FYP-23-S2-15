@@ -12,6 +12,8 @@ import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 const Register = () => {
   const [values, setValues] = useState({
     username: "",
+    firstName: "",
+    lastName: "",
     email: "",
     phone: "",
     password: "",
@@ -34,6 +36,28 @@ const Register = () => {
     },
     {
       id: 2,
+      name: "firstName",
+      type: "text",
+      placeholder: "First Name",
+      errorMessage:
+        "Last name should be 1-32 characters and shouldn't include any special character or number!",
+      label: "First name",
+      pattern: "^[A-Za-z]{1,32}$",
+      required: true, // When tried to submit with invalid input, it prevents submission
+    },
+    {
+      id: 3,
+      name: "lastName",
+      type: "text",
+      placeholder: "Last Name",
+      errorMessage:
+        "Last name should be 1-32 characters and shouldn't include any special character or number!",
+      label: "Last Name",
+      pattern: "^[A-Za-z]{1,32}$",
+      required: true, // When tried to submit with invalid input, it prevents submission
+    },
+    {
+      id: 4,
       name: "email",
       type: "email",
       placeholder: "Email",
@@ -50,7 +74,7 @@ const Register = () => {
     //   required: true,
     // },
     {
-      id: 3,
+      id: 5,
       name: "password",
       type: "password",
       placeholder: "Password",
@@ -61,7 +85,7 @@ const Register = () => {
       required: true,
     },
     {
-      id: 4,
+      id: 6,
       name: "confirmPassword",
       type: "password",
       placeholder: "Confirm Password",
@@ -91,26 +115,30 @@ const Register = () => {
         values.password
       );
 
-      const { email, username, phone } = values;
+      const { username, firstName, lastName, email, password, phone } = values;
 
       // ************** Connect with Django (setDoc) **************
       // instance is an object from axios_config.js
       // with the url of api
-      await instance.post("Users", {
-        username: username,
-        email: email,
-        phone: "+" + phone,
-        type: "user"
-      })
-      .then(res => console.log(res))
-      .catch(err=> console.error(err));
+      await instance
+        .post("Users", {
+          username: username,
+          email: email,
+          phone: "+" + phone,
+          type: "user",
+        })
+        .then((res) => console.log(res))
+        .catch((err) => console.error(err));
 
       // Provided by Firebase (Database)
       // "users" -> table name / result.user.uid -> id of the table
       await setDoc(doc(db, "users", result.user.uid), {
         // {email: emailValue, phone: phoneValue ...}
-        email: email,
         username: username,
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        // password: password,
         phone: "+" + phone, // "+" is required in order to reflect country code
         type: "user", // Added to differentiate the sidebar
         timeStamp: serverTimestamp(),
