@@ -4,6 +4,6 @@
 
 CREATE TRIGGER new_file_insert
     AFTER INSERT
-    ON public.filetab
+    ON public.filetable
     FOR EACH ROW
     EXECUTE FUNCTION public.new_file_insert_combine();

@@ -82,15 +82,28 @@ WSGI_APPLICATION = "backend.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
+DATABASE_ROUTERS = ['app.dbrouters.server1Router', ]
+DATABASE_APPS_MAPPING = {'FileServer1': 'server1'}
+
 DATABASES = {
     "default": {
        "ENGINE": "django.db.backends.postgresql",
         "NAME": "metadatadb",
-        "USER": "teamates1",
-        "PASSWORD": "pass",
+        "USER": "postgres",
+        "PASSWORD": "passcanliao",
         "HOST": "testdb.c9ybbr2jzshu.ap-southeast-1.rds.amazonaws.com",
         "PORT": "5432",
-    }
+    },
+
+    "server1": {
+       "ENGINE": "django.db.backends.postgresql",
+        "NAME": "FileServer1",
+        "USER": "postgres",
+        "PASSWORD": "passcanliao",
+        "HOST": "testdb.c9ybbr2jzshu.ap-southeast-1.rds.amazonaws.com",
+        "PORT": "5432",
+    },
+
 }
 
 
