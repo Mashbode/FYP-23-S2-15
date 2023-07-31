@@ -15,17 +15,23 @@ import MenuItem from "@mui/material/MenuItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
 import Tooltip from "@mui/material/Tooltip";
-import PersonAdd from "@mui/icons-material/PersonAdd";
 import Settings from "@mui/icons-material/Settings";
 import Logout from "@mui/icons-material/Logout";
 
-import { DarkModeContext } from "../../context/darkModeContext";
+// import { DarkModeContext } from "../../context/darkModeContext";
+import { AuthContext } from "../../context/AuthContext";
 import { useContext } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+
+import { auth } from "../../firebase";
+import { signOut } from "firebase/auth";
 
 const Navbar = () => {
+  const navigate = useNavigate();
+  const { dispatch } = useContext(AuthContext);
+  // const { dispatch } = useContext(DarkModeContext);
+
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
@@ -35,7 +41,19 @@ const Navbar = () => {
     setAnchorEl(null);
   };
 
-  const { dispatch } = useContext(DarkModeContext);
+  const handleLogout = () => {
+    setAnchorEl(null);
+
+    signOut(auth)
+      .then(() => {
+        // Sign-out successful.
+        dispatch({ type: "LOGOUT" });
+        navigate("/login");
+      })
+      .catch(() => {
+        // An error happened.
+      });
+  };
 
   return (
     <div className="navbar">
@@ -163,7 +181,7 @@ const Navbar = () => {
                     Settings
                   </MenuItem>
                 </Link>
-                <MenuItem onClick={handleClose} sx={{ fontSize: 15 }}>
+                <MenuItem onClick={handleLogout} sx={{ fontSize: 15 }}>
                   <ListItemIcon>
                     <Logout fontSize="small" />
                   </ListItemIcon>
