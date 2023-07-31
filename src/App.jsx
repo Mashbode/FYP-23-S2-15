@@ -9,13 +9,13 @@ import New from "./pages/new/New";
 import OTP from "./pages/otp/OTP";
 import MyDrive from "./pages/mydrive/MyDrive";
 
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-
 import "./style/dark.scss";
 
 import { DarkModeContext } from "./context/darkModeContext";
 import { AuthContext } from "./context/AuthContext";
+
 import { useContext } from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 const userInputs = [
   // Changed id to its actual name w/ adoption of firebase
