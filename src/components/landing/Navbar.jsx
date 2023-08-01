@@ -3,6 +3,8 @@ import { Link as LinkScroll } from "react-scroll";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
+import logo from "../../img/logo2.png";
+
 const Container = styled.div.attrs((props) => ({ className: props.className }))`
   &.changeBackground {
     background-color: rgba(188, 117, 131, 0.797);
@@ -39,10 +41,24 @@ const Right = styled.div`
   justify-content: space-between;
 `;
 
-const Logo = styled.h1`
-  font-weight: bold;
-  text-decoration: underline crimson;
-`;
+// const Logo = styled.h1`
+//   font-weight: bold;
+//   text-decoration: underline crimson;
+// `;
+
+// Logo css for logo.png
+// const Logo = styled.img`
+//   width: 13%;
+//   height: 13%;
+//   padding-bottom: 5px;
+// `
+
+// Logo css for logo2.png
+const Logo = styled.img`
+  width: 25%;
+  height: 25%;
+  padding-top: 5px;
+`
 
 const Menu = styled.ul`
   display: flex;
@@ -103,7 +119,8 @@ const Navbar = () => {
     <Container className={navColor ? "changeBackground" : ""}>
       <Wrapper>
         <Left>
-          <Logo>Logo</Logo>
+          {/* <Logo>Logo</Logo> */}
+          <Logo src={logo} alt="Logo" />
           <Menu>
             <MenuItem>
               <LinkScroll

@@ -8,6 +8,7 @@ import Single from "./pages/single/Single";
 import Edit from "./pages/edit/Edit";
 import OTP from "./pages/otp/OTP";
 import MyDrive from "./pages/mydrive/MyDrive";
+import Edit from "./pages/edit/Edit";
 
 import "./style/dark.scss";
 
@@ -20,22 +21,28 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 const userInputs = [
   // Changed id to its actual name w/ adoption of firebase
   {
+    id: "displayName",
+    label: "Name",
+    type: "text",
+    placeholder: "John Doe",
+  },
+  {
     id: "username",
     label: "Username",
     type: "text",
     placeholder: "john_doe",
   },
   {
-    id: "displayName",
-    label: "Name and surname",
-    type: "text",
-    placeholder: "John Doe",
-  },
-  {
     id: "email",
     label: "Email",
     type: "mail",
     placeholder: "john_doe@gmail.com",
+  },
+  {
+    id: "date",
+    lable: "Registered Date",
+    type: "date",
+    placeholder: "10 July 2023",
   },
   {
     id: "phone",
@@ -48,52 +55,7 @@ const userInputs = [
     label: "Password",
     type: "password",
   },
-  {
-    id: "address",
-    label: "Address",
-    type: "text",
-    placeholder: "Elton St. 216 NewYork",
-  },
-  {
-    id: "country",
-    label: "Country",
-    type: "text",
-    placeholder: "USA",
-  },
 ];
-
-// const productInputs = [
-//   {
-//     id: 1,
-//     label: "Title",
-//     type: "text",
-//     placeholder: "Apple Macbook Pro",
-//   },
-//   {
-//     id: 2,
-//     label: "Description",
-//     type: "text",
-//     placeholder: "Description",
-//   },
-//   {
-//     id: 3,
-//     label: "Category",
-//     type: "text",
-//     placeholder: "Computers",
-//   },
-//   {
-//     id: 4,
-//     label: "Price",
-//     type: "text",
-//     placeholder: "100",
-//   },
-//   {
-//     id: 5,
-//     label: "Stock",
-//     type: "text",
-//     placeholder: "in stock",
-//   },
-// ];
 
 function App() {
   const { darkMode } = useContext(DarkModeContext);
@@ -161,7 +123,7 @@ function App() {
                 path="edit"
                 element={
                   <RequireAuth>
-                    <Edit inputs={userInputs} title="Edit Account" />
+                    <Edit />
                   </RequireAuth>
                 }
               />
