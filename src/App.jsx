@@ -5,7 +5,7 @@ import Register from "./pages/register/Register";
 import Restore from "./pages/restore/Restore";
 import List from "./pages/list/List";
 import Single from "./pages/single/Single";
-import New from "./pages/new/New";
+import Edit from "./pages/edit/Edit";
 import OTP from "./pages/otp/OTP";
 import MyDrive from "./pages/mydrive/MyDrive";
 
@@ -161,7 +161,7 @@ function App() {
                 path="edit"
                 element={
                   <RequireAuth>
-                    <New inputs={userInputs} title="Edit Account" />
+                    <Edit inputs={userInputs} title="Edit Account" />
                   </RequireAuth>
                 }
               />
