@@ -1,14 +1,6 @@
 import "./datatable.scss";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 
-// import * as React from "react";
-// import Dialog from "@mui/material/Dialog";
-// import DialogActions from "@mui/material/DialogActions";
-// import DialogContent from "@mui/material/DialogContent";
-// import DialogContentText from "@mui/material/DialogContentText";
-// import DialogTitle from "@mui/material/DialogTitle";
-// import Slide from "@mui/material/Slide";
-
 import { toast, Toaster } from "react-hot-toast";
 
 import { Link } from "react-router-dom";
@@ -31,45 +23,22 @@ import {
   enquiryColumns,
 } from "../../datatablesource";
 
-// const Transition = React.forwardRef(function Transition(props, ref) {
-//   return <Slide direction="up" ref={ref} {...props} />;
-// });
-
 // Pass type prop if u want to apply it to both users & products
 const Datatable = ({ type }) => {
   // const [data, setData] = useState(userRows);
   const [data, setData] = useState([]);
-  // const [openConfirm, setOpenConfirm] = useState(false);
   const { currentUser } = useContext(AuthContext);
-
-  // const handleClickOpen = () => {
-  //   setOpenConfirm(true);
-  // };
-
-  // const handleClose = () => {
-  //   setOpenConfirm(false);
-  // };
 
   // 1. Delete the user from the database
   // 2. The user needs to be deleted from the Firebase -> Authentication -> Users manually as re-authentication requires the user's password (https://firebase.google.com/docs/auth/web/manage-users#re-authenticate_a_user)
   const handleUserDelete = async (id) => {
-    // setOpenConfirm(true);
     try {
-      // if (openConfirm) {
-      //   // https://firebase.google.com/docs/firestore/manage-data/delete-data#delete_documents
-      //   deleteDoc(doc(db, "users", id)); // doc(db, collection, id)
-      //   setData(data.filter((item) => item.id !== id)); // If used on its own, the data is not deleted when refreshed
-
-      //   toast("The user also needs to be deleted inside Firebase!", {
-      //     icon: "⚠️",
-      //   });
-      // } else {
-      //   setOpenConfirm(false);
-      // }
       if (window.confirm("Are you sure to delete the user?")) {
+        // ******************************* Connect with Django *******************************
         // https://firebase.google.com/docs/firestore/manage-data/delete-data#delete_documents
         await deleteDoc(doc(db, "users", id)); // doc(db, collection, id)
         setData(data.filter((item) => item.id !== id)); // If used on its own, the data is not deleted when refreshed
+        // ***********************************************************************************
 
         toast("The user also needs to be deleted inside Firebase!", {
           icon: "⚠️",
@@ -304,8 +273,9 @@ const Datatable = ({ type }) => {
     // };
     // fetchData();
 
+    // ************************** Connect with Django **************************
     // https://firebase.google.com/docs/firestore/query-data/listen
-    // Listen to data real-time + SF id is not required + doc chnged to snapShot
+    // Listen to data real-time + doc id is not required + doc chnged to snapShot
     const unsub = onSnapshot(collection(db, "users"), (snapShot) => {
       var list = [];
       // console.log("Current data: ", doc.data());
@@ -325,39 +295,13 @@ const Datatable = ({ type }) => {
     return () => {
       unsub();
     };
+    // *************************************************************************
   }, []);
 
   return (
     <div className="datatable">
       {/* https://react-hot-toast.com/ */}
       <Toaster toastOptions={{ duration: 3000 }} />
-      {/* <>
-        <Dialog
-          open={openConfirm}
-          TransitionComponent={Transition}
-          keepMounted
-          onClose={handleClose}
-          aria-describedby="alert-dialog-slide-description"
-        >
-          <DialogTitle>{"Are you sure to delete the user?"}</DialogTitle>
-          <DialogContent>
-            <DialogContentText id="alert-dialog-slide-description">
-              This process cannot be reverted. First, the user will be deleted
-              from the database. Next, the user needs to be deleted from the
-              Firebase - Authentication - Users manually as re-authentication
-              requires the user's password.
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <button className="confirm" onClick={handleClose}>
-              OK
-            </button>
-            <button className="cancel" onClick={handleClose}>
-              Cancel
-            </button>
-          </DialogActions>
-        </Dialog>
-      </> */}
       <div className="datatableTitle">
         {/* Title of the datatable = Type with the first letter changed to upper case */}
         {type.replace(/^./, type[0].toUpperCase())}
