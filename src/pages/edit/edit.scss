@@ -19,6 +19,7 @@
             }
 
             .left {
+                width: 40%;
                 display: flex;
                 flex-direction: column;
                 justify-content: center;
@@ -47,6 +48,7 @@
             }
             
             .right {
+                width: 60%;
 
                 form {
                     display: flex;
@@ -56,7 +58,7 @@
                         .rightContainer {
                             padding: 10px 0px;
                             text-align: center;
-                            width: 150px;
+                            width: 100%;
                             flex-basis: 150px;
                             flex-grow: 1;
 
