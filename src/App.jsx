@@ -8,7 +8,6 @@ import Single from "./pages/single/Single";
 import Edit from "./pages/edit/Edit";
 import OTP from "./pages/otp/OTP";
 import MyDrive from "./pages/mydrive/MyDrive";
-import Edit from "./pages/edit/Edit";
 
 import "./style/dark.scss";
 
