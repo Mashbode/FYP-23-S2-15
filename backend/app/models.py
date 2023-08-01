@@ -360,15 +360,15 @@ class Subscription(models.Model):
 
 class Users(models.Model):
     user_id = models.AutoField(primary_key=True)
-    username = models.CharField(max_length=50)
-    pssword = models.CharField(max_length=50)
-    f_name = models.CharField(max_length=50)
-    l_name = models.CharField(max_length=50)
-    email = models.CharField(max_length=50)
+    u_id = models.CharField(max_length=50, blank=True, null=True)
+    username = models.CharField(max_length=50, blank=True, null=True)
+    pssword = models.CharField(max_length=200, blank=True, null=True)
+    f_name = models.CharField(max_length=50, blank=True, null=True)
+    l_name = models.CharField(max_length=50, blank=True, null=True)
+    email = models.CharField(max_length=50, blank=True, null=True)
     phone_number = models.CharField(max_length=20, blank=True, null=True)
     usertype = models.CharField(max_length=10, blank=True, null=True)
     
-   
     def save(self, *args, **kwargs):
         self.pssword = make_password(self.pssword)
         super(Users, self).save(*args, **kwargs)
