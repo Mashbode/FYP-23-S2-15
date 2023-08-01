@@ -28,19 +28,9 @@ import {
 } from "firebase/auth";
 
 const Single = () => {
-  const [users, setUsers] = useState([]);
   const [open, setOpen] = useState(false);
   const [password, setPassword] = useState("");
   const user = JSON.parse(localStorage.getItem("user")); // Getting a user from local storage
-
-  useEffect(() => {
-    const getUsers = async () => {
-      const data = await getDocs(collection(db, "users"));
-      setUsers(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
-    };
-
-    getUsers();
-  }, []);
 
   const { dispatch } = useContext(AuthContext);
 

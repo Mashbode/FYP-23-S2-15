@@ -1,116 +1,88 @@
 import "./edit.scss";
 import Sidebar from "../../components/sidebar/Sidebar";
 import Navbar from "../../components/navbar/Navbar";
+
 import DriveFolderUploadOutlinedIcon from "@mui/icons-material/DriveFolderUploadOutlined";
-import { useState, useEffect } from "react";
-import {
-  doc,
-  setDoc,
-  addDoc,
-  serverTimestamp,
-  collection,
-} from "firebase/firestore";
-import { auth, db, storage } from "../../firebase";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import { useNavigate } from "react-router-dom";
 
-const Edit = ({ inputs, title }) => {
-  // For image uploaded
-  const [file, setFile] = useState("");
-  const [data, setData] = useState({});
-  const [perc, setPerc] = useState(); // Used to disable Send button during img upload
 
+import React, { useState, useEffect } from 'react';
+import { doc, updateDoc, getDoc } from 'firebase/firestore';
+import { auth, db } from '../../firebase';
+import { useNavigate } from 'react-router-dom';
+
+const Edit = () => {
+  const [user, setUser] = useState(null);
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhoneNumber] = useState('');
+  const [password, setPassword] = useState('');
+  const [registeredDate, setRegisteredDate] = useState('');
   const navigate = useNavigate();
 
-  // https://firebase.google.com/docs/storage/web/upload-files#monitor_upload_progress
-  useEffect(() => {
-    const uploadFile = () => {
-      const name = new Date().getTime() + file.name; // To get unique file names
-      const storageRef = ref(storage, name);
+  const [file, setFile] = useState("");
 
-      const uploadTask = uploadBytesResumable(storageRef, file);
-
-      // Listening to the upload progress
-      uploadTask.on(
-        "state_changed",
-        (snapshot) => {
-          const progress =
-            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          console.log("Upload is " + progress + "% done");
-          setPerc(progress);
-          switch (snapshot.state) {
-            case "paused":
-              console.log("Upload is paused");
-              break;
-            case "running":
-              console.log("Upload is running");
-              break;
-            default:
-              break;
-          }
-        },
-        (error) => {
-          console.log(error);
-        },
-        () => {
-          // Handle successful uploads on complete
-          // For instance, get the download URL: https://firebasestorage.googleapis.com/...
-          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-            // console.log("File available at", downloadURL);
-            // setData({ ...data, downloadURL }); // useEffect have a dependency only for file, below is the exact same one
-            setData((prev) => ({ ...prev, img: downloadURL })); // Adding img to data
-          });
-        }
-      );
-    };
-    file && uploadFile();
-  }, [file]);
-
-  const handleAdd = async (e) => {
-    e.preventDefault(); // Its to prevent refreshing
-    // await은 async 함수 안에서만 쓰여야 함
-
+  // Function to fetch the authenticated user's data from Firestore
+  const fetchUserData = async () => {
     try {
-      // // Set document
-      // // Create new collection: cities -> properties are name, state, country
-      // // LA is document id
-      // await setDoc(doc(db, "cities", "LA"), {
-      //   name: "Los Angeles",
-      //   state: "CA",
-      //   country: "USA",
-      // });
-      // // Add document
-      // // Create new collection: cities -> properties are name, state, country
-      // await addDoc(collection(db, "cities"), {
-      //   name: "Tokyo",
-      //   country: "Japan",
-      //   timeStamp: serverTimestamp(),
-      // });
-
-      const result = await createUserWithEmailAndPassword(
-        auth,
-        data.email,
-        data.password
-      );
-
-      await setDoc(doc(db, "users", result.user.uid), {
-        ...data,
-        timeStamp: serverTimestamp(),
-      });
-
-      navigate(-1); // gg back to previous pg after adding
-    } catch (err) {
-      console.log(err);
+      const user = auth.currentUser;
+      if (user) {
+        const userRef = doc(db, 'users', user.uid);
+        const userDoc = await getDoc(userRef);
+        if (userDoc.exists()) {
+          setUser(userDoc.data());
+          setFirstName(userDoc.data().firstName);
+          setLastName(userDoc.data().lastName);
+          setUsername(userDoc.data().username);
+          setEmail(userDoc.data().email);
+          setPhoneNumber(userDoc.data().phone);
+          setRegisteredDate(userDoc.data().timeStamp);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching user data:', error);
     }
   };
 
-  // Adding input data one by one
-  const handleInput = (e) => {
-    const id = e.target.id;
-    const value = e.target.value;
+  useEffect(() => {
+    fetchUserData();
+  }, []);
 
-    setData({ ...data, [id]: value });
+  const handleUpdate = async (e) => {
+    e.preventDefault(); // Prevent page refresh on submit
+    try {
+      const user = auth.currentUser;
+      if (user) {
+        const userRef = doc(db, 'users', user.uid);
+        await updateDoc(userRef, {
+          firstName,
+          lastName,
+          username,
+          email,
+          phone,
+        });
+
+        // Update password if provided
+        if (password) {
+          await user.updatePassword(password);
+        }
+
+        console.log('User information updated successfully!');
+        // Clear the password field after submitting
+        setPassword('');
+      }
+
+    // go back to previous pg after updating
+    //   navigate(-1);
+    } catch (error) {
+      console.error('Error updating user information:', error);
+    }
+  };
+
+  const handleCancelClick = () => {
+    // Navigate to the previous page using the navigate function with -1 as the argument
+    navigate(-1);
   };
 
   return (
@@ -119,11 +91,11 @@ const Edit = ({ inputs, title }) => {
       <div className="newContainer">
         <Navbar />
         <div className="top">
-          <h1>{title}</h1>
+          <h1>Edit Profile</h1>
         </div>
         <div className="bottom">
           <div className="left">
-            <img
+            <img 
               src={
                 file // Img file existing boolean
                   ? URL.createObjectURL(file)
@@ -131,39 +103,56 @@ const Edit = ({ inputs, title }) => {
               }
               alt=""
             />
+            <div className="formInput">
+              <label htmlFor="file">
+                Upload Profile Image: <DriveFolderUploadOutlinedIcon className="icon" />
+              </label>
+              <input
+                type="file"
+                id="file" // label htmlFor="file" and this input is connected
+                onChange={(e) => setFile(e.target.files[0])}
+                style={{ display: "none" }}
+              />
+             </div>
           </div>
           <div className="right">
-            <form onSubmit={handleAdd}>
-              <div className="formInput">
-                <label htmlFor="file">
-                  Image: <DriveFolderUploadOutlinedIcon className="icon" />
-                </label>
-                {/* <input type="file" /> 
-                Refer below */}
-                <input
-                  type="file"
-                  id="file" // label htmlFor="file" and this input is connected
-                  onChange={(e) => setFile(e.target.files[0])}
-                  style={{ display: "none" }}
-                />
-              </div>
-
-              {inputs.map((input) => (
-                // Do not forget to give unique key
-                <div className="formInput" key={input.id}>
-                  <label>{input.label}</label>
-                  <input
-                    id={input.id}
-                    type={input.type}
-                    placeholder={input.placeholder}
-                    onChange={handleInput}
-                  />
+            <form onSubmit={handleUpdate}>
+              <div className="rightContainer">
+                <div className="formInput">
+                  <div>
+                    <label>First Name:</label>
+                    <input type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+                  </div>
+                  <div>
+                    <label>Last Name:</label>
+                    <input type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} />
+                  </div>
+                  <div>
+                      <label>Username:</label>
+                      <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
+                  </div>
+                  <div className="updateButton">
+                    <button type="submit">Update</button>
+                  </div>
                 </div>
-              ))}
-              {/* Disabled to add img url to user collection */}
-              <button disabled={perc !== null && perc < 100} type="submit">
-                Send
-              </button>
+              </div>
+              <div className="rightContainer">
+                <div className="formInput">
+                  <div>
+                      <label>Email:</label>
+                      <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                  </div>
+                  <div>
+                      <label>Phone Number:</label>
+                      <input type="text" value={phone} onChange={(e) => setPhoneNumber(e.target.value)} />
+                  </div>
+                  <div>
+                      <label>New Password:</label>
+                      <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                  </div>
+                  <button onClick={handleCancelClick}>Cancel</button>
+                </div>
+              </div>
             </form>
           </div>
         </div>
