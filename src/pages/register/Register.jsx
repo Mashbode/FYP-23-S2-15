@@ -114,21 +114,29 @@ const Register = () => {
         values.email,
         values.password
       );
+      
+      // user created successfully >>> clear password (PDPA)
+      values.password = null;
+      // console.log(values.password);
 
-      const { username, firstName, lastName, email, password, phone } = values;
+      const { username, firstName, lastName, email, phone } = values;
 
       // ************** Connect with Django (setDoc) **************
-      // instance is an object from axios_config.js
-      // with the url of api
-      // await instance
-      //   .post("Users", {
-      //     username: username,
-      //     email: email,
-      //     phone: "+" + phone,
-      //     type: "user",
-      //   })
-      //   .then((res) => console.log(res))
-      //   .catch((err) => console.error(err));
+      /* `instance` is an instance of the Axios library that is configured with a base URL and
+      other settings. It is used to make HTTP requests to the backend server. In this code, it
+      is used to send a POST request to the backend server with the user registration data. */
+      await instance
+        .post("Users", {
+          uid: result.user.uid,
+          username: username,
+          f_name: firstName,
+          l_name: lastName,
+          email: email,
+          phone_number: "+" + phone,
+          usertype: "user",
+        })
+        .then((res) => console.log(res.data))
+        .catch((err) => console.error(err));
 
       // Provided by Firebase (Database)
       // "users" -> table name / result.user.uid -> id of the table
@@ -138,7 +146,6 @@ const Register = () => {
         firstName: firstName,
         lastName: lastName,
         email: email,
-        // password: password,
         phone: "+" + phone, // "+" is required in order to reflect country code
         type: "user", // Added to differentiate the sidebar
         timeStamp: serverTimestamp(),
