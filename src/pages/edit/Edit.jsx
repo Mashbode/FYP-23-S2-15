@@ -4,21 +4,20 @@ import Navbar from "../../components/navbar/Navbar";
 
 import DriveFolderUploadOutlinedIcon from "@mui/icons-material/DriveFolderUploadOutlined";
 
-
-import React, { useState, useEffect } from 'react';
-import { doc, updateDoc, getDoc } from 'firebase/firestore';
-import { auth, db } from '../../firebase';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { doc, updateDoc, getDoc } from "firebase/firestore";
+import { auth, db } from "../../firebase";
+import { useNavigate } from "react-router-dom";
 
 const Edit = () => {
   const [user, setUser] = useState(null);
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [phone, setPhoneNumber] = useState('');
-  const [password, setPassword] = useState('');
-  const [registeredDate, setRegisteredDate] = useState('');
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhoneNumber] = useState("");
+  const [password, setPassword] = useState("");
+  const [registeredDate, setRegisteredDate] = useState("");
   const navigate = useNavigate();
 
   const [file, setFile] = useState("");
@@ -28,7 +27,7 @@ const Edit = () => {
     try {
       const user = auth.currentUser;
       if (user) {
-        const userRef = doc(db, 'users', user.uid);
+        const userRef = doc(db, "users", user.uid);
         const userDoc = await getDoc(userRef);
         if (userDoc.exists()) {
           setUser(userDoc.data());
@@ -41,7 +40,7 @@ const Edit = () => {
         }
       }
     } catch (error) {
-      console.error('Error fetching user data:', error);
+      console.error("Error fetching user data:", error);
     }
   };
 
@@ -54,7 +53,7 @@ const Edit = () => {
     try {
       const user = auth.currentUser;
       if (user) {
-        const userRef = doc(db, 'users', user.uid);
+        const userRef = doc(db, "users", user.uid);
         await updateDoc(userRef, {
           firstName,
           lastName,
@@ -68,15 +67,15 @@ const Edit = () => {
           await user.updatePassword(password);
         }
 
-        console.log('User information updated successfully!');
+        console.log("User information updated successfully!");
         // Clear the password field after submitting
-        setPassword('');
+        setPassword("");
       }
 
-    // go back to previous pg after updating
-    //   navigate(-1);
+      // go back to previous pg after updating
+      //   navigate(-1);
     } catch (error) {
-      console.error('Error updating user information:', error);
+      console.error("Error updating user information:", error);
     }
   };
 
@@ -86,16 +85,16 @@ const Edit = () => {
   };
 
   return (
-    <div className="new">
+    <div className="edit">
       <Sidebar />
-      <div className="newContainer">
+      <div className="editContainer">
         <Navbar />
         <div className="top">
           <h1>Edit Profile</h1>
         </div>
         <div className="bottom">
           <div className="left">
-            <img 
+            <img
               src={
                 file // Img file existing boolean
                   ? URL.createObjectURL(file)
@@ -105,7 +104,8 @@ const Edit = () => {
             />
             <div className="formInput">
               <label htmlFor="file">
-                Upload Profile Image: <DriveFolderUploadOutlinedIcon className="icon" />
+                Upload Profile Image:{" "}
+                <DriveFolderUploadOutlinedIcon className="icon" />
               </label>
               <input
                 type="file"
@@ -113,7 +113,7 @@ const Edit = () => {
                 onChange={(e) => setFile(e.target.files[0])}
                 style={{ display: "none" }}
               />
-             </div>
+            </div>
           </div>
           <div className="right">
             <form onSubmit={handleUpdate}>
@@ -121,15 +121,27 @@ const Edit = () => {
                 <div className="formInput">
                   <div>
                     <label>First Name:</label>
-                    <input type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+                    <input
+                      type="text"
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                    />
                   </div>
                   <div>
                     <label>Last Name:</label>
-                    <input type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} />
+                    <input
+                      type="text"
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                    />
                   </div>
                   <div>
-                      <label>Username:</label>
-                      <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
+                    <label>Username:</label>
+                    <input
+                      type="text"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                    />
                   </div>
                   <div className="updateButton">
                     <button type="submit">Update</button>
@@ -139,16 +151,28 @@ const Edit = () => {
               <div className="rightContainer">
                 <div className="formInput">
                   <div>
-                      <label>Email:</label>
-                      <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                    <label>Email:</label>
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                    />
                   </div>
                   <div>
-                      <label>Phone Number:</label>
-                      <input type="text" value={phone} onChange={(e) => setPhoneNumber(e.target.value)} />
+                    <label>Phone Number:</label>
+                    <input
+                      type="text"
+                      value={phone}
+                      onChange={(e) => setPhoneNumber(e.target.value)}
+                    />
                   </div>
                   <div>
-                      <label>New Password:</label>
-                      <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                    <label>New Password:</label>
+                    <input
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                    />
                   </div>
                   <button onClick={handleCancelClick}>Cancel</button>
                 </div>

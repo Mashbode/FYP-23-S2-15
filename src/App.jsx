@@ -10,6 +10,7 @@ import OTP from "./pages/otp/OTP";
 import MyDrive from "./pages/mydrive/MyDrive";
 
 import "./style/dark.scss";
+import "devextreme/dist/css/dx.light.css";
 
 import { DarkModeContext } from "./context/darkModeContext";
 import { AuthContext } from "./context/AuthContext";
@@ -122,6 +123,7 @@ function App() {
                 path="edit"
                 element={
                   <RequireAuth>
+                    {/* <Edit inputs={userInputs} title="Edit Account" /> */}
                     <Edit />
                   </RequireAuth>
                 }
