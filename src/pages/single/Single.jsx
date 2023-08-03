@@ -4,7 +4,7 @@ import Navbar from "../../components/navbar/Navbar";
 // import Chart from "../../components/chart/chart/Chart";
 // import List from "../../components/table/Table";
 import Pie from "../../components/chart/pie/Pie";
-import FileManager from "../../components/filemananger/FileManager";
+// import FileManager from "../../components/filemananger/FileManager";
 
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
@@ -15,11 +15,11 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 
 import { AuthContext } from "../../context/AuthContext";
-import { useContext, useState, useEffect } from "react";
+import { useContext, useState } from "react";
 import { Link } from "react-router-dom";
 import { toast, Toaster } from "react-hot-toast";
 
-import { doc, deleteDoc, collection, getDocs } from "firebase/firestore";
+import { doc, deleteDoc } from "firebase/firestore";
 import { db, auth } from "../../firebase";
 import {
   EmailAuthProvider,
@@ -30,9 +30,8 @@ import {
 const Single = () => {
   const [open, setOpen] = useState(false);
   const [password, setPassword] = useState("");
-  const user = JSON.parse(localStorage.getItem("user")); // Getting a user from local storage
 
-  const { dispatch } = useContext(AuthContext);
+  const { dispatch, currentUser } = useContext(AuthContext);
 
   const handleDeleteUser = () => {
     // https://firebase.google.com/docs/auth/web/manage-users#delete_a_user
@@ -40,7 +39,7 @@ const Single = () => {
       .then(() => {
         // User deleted.
         // https://firebase.google.com/docs/firestore/manage-data/delete-data#delete_documents
-        deleteDoc(doc(db, "users", user.uid));
+        deleteDoc(doc(db, "users", currentUser.uid));
         toast.success("Your account deleted successfully!");
         setTimeout(() => {
           dispatch({ type: "LOGOUT" });
@@ -55,7 +54,10 @@ const Single = () => {
   // https://firebase.google.com/docs/reference/node/firebase.auth.EmailAuthProvider#static-credential
   // https://stackoverflow.com/questions/39872885/using-firebase-reauthenticate
   const handleDeleteAccount = () => {
-    const credential = EmailAuthProvider.credential(user.email, password);
+    const credential = EmailAuthProvider.credential(
+      currentUser.email,
+      password
+    );
     reauthenticateWithCredential(auth.currentUser, credential)
       .then(() => {
         // User re-authenticated.
@@ -174,9 +176,7 @@ const Single = () => {
             </div>
           </div>
         </div>
-        <div className="bottom">
-          <FileManager title="Files" />
-        </div>
+        <div className="bottom">{/* <FileManager title="Files" /> */}</div>
       </div>
     </div>
   );

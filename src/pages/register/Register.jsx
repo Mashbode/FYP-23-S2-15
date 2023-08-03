@@ -114,10 +114,9 @@ const Register = () => {
         values.email,
         values.password
       );
-      
-      // user created successfully >>> clear password (PDPA)
+
+      // User created successfully -> Clear password (PDPA)
       values.password = null;
-      // console.log(values.password);
 
       const { username, firstName, lastName, email, phone } = values;
 
