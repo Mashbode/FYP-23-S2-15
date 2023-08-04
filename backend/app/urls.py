@@ -63,6 +63,7 @@ urlpatterns = [
         #users
     path('api/users', userList.as_view()),
     path('api/users/<int:pk>', EdituserDetail.as_view()),
+    path('api/users/add', addUser.as_view()),
     #admin
     path('api/admin', adminList.as_view()),
     # path('api/admin/<int:pk>', EditAdminDetail.as_view()),

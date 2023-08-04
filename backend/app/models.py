@@ -361,7 +361,7 @@ class Subscription(models.Model):
 class Users(models.Model):
     user_id = models.AutoField(primary_key=True)
     username = models.CharField(max_length=50)
-    pssword = models.CharField(max_length=50)
+    pssword = models.CharField(max_length=250)
     f_name = models.CharField(max_length=50)
     l_name = models.CharField(max_length=50)
     email = models.CharField(max_length=50)
