@@ -260,13 +260,16 @@ const FileManagerContainer = ({ title, axiosFileItems }) => {
   const onItemClick = (e) => {
     if (e.itemData.name === "share") {
       var email = prompt("Please enter a user's email to share");
-      var userID = getUserIDWithEmail(email);
+      var userToShareID = getUserIDWithEmail(email);
       // ********************************************** Connect with Django **********************************************
       // Use e.fileSystemItem to share FileSystemItem
-      // The FileSystemItem should be pasted to userID/shared/
+      // The FileSystemItem should be pasted to currentUser.uid/shared/userToShareID
       // console.log(e.fileSystemItem);
-      // console.log(userID);
+      // console.log(userToShareID);
       // *****************************************************************************************************************
+      // Things to send to file system
+      // 1. fileID = console.log(e.fileSystemItem.__KEY__)
+      // 2. userID = console.log(currentUser.uid)
     }
   };
 
