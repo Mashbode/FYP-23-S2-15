@@ -82,8 +82,11 @@ WSGI_APPLICATION = "backend.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-DATABASE_ROUTERS = ['app.dbrouters.server1Router', ]
-DATABASE_APPS_MAPPING = {'FileServer1': 'server1'}
+DATABASE_ROUTERS = ['backend.dbrouter.server1Router', 'backend.dbrouter.server2Router', 'backend.dbrouter.server3Router', 'backend.dbrouter.server4Router']
+DATABASE_APPS_MAPPING = {'FileServer1': 'server1',
+                         'FileServer2': 'server2',
+                         'FileServer3': 'server3',
+                         'FileServer4': 'server4',}
 
 DATABASES = {
     "default": {

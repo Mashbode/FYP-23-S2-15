@@ -399,3 +399,67 @@ class Secret(models.Model):
     class Meta:
         managed = False
         db_table = 'secret'
+
+## fileserver1 
+class File1(models.Model):
+    file_id = models.UUIDField()
+    data = models.BinaryField(blank=True, null=True)
+    file_version_id = models.UUIDField()
+    fileserver1_id = models.AutoField(primary_key=True)
+    secret = models.BinaryField()
+
+    class Meta:
+        managed = False
+        db_table = 'file'
+
+class Secret(models.Model):
+    secret = models.CharField(primary_key=True, max_length=50)
+    file_id = models.UUIDField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'secret'
+
+##fileserver2 
+class File2(models.Model):
+    file_id = models.UUIDField()
+    data = models.BinaryField(blank=True, null=True)
+    file_version_id = models.UUIDField()
+    fileserver2_id = models.AutoField(primary_key=True)
+    secret = models.BinaryField()
+
+    class Meta:
+        managed = False
+        db_table = 'file'
+
+class Secret2(models.Model):
+    secret = models.CharField(primary_key=True, max_length=50)
+    file_id = models.UUIDField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'secret'
+
+##fileserver3
+class File3(models.Model):
+    file_id = models.UUIDField()
+    file_version_id = models.UUIDField()
+    data = models.BinaryField(blank=True, null=True)
+    fileserver3_id = models.AutoField(primary_key=True)
+    secret = models.BinaryField()
+
+    class Meta:
+        managed = False
+        db_table = 'file'
+
+##fileserver4
+class File4(models.Model):
+    file_version_id = models.UUIDField()
+    file_id = models.UUIDField()
+    data = models.BinaryField(blank=True, null=True)
+    fileserver4_id = models.AutoField(primary_key=True)
+    secret = models.BinaryField()
+
+    class Meta:
+        managed = False
+        db_table = 'file'
