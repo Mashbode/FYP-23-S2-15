@@ -259,7 +259,9 @@ class userList(generics.ListAPIView):
 class EdituserDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Users.objects.all()
     serializer_class = UsersSerializer
-
+class addUser(generics.CreateAPIView):
+    queryset = Users.objects.all()
+    serializer_class = UsersSerializer
 # view Admin
 class adminList(generics.ListAPIView):
     queryset = Admintab.objects.all()
@@ -321,6 +323,8 @@ class fileVersionUpdate(generics.RetrieveUpdateDestroyAPIView):
 
 class splitFilesIntoServer(generics.CreateAPIView):
     queryset = Server1.objects.all()
+
+########
 
 
 #view folders 
