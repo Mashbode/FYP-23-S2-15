@@ -2,6 +2,12 @@ from django.shortcuts import render
 from rest_framework import generics, viewsets
 from .serializers import *
 from .models import *
+#####################
+from rest_framework.decorators import api_view, APIView
+from rest_framework.response import Response
+import psycopg2
+from scripts import*
+from rest_framework.parsers import MultiPartParser, FormParser
 
 #USERS
 # Create your views here.
@@ -388,3 +394,98 @@ class DeleteSharedFile(generics.RetrieveDestroyAPIView):
 class CreateSharedFile(generics.CreateAPIView):
     queryset = Sharedfileaccess.objects.all()
     serializer_class = ShareFileAccessSerializer
+
+##########################################################################
+##########################################################################
+ ## standard queries ##
+def file():
+            # Connect to the PostgreSQL database
+    conn = psycopg2.connect(database="MainDB", user="postgres",
+						password="Mashed99", host="localhost", port="5432")
+    
+    cur = conn.cursor()
+    # smt = "SELECT file_id FROM filetab WHERE client_id =%s and uploadtime = "
+    smt = "SELECT file_id from filetab order by uploadtime DESC NULLs LAST LIMIT 1;"
+    # cur.execute(smt,(1,))
+    cur.execute(smt)
+    data = cur.fetchone()
+    # for row in data:
+        # print(row)
+    print(data[0])
+    
+    cur.close()
+    conn.close()
+    #gets file_id of the latest uploaded file 
+    return data[0]
+
+## function to get the fileversionID for the newly inserted file
+def fileversionOnInsert(file_id):
+    # Connect to the PostgreSQL database
+    conn = psycopg2.connect(database="MainDB", user="postgres",
+						password="Mashed99", host="localhost", port="5432")
+    # query = Fileversion.objects.get(file_id= file_id)
+    # serialize = fileversiontest(query)
+    # print(serialize)
+    cur = conn.cursor()
+    smt = "SELECT file_version_id FROM fileversion WHERE file_id ="+ str(file_id) 
+    cur.execute(smt)
+    data = cur.fetchone()
+    print(data[0])
+    cur.close()
+    conn.close()
+    return data[0]
+#########################################################################
+##########################################################################
+
+## when inserting file
+class FileUploadView(APIView):
+    parser_classes = (MultiPartParser, FormParser)
+
+    def post(self, request, *args, **kwargs):
+        file = request.FILES['file']
+        # Here you can add code to modify the file
+        # ...
+        return Response(status=204)
+
+@api_view(['POST'])
+def fileInsert(request):
+    #this part will only work with html so need to test with frontend
+    # file info to insert
+    # filename = request.POST.get['filename']
+    # filetype = request.POST.get['filetype']
+    # encryption = request.POST.get['encryptiontype']
+    # client = request.POST.get['client']
+    # filess = Filetab(filename, filetype,encryption,client)
+    # serializer= FileSerializer(data=request.data)
+    ##
+    ## this is to insert new file entry
+    serializer= FileSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+    
+    ## after saving we will pull the file_id of the latest added file
+    latest = file()
+    version = fileversionOnInsert(latest)
+
+
+    return Response(serializer.data)
+
+@api_view()
+def test(request,pk,name):
+    # dd = file()
+    print(str(pk))
+    print(str(name))
+    return  Response({"message": "Hello, world!"})
+
+@api_view(['POST'])
+def fileupdate(request, pk):
+    file = Filetab.objects.get(id=pk)
+    serializer = FileSerializer(instance = file, data = request.data)
+
+    if serializer.is_valid():
+        serializer.save()
+
+    return Response(serializer.data)
+
+##########################################################################
+##########################################################################
