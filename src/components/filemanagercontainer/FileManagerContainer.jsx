@@ -11,13 +11,17 @@ import FileManager, {
 
 import { toast, Toaster } from "react-hot-toast";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { db } from "../../firebase";
 
+import { AuthContext } from "../../context/AuthContext";
+
 const FileManagerContainer = ({ title, axiosFileItems }) => {
   const [fileItems, setFileItems] = useState([]);
+  const { currentUser } = useContext(AuthContext);
+
   useEffect(() => {
     // ********* Enable setFileItems(axiosFileItems) after the Connect with Django *********
     // setFileItems(axiosFileItems);
@@ -125,6 +129,9 @@ const FileManagerContainer = ({ title, axiosFileItems }) => {
   // ********************************************** Connect with Django **********************************************
   const updateAxiosFileItems = (fileItems) => {
     // Reflect updated fileItems backend
+    // Things to send to file system
+    // 1. fileID = console.log(fileItems.__KEY__)
+    // 2. userID = console.log(currentUser.uid)
     console.log(fileItems);
   };
   // *****************************************************************************************************************
@@ -294,7 +301,8 @@ const FileManagerContainer = ({ title, axiosFileItems }) => {
         {/* https://js.devexpress.com/Documentation/ApiReference/UI_Components/dxFileManager/Configuration/toolbar/ */}
         <Toolbar>
           {/* Specifies a predefined item's name and optional settings */}
-          <Item name="create" text="Create a directory" icon="newfolder" />
+          <Item name="create" text="Create a directory" />
+          <Item name="upload" text="Upload a file" />
           {/* Specifies a predefined item's name only */}
           <Item name="switchView" />
           <Item name="separator" />
