@@ -6,8 +6,9 @@ from .models import *
 from rest_framework.decorators import api_view, APIView
 from rest_framework.response import Response
 import psycopg2
-from scripts import*
+from app.scripts import*
 from rest_framework.parsers import MultiPartParser, FormParser
+from django.http import HttpResponse
 
 #USERS
 # Create your views here.
@@ -447,6 +448,32 @@ class FileUploadView(APIView):
         # ...
         return Response(status=204)
 
+
+@api_view(['POST'])
+# insert file ## the parameters that is needed is client_id
+def fileUploadTotal(request, client_id):
+    file = request.FILES['file']
+    # Here you can add code to handle the uploaded file
+    # For example, you could save the file to a specific folder on your server
+    with open('/shard_make' + file.name, 'wb+') as destination:
+        for chunk in file.chunks():
+            destination.write(chunk)
+    ### first compress the file 
+    compres_file_name = compression(file.name)
+    ### then encrypt 
+    encrypt_file_name = encrypt_file(compres_file_name)
+    ## then split the file
+    split_file_list = ecc_file(encrypt_file_name)
+    ## then split the pub key
+    split_key_list = pyshmir_split()
+    fileinfo = os.path.splitext(file.name)
+    filename = fileinfo[0]
+    fileext =  fileinfo[1]
+    ### insert into file table first to generate file_id (uuid)
+    files = File()
+    return HttpResponse('File uploaded successfully')
+
+
 @api_view(['POST'])
 def fileInsert(request):
     #this part will only work with html so need to test with frontend
@@ -479,7 +506,7 @@ def test(request,pk,name):
 
 @api_view(['POST'])
 def fileupdate(request, pk):
-    file = Filetab.objects.get(id=pk)
+    file = Filetable.objects.get(id=pk)
     serializer = FileSerializer(instance = file, data = request.data)
 
     if serializer.is_valid():
