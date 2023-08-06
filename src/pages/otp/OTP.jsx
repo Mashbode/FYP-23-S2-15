@@ -78,6 +78,7 @@ const OTP = () => {
   // Include error handling e.g., There is no phone match
   // 1. Get the user data (Make sure it contains user id)
   // 2. setUser should not be deleted
+
   // https://firebase.google.com/docs/firestore/query-data/get-data#get_multiple_documents_from_a_collection
   const getUser = async () => {
     const q = query(collection(db, "users"), where("phone", "==", "+" + phone));
@@ -100,6 +101,9 @@ const OTP = () => {
         setProgressing(false);
 
         getUser();
+
+        // Things to send to file system
+        // 1. userID = console.log(user.uid)
 
         dispatch({ type: "LOGIN", payload: user });
 

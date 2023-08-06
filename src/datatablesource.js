@@ -71,6 +71,8 @@ export const userColumns = [
   // },
 ];
 
+// ************************** Connect with Django **************************
+// Change the field according to the data fetched from Datatabls.jsx -> useEffect()
 export const fileColumns = [
   { field: "id", headerName: "ID", width: 250 },
   {
@@ -96,6 +98,7 @@ export const fileColumns = [
     },
   },
 ];
+// *************************************************************************
 
 export const sharedFileColumns = [
   { field: "id", headerName: "ID", width: 100 },

@@ -10,7 +10,7 @@ const List = ({ type }) => {
       <div className="listContainer">
         <Navbar />
         <Datatable type={type} />
-        {/* Type prop allows the either "user" or "files" (Not in use as of now) */}
+        {/* Type prop allows the either "user" or "files" */}
       </div>
     </div>
   );
