@@ -22,6 +22,7 @@ const FileManagerContainer = ({ title, axiosFileItems }) => {
   const [fileItems, setFileItems] = useState([]);
   const { currentUser } = useContext(AuthContext);
 
+  // ********************************************** Connect with Django **********************************************
   useEffect(() => {
     // ********* Enable setFileItems(axiosFileItems) after the Connect with Django *********
     // setFileItems(axiosFileItems);
@@ -108,6 +109,7 @@ const FileManagerContainer = ({ title, axiosFileItems }) => {
       },
     ]);
   }, []);
+  // *****************************************************************************************************************
 
   // const addNewItem = (items, parentName, newItem) => {
   //   return items.map((item) => {
@@ -129,6 +131,9 @@ const FileManagerContainer = ({ title, axiosFileItems }) => {
   // ********************************************** Connect with Django **********************************************
   const updateAxiosFileItems = (fileItems) => {
     // Reflect updated fileItems backend
+    // Make sure it is updated to the right directory
+    // MyDrive.jsx - currentUser.uid/
+    // Shared.jsx - currentUser.uid/shared
     // Things to send to file system
     // 1. fileID = console.log(fileItems.__KEY__)
     // 2. userID = console.log(currentUser.uid)
@@ -297,7 +302,10 @@ const FileManagerContainer = ({ title, axiosFileItems }) => {
           <Item name="move" text="Move to" />
           <Item name="copy" text="Copy to" />
           <Item name="delete" />
-          <Item name="share" text="Share to" icon="share" />
+          {/* Disabled when this is used in Shared.jsx */}
+          {title === "Shared" || (
+            <Item name="share" text="Share to" icon="share" />
+          )}
           <Item name="refresh" beginGroup="true" />
           <Item name="download" text="Download a File" />
         </ContextMenu>

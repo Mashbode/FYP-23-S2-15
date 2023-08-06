@@ -8,6 +8,7 @@ import Single from "./pages/single/Single";
 import Edit from "./pages/edit/Edit";
 import OTP from "./pages/otp/OTP";
 import MyDrive from "./pages/mydrive/MyDrive";
+import Shared from "./pages/shared/Shared";
 
 import "./style/dark.scss";
 import "devextreme/dist/css/dx.light.css";
@@ -138,11 +139,20 @@ function App() {
                   </RequireAuth>
                 }
               />
-              <Route
+              {/* <Route
                 path=":fileId"
                 element={
                   <RequireAuth>
                     <Single />
+                  </RequireAuth>
+                }
+              /> */}
+              <Route
+                index
+                path="shared"
+                element={
+                  <RequireAuth>
+                    <Shared />
                   </RequireAuth>
                 }
               />
@@ -154,24 +164,6 @@ function App() {
                   </RequireAuth>
                 }
               /> */}
-            </Route>
-            <Route path="files-shared">
-              <Route
-                index
-                element={
-                  <RequireAuth>
-                    <List type="shared" />
-                  </RequireAuth>
-                }
-              />
-              <Route
-                path=":fileId"
-                element={
-                  <RequireAuth>
-                    <Single />
-                  </RequireAuth>
-                }
-              />
             </Route>
             <Route path="files-deleted">
               <Route

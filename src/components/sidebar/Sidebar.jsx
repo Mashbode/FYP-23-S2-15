@@ -11,7 +11,9 @@ import SupportAgentIcon from "@mui/icons-material/SupportAgent";
 import StorageIcon from "@mui/icons-material/Storage";
 import PeopleAltOutlinedIcon from "@mui/icons-material/PeopleAltOutlined";
 import DeleteIcon from "@mui/icons-material/Delete";
+import Box from "@mui/material/Box";
 import LinearProgress from "@mui/joy/LinearProgress";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
 
 import { Link, useNavigate } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
@@ -22,6 +24,23 @@ import { AuthContext } from "../../context/AuthContext";
 import { doc, getDoc } from "firebase/firestore";
 import { db, auth } from "../../firebase";
 import { signOut } from "firebase/auth";
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: "#FF5733",
+      // light: will be calculated from palette.primary.main,
+      // dark: will be calculated from palette.primary.main,
+      // contrastText: will be calculated to contrast with palette.primary.main
+    },
+    secondary: {
+      main: "#E0C2FF",
+      light: "#F5EBFF",
+      // dark: will be calculated from palette.secondary.main,
+      contrastText: "#47008F",
+    },
+  },
+});
 
 const Sidebar = () => {
   const { currentUser } = useContext(AuthContext);
@@ -181,7 +200,7 @@ const Sidebar = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/files-shared" style={{ textDecoration: "none" }}>
+                <Link to="/files/shared" style={{ textDecoration: "none" }}>
                   <PeopleAltOutlinedIcon className="icon" />
                   <span>Shared</span>
                 </Link>
@@ -233,7 +252,14 @@ const Sidebar = () => {
             ></div>
           </div>
           <div className="bottom">
-            <LinearProgress color="neutral" determinate size="md" value={30} />
+            <Box sx={{ width: "100%" }}>
+              <LinearProgress
+                // color="primary"
+                determinate={true}
+                // size="md"
+                value={30}
+              />
+            </Box>
           </div>
           <div className="barComment">5 GB of 20 GB used</div>
         </>

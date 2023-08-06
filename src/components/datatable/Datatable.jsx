@@ -13,13 +13,10 @@ import {
   deleteDoc,
   onSnapshot,
 } from "firebase/firestore";
-import { ref, deleteObject } from "firebase/storage";
-import { db, storage } from "../../firebase";
+import { db } from "../../firebase";
 import {
   userColumns,
   fileColumns,
-  sharedFileColumns,
-  deletedFileColumns,
   enquiryColumns,
 } from "../../datatablesource";
 
@@ -51,31 +48,31 @@ const Datatable = ({ type }) => {
     }
   };
 
-  const handleFileDelete = async (params) => {
-    try {
-      if (window.confirm("Are you sure to delete the file?")) {
-        // Delete the document
-        await deleteDoc(doc(db, "files", params.row.id)); // doc(db, collection, id)
+  // const handleFileDelete = async (params) => {
+  //   try {
+  //     if (window.confirm("Are you sure to delete the file?")) {
+  //       // Delete the document
+  //       await deleteDoc(doc(db, "files", params.row.id)); // doc(db, collection, id)
 
-        // Delete the file inside storage
-        const name = `${currentUser.uid}_files/${params.row.filename}`;
-        const storageRef = ref(storage, name);
+  //       // Delete the file inside storage
+  //       const name = `${currentUser.uid}_files/${params.row.filename}`;
+  //       const storageRef = ref(storage, name);
 
-        // Delete the file
-        deleteObject(storageRef)
-          .then(() => {
-            console.log("File deleted successfully");
-          })
-          .catch((error) => {
-            console.log(error);
-          });
+  //       // Delete the file
+  //       deleteObject(storageRef)
+  //         .then(() => {
+  //           console.log("File deleted successfully");
+  //         })
+  //         .catch((error) => {
+  //           console.log(error);
+  //         });
 
-        setData(data.filter((item) => item.id !== params.row.id)); // If used on its own, when refreshed the data is not deleted
-      } else {
-        return;
-      }
-    } catch (error) {}
-  };
+  //       setData(data.filter((item) => item.id !== params.row.id)); // If used on its own, when refreshed the data is not deleted
+  //     } else {
+  //       return;
+  //     }
+  //   } catch (error) {}
+  // };
 
   // These actionColumns will be concat to columns below
   const actionUserColumn = [
@@ -107,101 +104,37 @@ const Datatable = ({ type }) => {
     },
   ];
 
-  const actionFileColumn = [
-    {
-      field: "action",
-      headerName: "Action",
-      width: 200,
-      renderCell: (params) => {
-        return (
-          <div className="cellAction">
-            {/* <Link to="/files/test" style={{ textDecoration: "none" }}>
-              <div className="firstActionButton">Download</div>
-            </Link> */}
-            <a href={params.row.file} className="firstActionButton" download>
-              Download
-            </a>
-            {/* <div
-              className="firstActionButton"
-              onClick={() => handleFileDownload(params)}
-            >
-              Download
-            </div> */}
-            <div
-              className="deleteButton"
-              onClick={() => handleFileDelete(params)}
-            >
-              Delete
-            </div>
-          </div>
-        );
-      },
-    },
-  ];
-
-  const actionSharedFileColumn = [
-    {
-      field: "action",
-      headerName: "Action",
-      width: 400,
-      renderCell: (params) => {
-        return (
-          <div className="cellAction">
-            {/* <Link to="/files/test" style={{ textDecoration: "none" }}>
-              <div className="firstActionButton">Download</div>
-            </Link> */}
-            <a href={params.row.file} className="firstActionButton" download>
-              Download
-            </a>
-            <div
-              className="firstActionButton"
-              // onClick={() => }
-            >
-              Manage Sharing
-            </div>
-            <div
-              className="deleteButton"
-              onClick={() => handleFileDelete(params)}
-            >
-              Delete
-            </div>
-          </div>
-        );
-      },
-    },
-  ];
-
-  const actionDeletedFileColumn = [
-    {
-      field: "action",
-      headerName: "Action",
-      width: 250,
-      renderCell: (params) => {
-        return (
-          <div className="cellAction">
-            {/* <Link to="/files/test" style={{ textDecoration: "none" }}>
-              <div className="firstActionButton">Download</div>
-            </Link> */}
-            {/* <a href={params.row.file} className="firstActionButton" download>
-              Download
-            </a> */}
-            <div
-              className="firstActionButton"
-              // onClick={() => handleFileDownload(params)}
-            >
-              Restore
-            </div>
-            <div
-              className="deleteButton"
-              onClick={() => handleFileDelete(params)}
-            >
-              Permanetly Delete
-            </div>
-          </div>
-        );
-      },
-    },
-  ];
+  // const actionFileColumn = [
+  //   {
+  //     field: "action",
+  //     headerName: "Action",
+  //     width: 200,
+  //     renderCell: (params) => {
+  //       return (
+  //         <div className="cellAction">
+  //           {/* <Link to="/files/test" style={{ textDecoration: "none" }}>
+  //             <div className="firstActionButton">Download</div>
+  //           </Link> */}
+  //           <a href={params.row.file} className="firstActionButton" download>
+  //             Download
+  //           </a>
+  //           {/* <div
+  //             className="firstActionButton"
+  //             onClick={() => handleFileDownload(params)}
+  //           >
+  //             Download
+  //           </div> */}
+  //           <div
+  //             className="deleteButton"
+  //             onClick={() => handleFileDelete(params)}
+  //           >
+  //             Delete
+  //           </div>
+  //         </div>
+  //       );
+  //     },
+  //   },
+  // ];
 
   const actionEnquiryColumn = [
     {
@@ -236,15 +169,7 @@ const Datatable = ({ type }) => {
       break;
     case "files":
       columns = fileColumns;
-      actionColumn = actionFileColumn;
-      break;
-    case "shared":
-      columns = sharedFileColumns;
-      actionColumn = actionSharedFileColumn;
-      break;
-    case "trash":
-      columns = deletedFileColumns;
-      actionColumn = actionDeletedFileColumn;
+      actionColumn = [];
       break;
     case "enquiries":
       columns = enquiryColumns;
