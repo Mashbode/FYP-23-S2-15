@@ -9,6 +9,8 @@ import psycopg2
 from app.scripts import*
 from rest_framework.parsers import MultiPartParser, FormParser
 from django.http import HttpResponse
+from django.core.files import File
+from .forms import  testForm
 
 #USERS
 # Create your views here.
@@ -255,85 +257,6 @@ class RetrieveEditPerm(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = PermissionSerializer
 
 
-
-## my stufff 
-# Create your views here.
-#view all users 
-class userList(generics.ListAPIView):
-    queryset = Users.objects.all()
-    serializer_class = UsersSerializer 
-#view individual user to edit   
-class EdituserDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Users.objects.all()
-    serializer_class = UsersSerializer
-class addUser(generics.CreateAPIView):
-    queryset = Users.objects.all()
-    serializer_class = UsersSerializer
-# view Admin
-class adminList(generics.ListAPIView):
-    queryset = Admintab.objects.all()
-    serializer_class = AdminSerializer
-
-# view admin to edit 
-class EditAdminDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Admintab.objects.all()
-    serializer_class = AdminSerializer
-
-#view clients
-class clientList(generics.ListAPIView):
-    queryset = Client.objects.all()
-    serializer_class = ClientSerializer
-
-# view client to edit 
-class EditClientDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Client.objects.all()
-    serializer_class = ClientSerializer
-
-class deleteclient(generics.RetrieveDestroyAPIView):
-    queryset = Client.objects.all()
-    serializer_class = ClientSerializer
-#view all file info 
-class fileList(generics.ListAPIView):
-    queryset = Filetable.objects.all()
-    serializer_class = FileSerializer
-#view single file
-class fileview(generics.RetrieveAPIView):
-    queryset = Filetable.objects.all()
-    serializer_class = FileSerializer
-#update file info 
-class fileEdit(generics.RetrieveUpdateAPIView):
-    queryset = Filetable.objects.all()
-    serializer_class = FileSerializer
-#creating file 
-class fileAdd(generics.ListCreateAPIView):
-    queryset = Filetable.objects.all()
-    serializer_class = FileSerializer
-
-#deletingfile
-class fileDelete(generics.RetrieveDestroyAPIView):
-    serializer_class = FileSerializer
-    queryset = Filetable.objects.all()
-
-#view file version
-class fileversionview(generics.ListAPIView):
-    queryset = Fileversion.objects.all()
-    serializer_class = FileVersionSerializer
-#add fil version 
-class fileVersionAdd(generics.CreateAPIView):
-    queryset = Fileversion.objects.all()
-    serializer_class = FileVersionSerializer
-
-#update file version
-class fileVersionUpdate(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Fileversion.objects.all()
-    serializer_class= FileVersionSerializer
-
-class splitFilesIntoServer(generics.CreateAPIView):
-    queryset = Server1.objects.all()
-
-########
-
-
 #view folders 
 class folderview(generics.ListAPIView):
     queryset = Foldertable.objects.all()
@@ -397,122 +320,185 @@ class CreateSharedFile(generics.CreateAPIView):
     serializer_class = ShareFileAccessSerializer
 
 ##########################################################################
+            ## these are the key functions  ##
 ##########################################################################
- ## standard queries ##
-def file():
-            # Connect to the PostgreSQL database
-    conn = psycopg2.connect(database="MainDB", user="postgres",
-						password="Mashed99", host="localhost", port="5432")
+### this for getting all versions of a particular file
+class getFileversions(generics.ListAPIView):
+    # queryset = Fileversion.objects.all()
+    serializer_class = FileVersionSerializer
+    # lookup_field = 'file_id'
+    def get_queryset(self):
+        return Fileversion.objects.filter(file_id=self.kwargs['file_id'])
+##########################################################################
+#####################################################################################
+## this works for some reason #########keeep this ################## works
+## need to provide client_id # not user_id 
+def uploadingFile(request, client_id):
+    if request.method == 'POST':
+        test = testForm(request.POST, request.FILES)
+        if test.is_valid():
+            file = request.FILES['file']
+            path = os.path.realpath(__file__)
+            dir = os.path.dirname(path)
+            dirs = dir + '/shard_make/' 
+            with open(dirs+ file.name, 'wb+') as destination:
+                for chunk in file.chunks():
+                    destination.write(chunk)
+            fileinfo = os.path.splitext(file.name)
+            filename = fileinfo[0]
+            fileext =  fileinfo[1]
+            c_id = client_id
+            ###
+            print('insert into file tab')
+            ### insert into file table first to generate file_id (uuid)
+            files = Filetable.objects.create(filename = filename, filetype = fileext, client_id = c_id)
+            ## dun have to use serializer to save data
+            serializers = FileSerializer(data = files)
+            if serializers.is_valid():
+                    serializers.save()
+            ### first compress the file 
+            compres_file_name = compression(file.name)
+            print('file compressed')
+            ### then encrypt 
+            encrypt_file_name = encrypt_file(compres_file_name)
+            print('file encrypted')
+            ## then split the file, it returns the list of split files
+            split_file_list = ecc_file(encrypt_file_name)
+            print('file split')
+            ## then split the pub key, it returns a list of file names for split
+            split_key_list = pyshmir_split()
+            print('pub key split')
+            ## once file is inserted, the tables will be generated
+            ## need to retrieve the file_id 
+            file_id = filegetting()
+            print('retrieve fileid')
+            ## retrieve the file_version_id from fileversion_table 
+            file_version_id = fileversionOnInsert(file_id)
+            print('retrieve file version')
+            ## function to upload the split file parts to the db 
+            upload = filepartsupload(split_file_list, split_key_list, file_id, file_version_id)
+            ## remove files in folder 
+            path = os.path.realpath(__file__)
+            dir = os.path.dirname(path)
+            dirs = dir + ('/shard_make')
+            for f in os.listdir(dirs):
+                os.remove(os.path.join(dirs, f))
+            return HttpResponse('file ok')
+    else:
+        test = testForm()
+        ## the html.html need to replace with the frontend stuff i think
+        return render(request,"html.html", {'form':test})
     
-    cur = conn.cursor()
-    # smt = "SELECT file_id FROM filetab WHERE client_id =%s and uploadtime = "
-    smt = "SELECT file_id from filetab order by uploadtime DESC NULLs LAST LIMIT 1;"
-    # cur.execute(smt,(1,))
-    cur.execute(smt)
-    data = cur.fetchone()
-    # for row in data:
-        # print(row)
-    print(data[0])
+
+
+### file update ################## works 
+#### need to provide fileID ####
+def fileupdateWhenUpdate(request,fileId):
+    if request.method == 'POST':
+        test = testForm(request.POST, request.FILES)
+        if test.is_valid():
+            file = request.FILES['file']
+            path = os.path.realpath(__file__)
+            dir = os.path.dirname(path)
+            dirs = dir + '/shard_make/' 
+            with open(dirs+ file.name, 'wb+') as destination:
+                for chunk in file.chunks():
+                    destination.write(chunk)
+            fileinfo = os.path.splitext(file.name)
+            filename = fileinfo[0]
+            fileext =  fileinfo[1]
+            ### get current time
+            newtime = timezzzz()
+            ### update new file insert 
+            files = Filetable.objects.filter(file_id = fileId).update(last_change = newtime)
+            ## dun have to use serializer to save data
+            ### first compress the file 
+            compres_file_name = compression(file.name)
+            print('file compressed')
+            ### then encrypt 
+            encrypt_file_name = encrypt_file(compres_file_name)
+            print('file encrypted')
+            ## then split the file, it returns the list of split files
+            split_file_list = ecc_file(encrypt_file_name)
+            print('file split')
+            ## then split the pub key, it returns a list of file names for split
+            split_key_list = pyshmir_split()
+            print('pub key split')
+            ## once file is inserted, the tables will be generated
+            ## retrieve the file_version_id from fileversion_table 
+            file_version_id = fileversionOnUpdate(fileId)
+            print('retrieve file version')
+            ## function to upload the split file parts to the db 
+            upload = filepartsupload(split_file_list, split_key_list, fileId, file_version_id)
+            ## remove all files in folder 
+            path = os.path.realpath(__file__)
+            dir = os.path.dirname(path)
+            dirs = dir + ('/shard_make')
+            for f in os.listdir(dirs):
+                os.remove(os.path.join(dirs, f))
+            return HttpResponse('file ok')
+    else:
+        test = testForm()
+        ## the html.html need to replace with the frontend stuff i think
+        return render(request,"html.html", {'form':test})
     
-    cur.close()
-    conn.close()
-    #gets file_id of the latest uploaded file 
-    return data[0]
 
-## function to get the fileversionID for the newly inserted file
-def fileversionOnInsert(file_id):
-    # Connect to the PostgreSQL database
-    conn = psycopg2.connect(database="MainDB", user="postgres",
-						password="Mashed99", host="localhost", port="5432")
-    # query = Fileversion.objects.get(file_id= file_id)
-    # serialize = fileversiontest(query)
-    # print(serialize)
-    cur = conn.cursor()
-    smt = "SELECT file_version_id FROM fileversion WHERE file_id ="+ str(file_id) 
-    cur.execute(smt)
-    data = cur.fetchone()
-    print(data[0])
-    cur.close()
-    conn.close()
-    return data[0]
-#########################################################################
-##########################################################################
+### retrieve current file ### will be downloaded ##
+### requires file_id 
+def obtainfile(request, file_id):
+    ## taking info of the file 
+    filename, fileExt = getfileinfo(file_id)
+    ## getting current version of file 
+    fileVer = getCurrentFileversion(file_id)
+    ## getting all the shards from db - returns list of file and key shards 
+    keyname_list, filename_list = getAllfileAndSecretparts(file_id, fileVer)
+    ## combine the file with ecc - returns list of names of recombined file
+    filename_c = combine_file(filename_list)
+    ## combining pub key with sss - returns name of key file
+    key = pyshmir_combine(keyname_list)
+    ## decrypting file - returns name of decryped file
+    filename_d = decrypt(filename_c)
+    ## decompress file -returns name of complete file 
+    decom = decompress(filename_d, fileExt, filename)
+    c_name = filename+fileExt
+    print(c_name)
+    ## uploading file to the frontend
+    with open(decom, 'rb') as f:
+        response = HttpResponse(f.read(), content_type='application/octet-stream')
+        response['Content-Disposition'] = 'attachment; filename="'+ c_name +'"'
+    ## remove all files in folder 
+    path = os.path.realpath(__file__)
+    dir = os.path.dirname(path)
+    dirs = dir + ('/shard_retrieve')
+    for f in os.listdir(dirs):
+        os.remove(os.path.join(dirs, f))
+    return response
 
-## when inserting file
-class FileUploadView(APIView):
-    parser_classes = (MultiPartParser, FormParser)
-
-    def post(self, request, *args, **kwargs):
-        file = request.FILES['file']
-        # Here you can add code to modify the file
-        # ...
-        return Response(status=204)
-
-
-@api_view(['POST'])
-# insert file ## the parameters that is needed is client_id
-def fileUploadTotal(request, client_id):
-    file = request.FILES['file']
-    # Here you can add code to handle the uploaded file
-    # For example, you could save the file to a specific folder on your server
-    with open('/shard_make' + file.name, 'wb+') as destination:
-        for chunk in file.chunks():
-            destination.write(chunk)
-    ### first compress the file 
-    compres_file_name = compression(file.name)
-    ### then encrypt 
-    encrypt_file_name = encrypt_file(compres_file_name)
-    ## then split the file
-    split_file_list = ecc_file(encrypt_file_name)
-    ## then split the pub key
-    split_key_list = pyshmir_split()
-    fileinfo = os.path.splitext(file.name)
-    filename = fileinfo[0]
-    fileext =  fileinfo[1]
-    ### insert into file table first to generate file_id (uuid)
-    files = File()
-    return HttpResponse('File uploaded successfully')
-
-
-@api_view(['POST'])
-def fileInsert(request):
-    #this part will only work with html so need to test with frontend
-    # file info to insert
-    # filename = request.POST.get['filename']
-    # filetype = request.POST.get['filetype']
-    # encryption = request.POST.get['encryptiontype']
-    # client = request.POST.get['client']
-    # filess = Filetab(filename, filetype,encryption,client)
-    # serializer= FileSerializer(data=request.data)
-    ##
-    ## this is to insert new file entry
-    serializer= FileSerializer(data=request.data)
-    if serializer.is_valid():
-        serializer.save()
-    
-    ## after saving we will pull the file_id of the latest added file
-    latest = file()
-    version = fileversionOnInsert(latest)
-
-
-    return Response(serializer.data)
-
-@api_view()
-def test(request,pk,name):
-    # dd = file()
-    print(str(pk))
-    print(str(name))
-    return  Response({"message": "Hello, world!"})
-
-@api_view(['POST'])
-def fileupdate(request, pk):
-    file = Filetable.objects.get(id=pk)
-    serializer = FileSerializer(instance = file, data = request.data)
-
-    if serializer.is_valid():
-        serializer.save()
-
-    return Response(serializer.data)
-
-##########################################################################
-##########################################################################
+### retrieve file of a particular version that is chosen
+### requires file_id and file_Version_id
+def obatainfileOfVersion(request, file_id, fileVersion):
+    ## taking info of the file 
+    filename, fileExt = getfileinfo(file_id)
+    ## getting all the shards from db - returns list of file and key shards 
+    keyname_list, filename_list = getAllfileAndSecretparts(file_id, fileVersion)
+     ## combine the file with ecc - returns list of names of recombined file
+    filename_c = combine_file(filename_list)
+    ## combining pub key with sss - returns name of key file
+    key = pyshmir_combine(keyname_list)
+    ## decrypting file - returns name of decryped file
+    filename_d = decrypt(filename_c)
+    ## decompress file -returns name of complete file 
+    decom = decompress(filename_d, fileExt, filename)
+    c_name = filename+fileExt
+    print(c_name)
+    ## uploading file to the frontend
+    with open(decom, 'rb') as f:
+        response = HttpResponse(f.read(), content_type='application/octet-stream')
+        response['Content-Disposition'] = 'attachment; filename="'+ c_name +'"'
+    ## remove all files in folder 
+    path = os.path.realpath(__file__)
+    dir = os.path.dirname(path)
+    dirs = dir + ('/shard_retrieve')
+    for f in os.listdir(dirs):
+        os.remove(os.path.join(dirs, f))
+    return response

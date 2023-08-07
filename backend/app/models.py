@@ -120,8 +120,8 @@ class Filetable(models.Model):
     file_id = models.UUIDField(primary_key=True, default = uuid.uuid4, editable = False)
     filename = models.CharField(max_length=50, blank=True, null=True)
     filetype = models.CharField(max_length=50, blank=True, null=True)
-    numberofparts = models.IntegerField(blank=True, null=True)
-    encryptiontype = models.ForeignKey(Encryption, models.DO_NOTHING, db_column='encryptiontype', blank=True, null=True)
+    numberofparts = models.IntegerField(default = 5,blank=True, null=True)
+    encryptiontype = models.ForeignKey(Encryption, models.DO_NOTHING, db_column='encryptiontype', default = 'AES',blank=True, null=True)
     client = models.ForeignKey(Client, models.DO_NOTHING, blank=True, null=True)
     #file_version = models.ForeignKey('Fileversion', models.DO_NOTHING, blank=True, null=True)
     last_change = models.DateTimeField(auto_now=True)
@@ -134,7 +134,7 @@ class Filetable(models.Model):
 
 class Fileversion(models.Model):
     file_version_id = models.UUIDField(primary_key=True, default = uuid.uuid4, editable = False)
-    file = models.ForeignKey(Filetable, models.DO_NOTHING)
+    file = models.ForeignKey(Filetable, models.DO_NOTHING) #file_id?
     file_version = models.IntegerField(blank=True, null=True)
     last_change = models.DateTimeField(auto_now_add=True)
 
@@ -380,25 +380,25 @@ class Users(models.Model):
 
 
 
-#FILESERVER1
-class File(models.Model):
-    file_id = models.UUIDField()
-    data = models.BinaryField(blank=True, null=True)
-    file_version_id = models.UUIDField()
-    fileserver1_id = models.AutoField(primary_key=True)
+# #FILESERVER1
+# class File(models.Model):
+#     file_id = models.UUIDField()
+#     data = models.BinaryField(blank=True, null=True)
+#     file_version_id = models.UUIDField()
+#     fileserver1_id = models.AutoField(primary_key=True)
 
-    class Meta:
-        managed = False
-        db_table = 'file'
+#     class Meta:
+#         managed = False
+#         db_table = 'file'
 
 
-class Secret(models.Model):
-    secret = models.CharField(primary_key=True, max_length=50)
-    file_id = models.UUIDField(blank=True, null=True)
+# class Secret(models.Model):
+#     secret = models.CharField(primary_key=True, max_length=50)
+#     file_id = models.UUIDField(blank=True, null=True)
 
-    class Meta:
-        managed = False
-        db_table = 'secret'
+#     class Meta:
+#         managed = False
+#         db_table = 'secret'
 
 ## fileserver1 
 class File1(models.Model):
@@ -410,7 +410,7 @@ class File1(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'file'
+        db_table = 'file1'
 
 class Secret(models.Model):
     secret = models.CharField(primary_key=True, max_length=50)
@@ -430,7 +430,7 @@ class File2(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'file'
+        db_table = 'file2'
 
 class Secret2(models.Model):
     secret = models.CharField(primary_key=True, max_length=50)
@@ -443,23 +443,35 @@ class Secret2(models.Model):
 ##fileserver3
 class File3(models.Model):
     file_id = models.UUIDField()
-    file_version_id = models.UUIDField()
     data = models.BinaryField(blank=True, null=True)
+    file_version_id = models.UUIDField()
     fileserver3_id = models.AutoField(primary_key=True)
     secret = models.BinaryField()
 
     class Meta:
         managed = False
-        db_table = 'file'
+        db_table = 'file3'
 
 ##fileserver4
 class File4(models.Model):
-    file_version_id = models.UUIDField()
     file_id = models.UUIDField()
     data = models.BinaryField(blank=True, null=True)
+    file_version_id = models.UUIDField()
     fileserver4_id = models.AutoField(primary_key=True)
     secret = models.BinaryField()
 
     class Meta:
         managed = False
-        db_table = 'file'
+        db_table = 'file4'
+
+##fileserver5
+class File5(models.Model):
+    fileserver5_id = models.AutoField(primary_key=True)
+    file_version_id = models.UUIDField()
+    file_id = models.UUIDField()
+    data = models.BinaryField(blank=True, null=True, editable=True)
+    secret = models.BinaryField(editable=True)
+
+    class Meta:
+        managed = False
+        db_table = 'file5'
