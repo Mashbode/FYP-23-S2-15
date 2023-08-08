@@ -15,11 +15,11 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 
 import { AuthContext } from "../../context/AuthContext";
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { toast, Toaster } from "react-hot-toast";
 
-import { doc, deleteDoc } from "firebase/firestore";
+import { doc, deleteDoc, getDoc } from "firebase/firestore";
 import { db, auth } from "../../firebase";
 import {
   EmailAuthProvider,
@@ -32,6 +32,50 @@ const Single = () => {
   const [password, setPassword] = useState("");
 
   const { dispatch, currentUser } = useContext(AuthContext);
+
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhoneNumber] = useState("");
+  const [registeredDate, setRegisteredDate] = useState();
+  
+  // convert firebase timestamp to date format. (Ex. 8/26/2023)  
+  let date = new Date(registeredDate)
+  let myDate = date.toLocaleDateString()
+  let myTime = date.toLocaleTimeString()
+  myDate = myDate.replaceAll('/', '-')
+  const mmddyyyy =  myDate + " " + myTime
+
+
+
+  // Function to fetch the authenticated user's data from Firestore
+  const fetchUserData = async () => {
+    try {
+      const user = auth.currentUser;
+      if (user) {
+        const userRef = doc(db, "users", user.uid);
+        const userDoc = await getDoc(userRef);
+        if (userDoc.exists()) {
+          setFirstName(userDoc.data().firstName);
+          setLastName(userDoc.data().lastName);
+          setUsername(userDoc.data().username);
+          setEmail(userDoc.data().email);
+          setPhoneNumber(userDoc.data().phone);
+          setRegisteredDate(userDoc.data().timeStamp.toDate());
+        }
+      }
+      console.log("REGISTERED DATE: " + registeredDate);
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchUserData();
+  }, []);
+
+  
 
   const handleDeleteUser = () => {
     // https://firebase.google.com/docs/auth/web/manage-users#delete_a_user
@@ -136,22 +180,22 @@ const Single = () => {
                 className="itemImg"
               />
               <div className="details">
-                <h1 className="itemTitle">Jane Doe</h1>
+                <h1 className="itemTitle">{firstName + " " + lastName}</h1>
                 <div className="detailItem">
                   <span className="itemKey">Username:</span>
-                  <span className="itemValue">jane1</span>
+                  <span className="itemValue">{username}</span>
                 </div>
                 <div className="detailItem">
                   <span className="itemKey">Email:</span>
-                  <span className="itemValue">jane1@gmail.com</span>
+                  <span className="itemValue">{email}</span>
                 </div>
                 <div className="detailItem">
                   <span className="itemKey">Registered Date:</span>
-                  <span className="itemValue">01 Jan 2023</span>
+                  <span className="itemValue">{mmddyyyy}</span>
                 </div>
                 <div className="detailItem">
                   <span className="itemKey">Phone:</span>
-                  <span className="itemValue">+65 8888 9999</span>
+                  <span className="itemValue">{phone}</span>
                 </div>
               </div>
               <div

@@ -8,6 +8,8 @@ import { useNavigate } from "react-router-dom";
 import { auth, db } from "../../firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
+// axios
+// import instance from "../../axios_config";
 
 const Register = () => {
   const [values, setValues] = useState({
@@ -126,13 +128,13 @@ const Register = () => {
       is used to send a POST request to the backend server with the user registration data. */
       // await instance
       //   .post("Users", {
-      //     uid: result.user.uid,
+      //     u_id: result.user.uid, // u_id >> client_id >> file_id
       //     username: username,
       //     f_name: firstName,
       //     l_name: lastName,
       //     email: email,
       //     phone_number: "+" + phone,
-      //     usertype: "user",
+      //     usertype: "Client",
       //   })
       //   .then((res) => console.log(res.data))
       //   .catch((err) => console.error(err));
@@ -153,7 +155,7 @@ const Register = () => {
         lastName: lastName,
         email: email,
         phone: "+" + phone, // "+" is required in order to reflect country code
-        type: "user", // Added to differentiate the sidebar
+        type: "Client", // Added to differentiate the sidebar
         timeStamp: serverTimestamp(),
       });
       // **********************************************************

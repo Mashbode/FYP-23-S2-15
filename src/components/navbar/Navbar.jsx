@@ -7,7 +7,6 @@ import NotificationsNoneOutlinedIcon from "@mui/icons-material/NotificationsNone
 import ChatBubbleOutlineOutlinedIcon from "@mui/icons-material/ChatBubbleOutlineOutlined";
 import ListOutlinedIcon from "@mui/icons-material/ListOutlined";
 
-import React from "react";
 import Box from "@mui/material/Box";
 import Avatar from "@mui/material/Avatar";
 import Menu from "@mui/material/Menu";
@@ -24,10 +23,42 @@ import { AuthContext } from "../../context/AuthContext";
 import { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-import { auth } from "../../firebase";
+import { auth, db } from "../../firebase";
 import { signOut } from "firebase/auth";
+import React, { useState, useEffect } from "react";
+import { doc, getDoc } from "firebase/firestore";
 
 const Navbar = () => {
+
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+
+  // Function to fetch the authenticated user's data from Firestore
+  const fetchUserData = async () => {
+    try {
+      const user = auth.currentUser;
+      if (user) {
+        const userRef = doc(db, "users", user.uid);
+        const userDoc = await getDoc(userRef);
+        if (userDoc.exists()) {
+          setFirstName(userDoc.data().firstName);
+          setLastName(userDoc.data().lastName);
+          setUsername(userDoc.data().username);
+          setEmail(userDoc.data().email);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchUserData();
+  }, []);
+
+
   const navigate = useNavigate();
   const { dispatch } = useContext(AuthContext);
   // const { dispatch } = useContext(DarkModeContext);
@@ -158,13 +189,13 @@ const Navbar = () => {
                   style={{ textDecoration: "none", color: "black" }}
                 >
                   <MenuItem onClick={handleClose} sx={{ fontSize: 15 }}>
-                    <Avatar /> Full Name
+                    <Avatar /> {firstName + " " + lastName}
                   </MenuItem>
                 </Link>
                 <MenuItem>
-                  Username1
+                  {username}
                   <br />
-                  user1@example.com
+                  {email}
                 </MenuItem>
                 <Divider />
                 {/* <MenuItem onClick={handleClose} sx={{fontSize:15}}>
