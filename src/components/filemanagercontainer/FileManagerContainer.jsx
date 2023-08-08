@@ -275,6 +275,30 @@ const FileManagerContainer = ({ title, axiosFileItems }) => {
       // Things to send to file system
       // 1. fileID = console.log(e.fileSystemItem.__KEY__)
       // 2. userID = console.log(currentUser.uid)
+      // 3. userToShareID = console.log(userToShareID)
+    }
+
+    if (e.itemData.name === "trash") {
+      // ********************************************** Connect with Django **********************************************
+      // Use e.fileSystemItem to trash FileSystemItem
+      // The FileSystemItem should be pasted to currentUser.uid/trash
+      // console.log(e.fileSystemItem);
+      // *****************************************************************************************************************
+      // Things to send to file system
+      // 1. fileID = console.log(e.fileSystemItem.__KEY__)
+      // 2. userID = console.log(currentUser.uid)
+    }
+
+    if (e.itemData.name === "restore") {
+      // ********************************************** Connect with Django **********************************************
+      // Use e.fileSystemItem to restore FileSystemItem
+      // The FileSystemItem should be pasted to currentUser.uid/
+      // and current item insdie currentUser.uid/trash should be deleted
+      // console.log(e.fileSystemItem);
+      // *****************************************************************************************************************
+      // Things to send to file system
+      // 1. fileID = console.log(e.fileSystemItem.__KEY__)
+      // 2. userID = console.log(currentUser.uid)
     }
   };
 
@@ -292,36 +316,51 @@ const FileManagerContainer = ({ title, axiosFileItems }) => {
         onItemDeleted={onItemDeleted}
         onItemMoved={onItemMoved}
         onItemRenamed={onItemRenamed}
-        rootFolderName="Custom Root Folder" // https://js.devexpress.com/Documentation/ApiReference/UI_Components/dxFileManager/Configuration/#rootFolderName
+        rootFolderName={currentUser.email} // https://js.devexpress.com/Documentation/ApiReference/UI_Components/dxFileManager/Configuration/#rootFolderName
         onContextMenuItemClick={onItemClick} // This is used to enable when the "Share to" menu item is clicked https://js.devexpress.com/Documentation/ApiReference/UI_Components/dxFileManager/Configuration/#onContextMenuItemClick
         // onToolbarItemClick={onItemClick} // https://js.devexpress.com/Documentation/ApiReference/UI_Components/dxFileManager/Configuration/#onToolbarItemClick
       >
         {/* https://js.devexpress.com/Documentation/ApiReference/UI_Components/dxFileManager/Configuration/contextMenu/ */}
         <ContextMenu>
-          <Item name="rename" />
-          <Item name="move" text="Move to" />
-          <Item name="copy" text="Copy to" />
-          <Item name="delete" />
-          {/* Disabled when this is used in Shared.jsx */}
-          {title === "Shared" || (
+          {title === "Trash" || <Item name="rename" />}
+          {title === "Trash" || <Item name="move" text="Move to" />}
+          {title === "Trash" || <Item name="copy" text="Copy to" />}
+
+          {/* Enabled in Trash page to permanently delete items */}
+          {title !== "Trash" || <Item name="delete" />}
+          {/* Enabled in Trash page to restore items */}
+          {title !== "Trash" || (
+            <Item name="restore" text="Restore" icon="revert" />
+          )}
+          {/* Disabled in Trash page to move items to deleted foler */}
+          {title === "Trash" || (
+            <Item name="trash" text="Move to trash" icon="trash" />
+          )}
+
+          {/* Disabled when this is used in Shared or Trash page */}
+          {title === "Shared" || title === "Trash" || (
             <Item name="share" text="Share to" icon="share" />
           )}
+
           <Item name="refresh" beginGroup="true" />
-          <Item name="download" text="Download a File" />
+          {title === "Trash" || <Item name="download" text="Download a File" />}
         </ContextMenu>
         {/* https://js.devexpress.com/Documentation/ApiReference/UI_Components/dxFileManager/Configuration/toolbar/ */}
         <Toolbar>
+          <Item name="showNavPane" visible="true" />
           {/* Specifies a predefined item's name and optional settings */}
-          <Item name="create" text="Create a directory" />
-          <Item name="upload" text="Upload a file" />
+          {title === "Trash" || (
+            <Item name="create" text="Create a directory" />
+          )}
+          {title === "Trash" || <Item name="upload" text="Upload a file" />}
           {/* Specifies a predefined item's name only */}
           <Item name="switchView" />
           <Item name="separator" />
           {/* Specifies items that are visible when users select files */}
-          <FileSelectionItem name="rename" />
-          <FileSelectionItem name="move" />
-          <FileSelectionItem name="copy" />
-          <FileSelectionItem name="delete" />
+          {title === "Trash" || <FileSelectionItem name="rename" />}
+          {title === "Trash" || <FileSelectionItem name="move" />}
+          {title === "Trash" || <FileSelectionItem name="copy" />}
+          {title !== "Trash" || <FileSelectionItem name="delete" />}
           {/* https://js.devexpress.com/Documentation/ApiReference/Common_Types/#ToolbarItemComponent */}
           {/* <FileSelectionItem
             widget="dxButton"

@@ -9,6 +9,7 @@ import Edit from "./pages/edit/Edit";
 import OTP from "./pages/otp/OTP";
 import MyDrive from "./pages/mydrive/MyDrive";
 import Shared from "./pages/shared/Shared";
+import Trash from "./pages/trash/Trash";
 
 import "./style/dark.scss";
 import "devextreme/dist/css/dx.light.css";
@@ -147,6 +148,24 @@ function App() {
                   </RequireAuth>
                 }
               /> */}
+              {/* <Route
+                  path="new"
+                  element={
+                    <RequireAuth>
+                      <NewFile title="Add New File" />
+                    </RequireAuth>
+                  }
+                /> */}
+            </Route>
+            <Route path="my-drive">
+              <Route
+                index
+                element={
+                  <RequireAuth>
+                    <MyDrive />
+                  </RequireAuth>
+                }
+              />
               <Route
                 index
                 path="shared"
@@ -156,29 +175,12 @@ function App() {
                   </RequireAuth>
                 }
               />
-              {/* <Route
-                path="new"
-                element={
-                  <RequireAuth>
-                    <NewFile title="Add New File" />
-                  </RequireAuth>
-                }
-              /> */}
-            </Route>
-            <Route path="files-deleted">
               <Route
                 index
+                path="trash"
                 element={
                   <RequireAuth>
-                    <List type="trash" />
-                  </RequireAuth>
-                }
-              />
-              <Route
-                path=":fileId"
-                element={
-                  <RequireAuth>
-                    <Single />
+                    <Trash />
                   </RequireAuth>
                 }
               />
@@ -193,14 +195,6 @@ function App() {
                 }
               />
             </Route>
-            <Route
-              path="my-drive"
-              element={
-                <RequireAuth>
-                  <MyDrive />
-                </RequireAuth>
-              }
-            />
           </Route>
         </Routes>
       </BrowserRouter>

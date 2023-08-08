@@ -200,13 +200,13 @@ const Sidebar = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/files/shared" style={{ textDecoration: "none" }}>
+                <Link to="/my-drive/shared" style={{ textDecoration: "none" }}>
                   <PeopleAltOutlinedIcon className="icon" />
                   <span>Shared</span>
                 </Link>
               </li>
               <li>
-                <Link to="/files-deleted" style={{ textDecoration: "none" }}>
+                <Link to="/my-drive/trash" style={{ textDecoration: "none" }}>
                   <DeleteIcon className="icon" />
                   <span>Trash</span>
                 </Link>
