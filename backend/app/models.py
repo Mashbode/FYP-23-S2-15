@@ -11,7 +11,7 @@ import uuid
 from django.utils import timezone
 
 class Admintab(models.Model):
-    user = models.ForeignKey('Users', models.DO_NOTHING, blank=True, null=True)
+    u_id = models.ForeignKey('Users', models.DO_NOTHING,db_column= 'u_id', blank=True, null=True)
     admin_id = models.AutoField(primary_key=True)
 
     class Meta:
@@ -21,7 +21,7 @@ class Admintab(models.Model):
 
 class Client(models.Model):
     subscriptiontype = models.ForeignKey('Subscription', models.DO_NOTHING, db_column='subscriptiontype', blank=True, null=True)
-    u_id = models.ForeignKey('Users', models.DO_NOTHING)
+    u_id = models.ForeignKey('Users', models.DO_NOTHING,db_column= 'u_id', blank=True, null=True)
     client_id = models.AutoField(primary_key=True)
 
     class Meta:
@@ -406,6 +406,7 @@ class File1(models.Model):
         managed = False
         db_table = 'file1'
 
+## not used
 class Secret(models.Model):
     secret = models.CharField(primary_key=True, max_length=50)
     file_id = models.UUIDField(blank=True, null=True)
@@ -413,6 +414,18 @@ class Secret(models.Model):
     class Meta:
         managed = False
         db_table = 'secret'
+
+class File1_log(models.Model):
+    file_id = models.UUIDField()
+    data = models.BinaryField(blank=True, null=True)
+    file_version_id = models.UUIDField()
+    fileserver1_id = models.AutoField(primary_key=True)
+    secret = models.BinaryField()
+    delete_time = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        managed=False
+        db_table = 'file1_log'
 
 ##fileserver2 
 class File2(models.Model):
@@ -426,6 +439,7 @@ class File2(models.Model):
         managed = False
         db_table = 'file2'
 
+## not used
 class Secret2(models.Model):
     secret = models.CharField(primary_key=True, max_length=50)
     file_id = models.UUIDField(blank=True, null=True)
@@ -433,6 +447,18 @@ class Secret2(models.Model):
     class Meta:
         managed = False
         db_table = 'secret'
+
+class File2_log(models.Model):
+    file_id = models.UUIDField()
+    data = models.BinaryField(blank=True, null=True)
+    file_version_id = models.UUIDField()
+    fileserver2_id = models.AutoField(primary_key=True)
+    secret = models.BinaryField()
+    delete_time = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        managed=False
+        db_table = 'file2_log'
 
 ##fileserver3
 class File3(models.Model):
@@ -446,6 +472,18 @@ class File3(models.Model):
         managed = False
         db_table = 'file3'
 
+class File3_log(models.Model):
+    file_id = models.UUIDField()
+    data = models.BinaryField(blank=True, null=True)
+    file_version_id = models.UUIDField()
+    fileserver3_id = models.AutoField(primary_key=True)
+    secret = models.BinaryField()
+    delete_time = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        managed=False
+        db_table = 'file3_log'
+
 ##fileserver4
 class File4(models.Model):
     file_id = models.UUIDField()
@@ -458,6 +496,18 @@ class File4(models.Model):
         managed = False
         db_table = 'file4'
 
+class File4_log(models.Model):
+    file_id = models.UUIDField()
+    data = models.BinaryField(blank=True, null=True)
+    file_version_id = models.UUIDField()
+    fileserver4_id = models.AutoField(primary_key=True)
+    secret = models.BinaryField()
+    delete_time = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        managed=False
+        db_table = 'file4_log'
+
 ##fileserver5
 class File5(models.Model):
     fileserver5_id = models.AutoField(primary_key=True)
@@ -469,3 +519,15 @@ class File5(models.Model):
     class Meta:
         managed = False
         db_table = 'file5'
+
+class File5_log(models.Model):
+    file_id = models.UUIDField()
+    data = models.BinaryField(blank=True, null=True)
+    file_version_id = models.UUIDField()
+    fileserver5_id = models.AutoField(primary_key=True)
+    secret = models.BinaryField()
+    delete_time = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        managed=False
+        db_table = 'file5_log'
