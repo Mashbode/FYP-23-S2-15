@@ -15,7 +15,6 @@ import {
   serverTimestamp,
   getDocs,
 } from "firebase/firestore";
-import CircularProgress from "@mui/material/CircularProgress";
 
 const Container = styled.div`
   height: 90%; // 10% is for Footer.jsx

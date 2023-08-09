@@ -8,6 +8,8 @@ import { useNavigate } from "react-router-dom";
 import { auth, db } from "../../firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
+// axios
+// import instance from "../../axios_config";
 
 const Register = () => {
   const [values, setValues] = useState({
@@ -124,18 +126,25 @@ const Register = () => {
       /* `instance` is an instance of the Axios library that is configured with a base URL and
       other settings. It is used to make HTTP requests to the backend server. In this code, it
       is used to send a POST request to the backend server with the user registration data. */
-      await instance
-        .post("Users", {
-          uid: result.user.uid,
-          username: username,
-          f_name: firstName,
-          l_name: lastName,
-          email: email,
-          phone_number: "+" + phone,
-          usertype: "user",
-        })
-        .then((res) => console.log(res.data))
-        .catch((err) => console.error(err));
+      // await instance
+      //   .post("Users", {
+      //     u_id: result.user.uid, // u_id >> client_id >> file_id
+      //     username: username,
+      //     f_name: firstName,
+      //     l_name: lastName,
+      //     email: email,
+      //     phone_number: "+" + phone,
+      //     usertype: "Client",
+      //   })
+      //   .then((res) => console.log(res.data))
+      //   .catch((err) => console.error(err));
+
+      // Things to send to file system
+      // 1. userID = console.log(result.user.uid)
+      // 2. In the file system following directory should be created
+      // c.f.) https://docs.google.com/document/d/1_TfokixhMlvAl3r5gH4lYefZ_f27AXWUZR4_qwghMXA/edit?usp=drive_link
+      // result.user.uid/shared
+      // result.user.uid/deleted
 
       // Provided by Firebase (Database)
       // "users" -> table name / result.user.uid -> id of the table
@@ -146,7 +155,7 @@ const Register = () => {
         lastName: lastName,
         email: email,
         phone: "+" + phone, // "+" is required in order to reflect country code
-        type: "user", // Added to differentiate the sidebar
+        type: "Client", // Added to differentiate the sidebar
         timeStamp: serverTimestamp(),
       });
       // **********************************************************

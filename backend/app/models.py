@@ -122,7 +122,7 @@ class Filetable(models.Model):
     filetype = models.CharField(max_length=50, blank=True, null=True)
     numberofparts = models.IntegerField(default = 5,blank=True, null=True)
     encryptiontype = models.ForeignKey(Encryption, models.DO_NOTHING, db_column='encryptiontype', default = 'AES',blank=True, null=True)
-    client = models.ForeignKey(Client, models.DO_NOTHING, blank=True, null=True)
+    client_id = models.ForeignKey(Client, models.DO_NOTHING)
     #file_version = models.ForeignKey('Fileversion', models.DO_NOTHING, blank=True, null=True)
     last_change = models.DateTimeField(auto_now=True)
     uploadtime = models.DateTimeField(auto_now_add=True)
@@ -359,20 +359,14 @@ class Subscription(models.Model):
 
 
 class Users(models.Model):
-    u_id = models.AutoField(primary_key=True)
+    u_id = models.CharField(primary_key=True, unique=True)
     username = models.CharField(max_length=50)
-    pssword = models.CharField(max_length=250)
     f_name = models.CharField(max_length=50)
     l_name = models.CharField(max_length=50)
     email = models.CharField(max_length=50)
-    phone_number = models.CharField(max_length=20, blank=True, null=True)
-    usertype = models.CharField(max_length=10, blank=True, null=True)
+    phone_number = models.CharField(max_length=20)
+    usertype = models.CharField(max_length=10)
     
-   
-    def save(self, *args, **kwargs):
-        self.pssword = make_password(self.pssword)
-        super(Users, self).save(*args, **kwargs)
-
     class Meta:
         managed = False
         db_table = 'users'

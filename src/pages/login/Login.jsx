@@ -54,6 +54,10 @@ const Login = () => {
         // When signin succeed
         // Signed in
         const user = userCredential.user;
+
+        // Things to send to file system
+        // 1. userID = console.log(user.uid)
+
         dispatch({ type: "LOGIN", payload: user });
         navigate("/home");
       })
