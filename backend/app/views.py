@@ -8,9 +8,10 @@ from rest_framework.response import Response
 import psycopg2
 from app.scripts import*
 from rest_framework.parsers import MultiPartParser, FormParser
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.core.files import File
 from .forms import  testForm
+from .response import filenotUrsResponse
 
 #USERS
 # Create your views here.
@@ -502,3 +503,36 @@ def obatainfileOfVersion(request, file_id, fileVersion):
     for f in os.listdir(dirs):
         os.remove(os.path.join(dirs, f))
     return response
+
+
+## function to delete 
+def deletefile(request, fileId, clientId):
+    # print('e')
+    ## checking if the file exists but does not belong to the current client.
+    if Filetable.objects.filter(file_id = fileId, client = clientId).count() == 0 and Filetable.objects.filter(file_id = fileId).exists():
+        ## response taken from response.py file
+        print('here')
+        return filenotUrsResponse()
+    try:
+        ## delete from file table 
+        print('herte')
+        death = Filetable.objects.filter(file_id =fileId, client= clientId )
+        print(death)
+        death.delete()
+        print('a')
+        ## delete from file servers 
+        d1 = File1.objects.filter(file_id =fileId).using('server1').delete() 
+        print('b')
+        d2 = File2.objects.filter(file_id=fileId).using('server2').delete()
+        print('c')
+        d3 = File3.objects.filter(file_id=fileId).using('server3').delete()
+        print('d')
+        d4 = File4.objects.filter(file_id=fileId).using('server4').delete()
+        print('e')
+        d5 = File5.objects.filter(file_id=fileId).using('server5').delete()
+        detail = {'status':'success',
+                'message': 'file deleted'}
+    except:
+        detail ={'status': 'fail',
+                 'message': 'error occured'}
+    return JsonResponse(detail)

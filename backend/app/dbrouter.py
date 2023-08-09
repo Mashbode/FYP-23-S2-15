@@ -1,6 +1,6 @@
 # file for db 
 class server1Router:
-    model_type = {'File1', 'Secret'}
+    model_type = {'File1', 'Secret', 'File1_log'}
     def db_for_read(self, model, **hints):
         """
         Attempts to read file models go to server1.
@@ -36,7 +36,7 @@ class server1Router:
         return None
 
 class server2Router:
-    model_type ={'File2', 'Secret2'}
+    model_type ={'File2', 'Secret2', 'File2_log'}
     def db_for_read(self, model, **hints):
         """
         Attempts to read file models go to server2.
@@ -72,7 +72,7 @@ class server2Router:
         return None
     
 class server3Router:
-    model_type ={'File3'}
+    model_type ={'File3', 'File3_log'}
     def db_for_read(self, model, **hints):
         """
         Attempts to read file models go to server3.
@@ -108,7 +108,7 @@ class server3Router:
         return None
     
 class server4Router:
-    model_type ={'File4'}
+    model_type ={'File4', 'File4_log'}
     def db_for_read(self, model, **hints):
         """
         Attempts to read file models go to server4.
@@ -144,7 +144,7 @@ class server4Router:
         return None
 
 class server5Router:
-    model_type ={'File5'}
+    model_type ={'File5', 'File5_log'}
     def db_for_read(self, model, **hints):
         """
         Attempts to read file models go to server5.

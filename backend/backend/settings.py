@@ -109,7 +109,7 @@ DATABASES = {
         "PORT": "5432",
     },
 
-        "server2": {
+    "server2": {
        "ENGINE": "django.db.backends.postgresql",
         "NAME": "FileServer2",
         "USER": "postgres",
@@ -118,7 +118,7 @@ DATABASES = {
         "PORT": "5432",
     },
 
-        "server3": {
+    "server3": {
        "ENGINE": "django.db.backends.postgresql",
         "NAME": "FileServer3",
         "USER": "postgres",
@@ -127,7 +127,7 @@ DATABASES = {
         "PORT": "5432",
     },
 
-        "server4": {
+    "server4": {
        "ENGINE": "django.db.backends.postgresql",
         "NAME": "FileServer4",
         "USER": "postgres",
