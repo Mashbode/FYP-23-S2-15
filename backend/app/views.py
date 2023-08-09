@@ -320,9 +320,9 @@ class CreateSharedFile(generics.CreateAPIView):
     queryset = Sharedfileaccess.objects.all()
     serializer_class = ShareFileAccessSerializer
 
-##########################################################################
+########################################################################################################################################################################################################################################################################################################
             ## these are the key functions  ##
-##########################################################################
+####################################################################################################################################################
 ### this for getting all versions of a particular file
 class getFileversions(generics.ListAPIView):
     # queryset = Fileversion.objects.all()
@@ -330,6 +330,47 @@ class getFileversions(generics.ListAPIView):
     # lookup_field = 'file_id'
     def get_queryset(self):
         return Fileversion.objects.filter(file_id=self.kwargs['file_id'])
+    
+## view to retreive files that are in a folder ## when opening a folder 
+def getfileinfolderinfo(request, folderId):
+    test = Folderfiles.objects.filter(folder_files_id= folderId).values('file','folder','file__filename', 'file_filetype')
+    data = {'results': list(test)}
+    return JsonResponse(data)
+
+## view to retrieve list of files that are shared to the user ## when only files are shared
+# ## client_id in the parameters is the one who recieves the shared file
+# ## shared_client_id in sharedfileaccess table is the client who receives the shared file
+# ## client in the table is the one who shared the file 
+def getfilesharedtoClient(request, client_id):
+    test = Sharedfileaccess.objects.filter(shared_client_id = client_id).values('file',  'create_time', 'client', 'permission_type', 'file_filename', 'file_filetype')
+    data ={'results': list(test)}
+    return JsonResponse(data)
+
+## view to retrieve list of files that client has shared 
+# ## client_id in parameters is client that shared the file
+# ## shared_client_id in sharedfileaccess table is the client who receives the shared file
+def getfilesThatClientShared(request, client_id):
+    test = Sharedfileaccess.objects.filter(client=client_id).values('file',  'create_time','shared_client_id', 'permission_type', 'file_filename', 'file_filetype')
+    data = {'results' : list(test)}
+    return JsonResponse(data)
+
+## view to retrieve list of folders shared to user 
+# ## client_id in parameters is the one that receives the shared folder 
+# ## shared_client_id in the sharedfolderaccess table is the client who receives the shared folder
+def getfolderssharedtoclient(request, client_id):
+    test = Sharedfolderaccess.objects.filter(shared_client_id = client_id).values('folder', 'client', 'create_time', 'permission_type', 'folder_foldername' )
+    data = {'results' : list(test)}
+    return JsonResponse(data)
+
+
+## view to retreive list of folder that the user shared 
+# ## client_id in parameters is the client that shared the folder 
+# ## shared_client_id in the sharedfolderaccess table is the client who receives the shared folder
+def getfoldersThatClientShared(request, client_id):
+    test = Sharedfolderaccess.objects.filter(client=client_id).values('folder', 'shared_client_id', 'create_time', 'permission_type', 'folder_foldername')
+    data = {'results' : list(test)}
+    return JsonResponse(data)
+
 ##########################################################################
 #####################################################################################
 ## this works for some reason #########keeep this ################## works

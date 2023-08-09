@@ -17,6 +17,18 @@ urlpatterns = [
     path('api/retreiveFile/version/<uuid:file_id>/<uuid:fileVersion>',obatainfileOfVersion),
         # url for deleting file # requires fileid and client id
     path('api/fileDelete/<uuid:fileId>/<int:clientId>', deletefile),
+        # url for retrieving files that are in a folder, require folder_id
+    path('api/folderfile/filelist/<int:folderId>', getfileinfolderinfo),
+        # url for retrieve list of files that are shared to the user
+    path('api/sharedfile/toclient/<int:client_id>', getfilesharedtoClient),
+        # url to retrieve list of files that user shared to other users 
+    path('api/sharedfile/toothers/<int:client_id>', getfilesThatClientShared), 
+        # url to retrieve list of folder that are shared to the user 
+    path('api/sharedfolder/toclient/<int:client_id>', getfolderssharedtoclient),
+        # url to retrieve list of folder that user share to other users 
+    path('api/sharedfolder/toothers/<int:client_id>', getfoldersThatClientShared), 
+
+
         #######################################################################
         #######################################################################
 
