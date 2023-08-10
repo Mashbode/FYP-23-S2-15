@@ -26,6 +26,7 @@ import {
   reauthenticateWithCredential,
   deleteUser,
 } from "firebase/auth";
+import FileManagerContainer from "../../components/filemanagercontainer/FileManagerContainer";
 
 const Single = () => {
   const [open, setOpen] = useState(false);
@@ -39,15 +40,13 @@ const Single = () => {
   const [email, setEmail] = useState("");
   const [phone, setPhoneNumber] = useState("");
   const [registeredDate, setRegisteredDate] = useState();
-  
-  // convert firebase timestamp to date format. (Ex. 8/26/2023)  
-  let date = new Date(registeredDate)
-  let myDate = date.toLocaleDateString()
-  let myTime = date.toLocaleTimeString()
-  myDate = myDate.replaceAll('/', '-')
-  const mmddyyyy =  myDate + " " + myTime
 
-
+  // Convert firebase timestamp to date format. (Ex. 8/26/2023)
+  let date = new Date(registeredDate);
+  let myDate = date.toLocaleDateString();
+  let myTime = date.toLocaleTimeString();
+  myDate = myDate.replaceAll("/", "-");
+  const mmddyyyy = myDate + " " + myTime;
 
   // Function to fetch the authenticated user's data from Firestore
   const fetchUserData = async () => {
@@ -71,16 +70,25 @@ const Single = () => {
     }
   };
 
+  // ************************************************************ Connect with Django ************************************************************
+  const [axiosFileItems, setAxiosFileItems] = useState([]);
+  const getAxiosMyDriveFileItems = () => {
+    // Write codes to fetch the data from the backend with inside a file directory "currentUser.uid/" in objects inside array format e.g., data.js
+    // When the array is returned make sure to use below setAxiosFileItems(return value)
+    setAxiosFileItems();
+  };
+  // *********************************************************************************************************************************************
+
   useEffect(() => {
     fetchUserData();
+    getAxiosMyDriveFileItems();
   }, []);
-
-  
 
   const handleDeleteUser = () => {
     // https://firebase.google.com/docs/auth/web/manage-users#delete_a_user
     deleteUser(auth.currentUser)
       .then(() => {
+        // ************************************************************ Connect with Django ************************************************************
         // User deleted.
         // https://firebase.google.com/docs/firestore/manage-data/delete-data#delete_documents
         deleteDoc(doc(db, "users", currentUser.uid));
@@ -88,6 +96,9 @@ const Single = () => {
         setTimeout(() => {
           dispatch({ type: "LOGOUT" });
         }, 2000);
+
+        // Write codes to delete the user from the backend
+        // *********************************************************************************************************************************************
       })
       .catch((error) => {
         // An error ocurred
@@ -220,7 +231,12 @@ const Single = () => {
             </div>
           </div>
         </div>
-        <div className="bottom">{/* <FileManager title="Files" /> */}</div>
+        <div className="bottom">
+          <FileManagerContainer
+            title="My Drive"
+            axiosFileItems={axiosFileItems}
+          />
+        </div>
       </div>
     </div>
   );

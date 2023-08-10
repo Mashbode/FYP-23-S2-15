@@ -20,16 +20,14 @@ import Logout from "@mui/icons-material/Logout";
 
 // import { DarkModeContext } from "../../context/darkModeContext";
 import { AuthContext } from "../../context/AuthContext";
-import { useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import { auth, db } from "../../firebase";
-import { signOut } from "firebase/auth";
-import React, { useState, useEffect } from "react";
 import { doc, getDoc } from "firebase/firestore";
+import { signOut } from "firebase/auth";
 
 const Navbar = () => {
-
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [username, setUsername] = useState("");
@@ -57,7 +55,6 @@ const Navbar = () => {
   useEffect(() => {
     fetchUserData();
   }, []);
-
 
   const navigate = useNavigate();
   const { dispatch } = useContext(AuthContext);
