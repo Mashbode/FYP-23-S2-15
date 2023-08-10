@@ -320,6 +320,15 @@ class CreateSharedFile(generics.CreateAPIView):
     queryset = Sharedfileaccess.objects.all()
     serializer_class = ShareFileAccessSerializer
 
+
+#### view file 
+#view single file
+class fileview(generics.RetrieveAPIView):
+    queryset = Filetable.objects.all()
+    serializer_class = FileSerializer
+
+
+
 ########################################################################################################################################################################################################################################################################################################
             ## these are the key functions  ##
 ####################################################################################################################################################
@@ -330,7 +339,32 @@ class getFileversions(generics.ListAPIView):
     # lookup_field = 'file_id'
     def get_queryset(self):
         return Fileversion.objects.filter(file_id=self.kwargs['file_id'])
+###  getting all the files that are under the user
+class getallClientfiles(generics.ListAPIView):
+    serializer_class =FileSerializer
+    def get_queryset(self):
+        return Filetable.objects.filter(client_id=self.kwargs['client_id'])
+##########################################################################    
+
+### getting all the folders of a user 
+class getallClientfolder(generics.ListAPIView):
+    serializer_class=FolderSerializer
+    def get_queryset(self):
+        return Foldertable.objects.filter(client_id=self.kwargs['client_id'])
     
+########################################################################## 
+## view deleted files 
+class getDeletedFilelogs(generics.ListAPIView):
+    serializer_class = FileLogSerializer
+    def get_queryset(self):
+        return FileLog.objects.filter(client_id=self.kwargs['client_id'])
+########################################################################## 
+## view deleted folders 
+class getDeletedFolderlogs(generics.ListAPIView):
+    serializer_class=FolderLogSerializer
+    def get_queryset(self):
+        return FolderLogs.objects.filter(client_id=self.kwargs['client_id'])
+       
 ## view to retreive files that are in a folder ## when opening a folder 
 def getfileinfolderinfo(request, folderId):
     test = Folderfiles.objects.filter(folder_files_id= folderId).values('file','folder','file__filename', 'file_filetype')
