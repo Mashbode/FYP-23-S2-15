@@ -363,7 +363,7 @@ class Users(models.Model):
     email = models.CharField(max_length=50)
     phone_number = models.CharField(max_length=20)
     usertype = models.CharField(max_length=10)
-    
+
     class Meta:
         managed = False
         db_table = 'users'
