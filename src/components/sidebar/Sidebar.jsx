@@ -11,7 +11,9 @@ import SupportAgentIcon from "@mui/icons-material/SupportAgent";
 import StorageIcon from "@mui/icons-material/Storage";
 import PeopleAltOutlinedIcon from "@mui/icons-material/PeopleAltOutlined";
 import DeleteIcon from "@mui/icons-material/Delete";
+import Box from "@mui/material/Box";
 import LinearProgress from "@mui/joy/LinearProgress";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
 
 import { Link, useNavigate } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
@@ -20,31 +22,47 @@ import { DarkModeContext } from "../../context/darkModeContext";
 import { AuthContext } from "../../context/AuthContext";
 
 import { doc, getDoc } from "firebase/firestore";
-import { db } from "../../firebase";
+import { db, auth } from "../../firebase";
+import { signOut } from "firebase/auth";
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: "#FF5733",
+      // light: will be calculated from palette.primary.main,
+      // dark: will be calculated from palette.primary.main,
+      // contrastText: will be calculated to contrast with palette.primary.main
+    },
+    secondary: {
+      main: "#E0C2FF",
+      light: "#F5EBFF",
+      // dark: will be calculated from palette.secondary.main,
+      contrastText: "#47008F",
+    },
+  },
+});
 
 const Sidebar = () => {
+  const { currentUser } = useContext(AuthContext);
+
   // Run only once when the component is build
   useEffect(() => {
     // async includes await function
     // This is to differentiate the sidebar contents according to the type of user
     const getUserType = async () => {
-      const user = JSON.parse(localStorage.getItem("user")); // Getting a user from local storage
-
       // https://firebase.google.com/docs/firestore/query-data/get-data#get_a_document
-      const docSnap = await getDoc(doc(db, "users", user.uid)); // uid is the document id of "users" to distinguish the users
+      const docSnap = await getDoc(doc(db, "users", currentUser.uid)); // uid is the document id of "users" to distinguish the users
       if (docSnap.exists()) {
-        {
-          // field inside a document = admin => setAdmin true
-          // field inside a document = else => setAdmin false
-          docSnap.data().type === "admin" ? setAdmin(true) : setAdmin(false);
-        }
+        // field inside a document = Admin => setAdmin true
+        // field inside a document = else => setAdmin false
+        docSnap.data().type === "Admin" ? setAdmin(true) : setAdmin(false);
       } else {
         // docSnap.data() will be undefined in this case
         console.log("No such document!");
       }
     };
     getUserType();
-  }, []);
+  }, [currentUser]);
 
   const [admin, setAdmin] = useState();
   const { dispatchDarkMode } = useContext(DarkModeContext);
@@ -53,8 +71,15 @@ const Sidebar = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    dispatch({ type: "LOGOUT" });
-    navigate("/login");
+    signOut(auth)
+      .then(() => {
+        // Sign-out successful.
+        dispatch({ type: "LOGOUT" });
+        navigate("/login");
+      })
+      .catch(() => {
+        // An error happened.
+      });
   };
 
   return (
@@ -87,7 +112,7 @@ const Sidebar = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/files" style={{ textDecoration: "none" }}>
+                <Link to="/admin-drive" style={{ textDecoration: "none" }}>
                   <InsertDriveFileIcon className="icon" />
                   <span>Files</span>
                 </Link>
@@ -113,7 +138,7 @@ const Sidebar = () => {
               </li>
               <p className="title">USER</p>
               <li>
-                <Link to="/users/test" style={{ textDecoration: "none" }}>
+                <Link to="/users/profile" style={{ textDecoration: "none" }}>
                   <AccountCircleOutlinedIcon className="icon" />
                   <span>Profile</span>
                 </Link>
@@ -142,7 +167,7 @@ const Sidebar = () => {
           </div>
         </>
       ) : (
-        // User's sidebar
+        // Client's sidebar
         <>
           <div className="top">
             <Link to="/" style={{ textDecoration: "none" }}>
@@ -175,13 +200,13 @@ const Sidebar = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/files-shared" style={{ textDecoration: "none" }}>
+                <Link to="/my-drive/shared" style={{ textDecoration: "none" }}>
                   <PeopleAltOutlinedIcon className="icon" />
                   <span>Shared</span>
                 </Link>
               </li>
               <li>
-                <Link to="/files-deleted" style={{ textDecoration: "none" }}>
+                <Link to="/my-drive/trash" style={{ textDecoration: "none" }}>
                   <DeleteIcon className="icon" />
                   <span>Trash</span>
                 </Link>
@@ -199,7 +224,7 @@ const Sidebar = () => {
               </li>
               <p className="title">USER</p>
               <li>
-                <Link to="/users/test" style={{ textDecoration: "none" }}>
+                <Link to="/users/profile" style={{ textDecoration: "none" }}>
                   <AccountCircleOutlinedIcon className="icon" />
                   <span>Profile</span>
                 </Link>
@@ -227,7 +252,14 @@ const Sidebar = () => {
             ></div>
           </div>
           <div className="bottom">
-            <LinearProgress color="neutral" determinate size="md" value={30} />
+            <Box sx={{ width: "100%" }}>
+              <LinearProgress
+                // color="primary"
+                determinate={true}
+                // size="md"
+                value={30}
+              />
+            </Box>
           </div>
           <div className="barComment">5 GB of 20 GB used</div>
         </>

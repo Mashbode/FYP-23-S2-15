@@ -90,6 +90,13 @@
             box-shadow: 2px 4px 10px 1px rgba(201, 201, 201, 0.47);
             padding: 10px;
             margin: 10px 20px; // top-bottom, right-left
+
+            .fileManagerTitle {
+                font-size: 16px;
+                font-weight: bold;
+                color: lightgray;
+                margin-bottom: 20px;
+            }
         }
 
         .title {
@@ -98,4 +105,42 @@
             margin-bottom: 20px;
         }
     }
+}
+
+.MuiTypography-root.MuiDialogTitle-root {
+    font-family: "Nunito", sans-serif;
+}
+
+.MuiTypography-root.MuiDialogContentText-root {
+    font-family: "Nunito", sans-serif;
+}
+
+.MuiFormLabel-root.MuiInputLabel-root {
+    font-family: "Nunito", sans-serif;
+}
+
+.MuiButtonBase-root.MuiButton-root {
+    font-family: "Nunito", sans-serif;
+}
+
+label.MuiFormLabel-root.Mui-focused {
+    color: #5e35b1;
+}
+
+.MuiInputBase-root.MuiInput-root {
+    &:after {
+        border-bottom: 2px solid #5e35b1;
+    }
+
+    &:hover:not(.Mui-disabled, .Mui-error):before {
+        border-bottom: 2px solid #5e35b1;
+    }
+}
+
+.MuiButtonBase-root.MuiButton-root:hover {
+    background-color: #5e35b10c;
+}
+
+.MuiButtonBase-root.MuiButton-root {
+    color: #5e35b1;
 }

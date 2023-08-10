@@ -2,6 +2,79 @@ from django.urls import path
 from .views import *
 
 urlpatterns = [
+   ############################# put a comment on urls that are being used so we can clean up ######################
+        #######################################################################
+        ########################## important functions ########################
+    ##### file upload functions  ################
+        # this url for getting file versions 
+    path('api/file/versions/<uuid:file_id>', getFileversions.as_view()),
+
+        # url for uploading file, require client_id
+    path('api/fileupload/<int:client_id>', uploadingFile, name='file-upload'),
+
+        # url for updating file, require file_id
+    path('api/fileupdate/<uuid:fileId>', fileupdateWhenUpdate),
+
+    #### file retreival functions (i.e. download)##########
+        # url for retrieving file, require file_id
+    path('api/retrievefile/<uuid:file_id>', obtainfile),
+
+        # url for retrieving file of particular version
+    path('api/retreiveFile/version/<uuid:file_id>/<uuid:fileVersion>',obatainfileOfVersion),
+    
+    ### file deletion ################
+        # url for deleting file # requires fileid and client id
+    path('api/fileDelete/<uuid:fileId>/<int:clientId>', deletefile),
+
+    ###### retrieving files in folder
+        # url for retrieving files that are in a folder, require folder_id
+    path('api/folderfile/filelist/<int:folderId>', getfileinfolderinfo),
+
+    ###### retrieving list of shared files 
+        # url for retrieve list of files that are shared to the user
+    path('api/sharedfile/toclient/<int:client_id>', getfilesharedtoClient),
+
+        # url to retrieve list of files that user shared to other users 
+    path('api/sharedfile/toothers/<int:client_id>', getfilesThatClientShared), 
+
+    ####### retrieving list of shared folders 
+        # url to retrieve list of folder that are shared to the user 
+    path('api/sharedfolder/toclient/<int:client_id>', getfolderssharedtoclient),
+
+        # url to retrieve list of folder that user share to other users 
+    path('api/sharedfolder/toothers/<int:client_id>', getfoldersThatClientShared), 
+
+    ######### functions to view file and folder info ##########
+        # url to retrieve list of files under the client
+    path('api/client/file/<int:client_id>', getallClientfiles.as_view()),
+
+        # view file info -requires file_id
+    path('api/client/file/info/<uuid:pk>', fileview.as_view()),
+
+        # url to retrieve list of folders under the client
+    path('api/client/Folders/<int:client_id>', getallClientfolder.as_view()),
+
+        # view folder info - requires folder_id
+    path('api/client/folder/info/<int:pk>', folderview.as_view()),
+
+        # url to retrieve list of deleted files under the client
+    path('api/client/deleted/fileLogs/<int:client_id>', getDeletedFilelogs.as_view()),
+
+        # url to retrieve list of deleted folders under the client 
+    path('api/client/deleted/folderLogs/<int:client_id>', getDeletedFolderlogs.as_view()),
+
+
+        ### add file to folder
+    path('api/client/Folder/addFile',  ListCreateFolderFile.as_view()),
+
+        ### delete shared folder
+    path('api/SharedFolderAccess/<int:pk>', DeleteSharedFolder.as_view()),
+        ### delete shared file
+    path('api/SharedFileAccess/<int:pk>', DeleteSharedFile.as_view()),
+        #######################################################################
+        #######################################################################
+
+   
    #Users
     path('api/Users',  ListCreateUsers.as_view(), name = "View-All-Users"),
     path('api/<int:pk>', RetrieveEditUsers.as_view()),
@@ -51,43 +124,14 @@ urlpatterns = [
     path('api/Folder/<int:pk>', RetrieveEditFolder.as_view()),
     path('api/DeletedFolder',  ListDeletedFile.as_view()),
 
+    ### add
     path('api/FolderFile',  ListCreateFolderFile.as_view()),
+
     path('api/FolderFile/<int:pk>', RetrieveEditFolderFile.as_view()),
     path('api/DeletedFolderFile',  ListDeletedFolderFile.as_view()),
 
     path('api/Permission',  ListCreatePerm.as_view()),
     path('api/Permission/<pk>', RetrieveEditPerm.as_view()),
-
-
-    ## my stuff 
-        #users
-    path('api/users', userList.as_view()),
-    path('api/users/<int:pk>', EdituserDetail.as_view()),
-    #admin
-    path('api/admin', adminList.as_view()),
-    # path('api/admin/<int:pk>', EditAdminDetail.as_view()),
-    #clients
-    path('api/client', clientList.as_view()),
-    path('api/client/<int:pk>', EditClientDetail.as_view()),
-    path('api/client/delete/<int:pk>', deleteclient.as_view()),
-    #files 
-    path('api/file', fileList.as_view()),
-    path('api/file/lone/<uuid:pk>', fileview.as_view()),
-    path('api/file/edit/<uuid:pk>', fileEdit.as_view()),
-    path('api/file/add', fileAdd.as_view()),
-    path('api/file/delete/<uuid:pk>', fileDelete.as_view()),
-    #fileversion
-    path('api/fileversion', fileversionview.as_view()),
-    path('api/fileversion/',fileVersionAdd.as_view()),
-    #folder 
-    path('api/folder', folderview.as_view()),
-    path('api/folder/add', folderCreate.as_view()),
-    path('api/folder/delete/<int:pk>', folderDelete.as_view()),
-    #folderFile 
-    path('api/folderfile', folderfilesview.as_view()),
-    path('api/folderfile/delete/<int:pk>', folderfileDelete.as_view()),
-    path('api/folderfile/create', folderfileCreate.as_view()),
-    path('api/viewfflogs', folderfilelogs.as_view()),
 
    ######
     path('api/SharedFolderAccess', CreateSharedFolder.as_view()), 

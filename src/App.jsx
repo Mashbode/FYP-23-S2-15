@@ -5,21 +5,31 @@ import Register from "./pages/register/Register";
 import Restore from "./pages/restore/Restore";
 import List from "./pages/list/List";
 import Single from "./pages/single/Single";
-import New from "./pages/new/New";
-import NewFile from "./pages/new/NewFile";
+import Edit from "./pages/edit/Edit";
+import ChangePassword from "./pages/password/ChangePassword";
 import OTP from "./pages/otp/OTP";
 import MyDrive from "./pages/mydrive/MyDrive";
-
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import AdminDrive from "./pages/admindrive/AdminDrive";
+import Shared from "./pages/shared/Shared";
+import Trash from "./pages/trash/Trash";
 
 import "./style/dark.scss";
+import "devextreme/dist/css/dx.light.css";
 
 import { DarkModeContext } from "./context/darkModeContext";
 import { AuthContext } from "./context/AuthContext";
+
 import { useContext } from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 const userInputs = [
   // Changed id to its actual name w/ adoption of firebase
+  {
+    id: "displayName",
+    label: "Name",
+    type: "text",
+    placeholder: "John Doe",
+  },
   {
     id: "username",
     label: "Username",
@@ -27,16 +37,16 @@ const userInputs = [
     placeholder: "john_doe",
   },
   {
-    id: "displayName",
-    label: "Name and surname",
-    type: "text",
-    placeholder: "John Doe",
-  },
-  {
     id: "email",
     label: "Email",
     type: "mail",
     placeholder: "john_doe@gmail.com",
+  },
+  {
+    id: "date",
+    lable: "Registered Date",
+    type: "date",
+    placeholder: "10 July 2023",
   },
   {
     id: "phone",
@@ -49,52 +59,7 @@ const userInputs = [
     label: "Password",
     type: "password",
   },
-  {
-    id: "address",
-    label: "Address",
-    type: "text",
-    placeholder: "Elton St. 216 NewYork",
-  },
-  {
-    id: "country",
-    label: "Country",
-    type: "text",
-    placeholder: "USA",
-  },
 ];
-
-// const productInputs = [
-//   {
-//     id: 1,
-//     label: "Title",
-//     type: "text",
-//     placeholder: "Apple Macbook Pro",
-//   },
-//   {
-//     id: 2,
-//     label: "Description",
-//     type: "text",
-//     placeholder: "Description",
-//   },
-//   {
-//     id: 3,
-//     label: "Category",
-//     type: "text",
-//     placeholder: "Computers",
-//   },
-//   {
-//     id: 4,
-//     label: "Price",
-//     type: "text",
-//     placeholder: "100",
-//   },
-//   {
-//     id: 5,
-//     label: "Stock",
-//     type: "text",
-//     placeholder: "in stock",
-//   },
-// ];
 
 function App() {
   const { darkMode } = useContext(DarkModeContext);
@@ -162,7 +127,16 @@ function App() {
                 path="edit"
                 element={
                   <RequireAuth>
-                    <New inputs={userInputs} title="Edit Account" />
+                    {/* <Edit inputs={userInputs} title="Edit Account" /> */}
+                    <Edit />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="change-password"
+                element={
+                  <RequireAuth>
+                    <ChangePassword />
                   </RequireAuth>
                 }
               />
@@ -176,119 +150,67 @@ function App() {
                   </RequireAuth>
                 }
               />
-              <Route
+              {/* <Route
                 path=":fileId"
                 element={
                   <RequireAuth>
                     <Single />
                   </RequireAuth>
                 }
-              />
-              <Route
-                path="new"
-                element={
-                  <RequireAuth>
-                    <NewFile title="Add New File" />
-                  </RequireAuth>
-                }
-              />
+              /> */}
+              {/* <Route
+                  path="new"
+                  element={
+                    <RequireAuth>
+                      <NewFile title="Add New File" />
+                    </RequireAuth>
+                  }
+                /> */}
             </Route>
-            <Route path="files-shared">
+            <Route path="my-drive">
               <Route
                 index
                 element={
                   <RequireAuth>
-                    <List type="shared" />
+                    <MyDrive />
                   </RequireAuth>
                 }
               />
-              <Route
-                path=":fileId"
-                element={
-                  <RequireAuth>
-                    <Single />
-                  </RequireAuth>
-                }
-              />
-              <Route
-                path="new"
-                element={
-                  <RequireAuth>
-                    <NewFile title="Add New File" />
-                  </RequireAuth>
-                }
-              />
-            </Route>
-            <Route path="files-deleted">
               <Route
                 index
+                path="shared"
                 element={
                   <RequireAuth>
-                    <List type="trash" />
+                    <Shared />
                   </RequireAuth>
                 }
               />
-              <Route
-                path=":fileId"
-                element={
-                  <RequireAuth>
-                    <Single />
-                  </RequireAuth>
-                }
-              />
-              <Route
-                path="new"
-                element={
-                  <RequireAuth>
-                    <NewFile title="Add New File" />
-                  </RequireAuth>
-                }
-              />
-            </Route>
-            <Route path="enquiries">
               <Route
                 index
+                path="trash"
                 element={
                   <RequireAuth>
-                    <List type="enquiries" />
+                    <Trash />
                   </RequireAuth>
                 }
               />
             </Route>
             <Route
-              path="my-drive"
+              path="admin-drive"
               element={
                 <RequireAuth>
-                  <MyDrive />
+                  <AdminDrive />
                 </RequireAuth>
               }
             />
-            {/* <Route path="products">
-              <Route
-                index
-                element={
-                  <RequireAuth>
-                    <List />
-                  </RequireAuth>
-                }
-              />
-              <Route
-                path=":productId"
-                element={
-                  <RequireAuth>
-                    <Single />
-                  </RequireAuth>
-                }
-              />
-              <Route
-                path="new"
-                element={
-                  <RequireAuth>
-                    <New inputs={productInputs} title="Add New Product" />
-                  </RequireAuth>
-                }
-              />
-            </Route> */}
+            <Route
+              path="enquiries"
+              element={
+                <RequireAuth>
+                  <List type="enquiries" />
+                </RequireAuth>
+              }
+            />
           </Route>
         </Routes>
       </BrowserRouter>

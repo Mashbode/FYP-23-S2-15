@@ -7,7 +7,6 @@ import NotificationsNoneOutlinedIcon from "@mui/icons-material/NotificationsNone
 import ChatBubbleOutlineOutlinedIcon from "@mui/icons-material/ChatBubbleOutlineOutlined";
 import ListOutlinedIcon from "@mui/icons-material/ListOutlined";
 
-import React from "react";
 import Box from "@mui/material/Box";
 import Avatar from "@mui/material/Avatar";
 import Menu from "@mui/material/Menu";
@@ -15,17 +14,52 @@ import MenuItem from "@mui/material/MenuItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
 import Tooltip from "@mui/material/Tooltip";
-import PersonAdd from "@mui/icons-material/PersonAdd";
 import Settings from "@mui/icons-material/Settings";
 import Logout from "@mui/icons-material/Logout";
 
-import { DarkModeContext } from "../../context/darkModeContext";
-import { useContext } from "react";
-import { Link } from "react-router-dom";
+// import { DarkModeContext } from "../../context/darkModeContext";
+import { AuthContext } from "../../context/AuthContext";
+import React, { useState, useEffect, useContext } from "react";
+import { Link, useNavigate } from "react-router-dom";
+
+import { auth, db } from "../../firebase";
+import { doc, getDoc } from "firebase/firestore";
+import { signOut } from "firebase/auth";
 
 const Navbar = () => {
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+
+  // Function to fetch the authenticated user's data from Firestore
+  const fetchUserData = async () => {
+    try {
+      const user = auth.currentUser;
+      if (user) {
+        const userRef = doc(db, "users", user.uid);
+        const userDoc = await getDoc(userRef);
+        if (userDoc.exists()) {
+          setFirstName(userDoc.data().firstName);
+          setLastName(userDoc.data().lastName);
+          setUsername(userDoc.data().username);
+          setEmail(userDoc.data().email);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchUserData();
+  }, []);
+
+  const navigate = useNavigate();
+  const { dispatch } = useContext(AuthContext);
+  // const { dispatch } = useContext(DarkModeContext);
+
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
@@ -35,7 +69,19 @@ const Navbar = () => {
     setAnchorEl(null);
   };
 
-  const { dispatch } = useContext(DarkModeContext);
+  const handleLogout = () => {
+    setAnchorEl(null);
+
+    signOut(auth)
+      .then(() => {
+        // Sign-out successful.
+        dispatch({ type: "LOGOUT" });
+        navigate("/login");
+      })
+      .catch(() => {
+        // An error happened.
+      });
+  };
 
   return (
     <div className="navbar">
@@ -140,13 +186,13 @@ const Navbar = () => {
                   style={{ textDecoration: "none", color: "black" }}
                 >
                   <MenuItem onClick={handleClose} sx={{ fontSize: 15 }}>
-                    <Avatar /> Full Name
+                    <Avatar /> {firstName + " " + lastName}
                   </MenuItem>
                 </Link>
                 <MenuItem>
-                  Username1
+                  {username}
                   <br />
-                  user1@example.com
+                  {email}
                 </MenuItem>
                 <Divider />
                 {/* <MenuItem onClick={handleClose} sx={{fontSize:15}}>
@@ -155,7 +201,7 @@ const Navbar = () => {
                   </ListItemIcon>
                   Add another account
                 </MenuItem> */}
-                <Link to="/users/edit" style={{ textDecoration: "none" }}>
+                <Link to="/users/profile" style={{ textDecoration: "none" }}>
                   <MenuItem onClick={handleClose} sx={{ fontSize: 15 }}>
                     <ListItemIcon>
                       <Settings fontSize="small" />
@@ -163,7 +209,7 @@ const Navbar = () => {
                     Settings
                   </MenuItem>
                 </Link>
-                <MenuItem onClick={handleClose} sx={{ fontSize: 15 }}>
+                <MenuItem onClick={handleLogout} sx={{ fontSize: 15 }}>
                   <ListItemIcon>
                     <Logout fontSize="small" />
                   </ListItemIcon>

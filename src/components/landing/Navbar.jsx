@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import logo from "../../img/logo2.png";
 import { Link as LinkScroll } from "react-scroll";
 import { useState } from "react";
 import { Link } from "react-router-dom";
@@ -39,9 +40,10 @@ const Right = styled.div`
   justify-content: space-between;
 `;
 
-const Logo = styled.h1`
-  font-weight: bold;
-  text-decoration: underline crimson;
+const Logo = styled.img`
+  width: 25%;
+  height: 25%;
+  padding-top: 5px;
 `;
 
 const Menu = styled.ul`
@@ -103,7 +105,7 @@ const Navbar = () => {
     <Container className={navColor ? "changeBackground" : ""}>
       <Wrapper>
         <Left>
-          <Logo>Logo</Logo>
+          <Logo src={logo} alt="Logo" />
           <Menu>
             <MenuItem>
               <LinkScroll

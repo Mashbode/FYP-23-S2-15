@@ -2,6 +2,16 @@ from django.shortcuts import render
 from rest_framework import generics, viewsets
 from .serializers import *
 from .models import *
+#####################
+from rest_framework.decorators import api_view, APIView
+from rest_framework.response import Response
+import psycopg2
+from app.scripts import*
+from rest_framework.parsers import MultiPartParser, FormParser
+from django.http import HttpResponse, JsonResponse
+from django.core.files import File
+from .forms import  testForm
+from .response import filenotUrsResponse
 
 #USERS
 # Create your views here.
@@ -248,81 +258,6 @@ class RetrieveEditPerm(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = PermissionSerializer
 
 
-
-## my stufff 
-# Create your views here.
-#view all users 
-class userList(generics.ListAPIView):
-    queryset = Users.objects.all()
-    serializer_class = UsersSerializer 
-#view individual user to edit   
-class EdituserDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Users.objects.all()
-    serializer_class = UsersSerializer
-
-# view Admin
-class adminList(generics.ListAPIView):
-    queryset = Admintab.objects.all()
-    serializer_class = AdminSerializer
-
-# view admin to edit 
-class EditAdminDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Admintab.objects.all()
-    serializer_class = AdminSerializer
-
-#view clients
-class clientList(generics.ListAPIView):
-    queryset = Client.objects.all()
-    serializer_class = ClientSerializer
-
-# view client to edit 
-class EditClientDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Client.objects.all()
-    serializer_class = ClientSerializer
-
-class deleteclient(generics.RetrieveDestroyAPIView):
-    queryset = Client.objects.all()
-    serializer_class = ClientSerializer
-#view all file info 
-class fileList(generics.ListAPIView):
-    queryset = Filetable.objects.all()
-    serializer_class = FileSerializer
-#view single file
-class fileview(generics.RetrieveAPIView):
-    queryset = Filetable.objects.all()
-    serializer_class = FileSerializer
-#update file info 
-class fileEdit(generics.RetrieveUpdateAPIView):
-    queryset = Filetable.objects.all()
-    serializer_class = FileSerializer
-#creating file 
-class fileAdd(generics.ListCreateAPIView):
-    queryset = Filetable.objects.all()
-    serializer_class = FileSerializer
-
-#deletingfile
-class fileDelete(generics.RetrieveDestroyAPIView):
-    serializer_class = FileSerializer
-    queryset = Filetable.objects.all()
-
-#view file version
-class fileversionview(generics.ListAPIView):
-    queryset = Fileversion.objects.all()
-    serializer_class = FileVersionSerializer
-#add fil version 
-class fileVersionAdd(generics.CreateAPIView):
-    queryset = Fileversion.objects.all()
-    serializer_class = FileVersionSerializer
-
-#update file version
-class fileVersionUpdate(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Fileversion.objects.all()
-    serializer_class= FileVersionSerializer
-
-class splitFilesIntoServer(generics.CreateAPIView):
-    queryset = Server1.objects.all()
-
-
 #view folders 
 class folderview(generics.ListAPIView):
     queryset = Foldertable.objects.all()
@@ -384,3 +319,295 @@ class DeleteSharedFile(generics.RetrieveDestroyAPIView):
 class CreateSharedFile(generics.CreateAPIView):
     queryset = Sharedfileaccess.objects.all()
     serializer_class = ShareFileAccessSerializer
+
+
+#### view file 
+#view single file
+class fileview(generics.RetrieveAPIView):
+    queryset = Filetable.objects.all()
+    serializer_class = FileSerializer
+
+
+
+########################################################################################################################################################################################################################################################################################################
+            ## these are the key functions  ##
+####################################################################################################################################################
+### this for getting all versions of a particular file
+class getFileversions(generics.ListAPIView):
+    # queryset = Fileversion.objects.all()
+    serializer_class = FileVersionSerializer
+    # lookup_field = 'file_id'
+    def get_queryset(self):
+        return Fileversion.objects.filter(file_id=self.kwargs['file_id'])
+###  getting all the files that are under the user
+class getallClientfiles(generics.ListAPIView):
+    serializer_class =FileSerializer
+    def get_queryset(self):
+        return Filetable.objects.filter(client_id=self.kwargs['client_id'])
+##########################################################################    
+
+### getting all the folders of a user 
+class getallClientfolder(generics.ListAPIView):
+    serializer_class=FolderSerializer
+    def get_queryset(self):
+        return Foldertable.objects.filter(client_id=self.kwargs['client_id'])
+    
+########################################################################## 
+## view deleted files 
+class getDeletedFilelogs(generics.ListAPIView):
+    serializer_class = FileLogSerializer
+    def get_queryset(self):
+        return FileLog.objects.filter(client_id=self.kwargs['client_id'])
+########################################################################## 
+## view deleted folders 
+class getDeletedFolderlogs(generics.ListAPIView):
+    serializer_class=FolderLogSerializer
+    def get_queryset(self):
+        return FolderLogs.objects.filter(client_id=self.kwargs['client_id'])
+       
+## view to retreive files that are in a folder ## when opening a folder 
+def getfileinfolderinfo(request, folderId):
+    test = Folderfiles.objects.filter(folder_files_id= folderId).values('file','folder','file__filename', 'file_filetype')
+    data = {'results': list(test)}
+    return JsonResponse(data)
+
+## view to retrieve list of files that are shared to the user ## when only files are shared
+# ## client_id in the parameters is the one who recieves the shared file
+# ## shared_client_id in sharedfileaccess table is the client who receives the shared file
+# ## client in the table is the one who shared the file 
+def getfilesharedtoClient(request, client_id):
+    test = Sharedfileaccess.objects.filter(shared_client_id = client_id).values('file',  'create_time', 'client', 'permission_type', 'file_filename', 'file_filetype')
+    data ={'results': list(test)}
+    return JsonResponse(data)
+
+## view to retrieve list of files that client has shared 
+# ## client_id in parameters is client that shared the file
+# ## shared_client_id in sharedfileaccess table is the client who receives the shared file
+def getfilesThatClientShared(request, client_id):
+    test = Sharedfileaccess.objects.filter(client=client_id).values('file',  'create_time','shared_client_id', 'permission_type', 'file_filename', 'file_filetype')
+    data = {'results' : list(test)}
+    return JsonResponse(data)
+
+## view to retrieve list of folders shared to user 
+# ## client_id in parameters is the one that receives the shared folder 
+# ## shared_client_id in the sharedfolderaccess table is the client who receives the shared folder
+def getfolderssharedtoclient(request, client_id):
+    test = Sharedfolderaccess.objects.filter(shared_client_id = client_id).values('folder', 'client', 'create_time', 'permission_type', 'folder_foldername' )
+    data = {'results' : list(test)}
+    return JsonResponse(data)
+
+
+## view to retreive list of folder that the user shared 
+# ## client_id in parameters is the client that shared the folder 
+# ## shared_client_id in the sharedfolderaccess table is the client who receives the shared folder
+def getfoldersThatClientShared(request, client_id):
+    test = Sharedfolderaccess.objects.filter(client=client_id).values('folder', 'shared_client_id', 'create_time', 'permission_type', 'folder_foldername')
+    data = {'results' : list(test)}
+    return JsonResponse(data)
+
+##########################################################################
+#####################################################################################
+## this works for some reason #########keeep this ################## works
+## need to provide client_id # not user_id 
+def uploadingFile(request, client_id):
+    if request.method == 'POST':
+        test = testForm(request.POST, request.FILES)
+        if test.is_valid():
+            file = request.FILES['file']
+            path = os.path.realpath(__file__)
+            dir = os.path.dirname(path)
+            dirs = dir + '/shard_make/' 
+            with open(dirs+ file.name, 'wb+') as destination:
+                for chunk in file.chunks():
+                    destination.write(chunk)
+            fileinfo = os.path.splitext(file.name)
+            filename = fileinfo[0]
+            fileext =  fileinfo[1]
+            c_id = client_id
+            ###
+            print('insert into file tab')
+            ### insert into file table first to generate file_id (uuid)
+            files = Filetable.objects.create(filename = filename, filetype = fileext, client_id = c_id)
+            ## dun have to use serializer to save data
+            serializers = FileSerializer(data = files)
+            if serializers.is_valid():
+                    serializers.save()
+            ### first compress the file 
+            compres_file_name = compression(file.name)
+            print('file compressed')
+            ### then encrypt 
+            encrypt_file_name = encrypt_file(compres_file_name)
+            print('file encrypted')
+            ## then split the file, it returns the list of split files
+            split_file_list = ecc_file(encrypt_file_name)
+            print('file split')
+            ## then split the pub key, it returns a list of file names for split
+            split_key_list = pyshmir_split()
+            print('pub key split')
+            ## once file is inserted, the tables will be generated
+            ## need to retrieve the file_id 
+            file_id = filegetting()
+            print('retrieve fileid')
+            ## retrieve the file_version_id from fileversion_table 
+            file_version_id = fileversionOnInsert(file_id)
+            print('retrieve file version')
+            ## function to upload the split file parts to the db 
+            upload = filepartsupload(split_file_list, split_key_list, file_id, file_version_id)
+            ## remove files in folder 
+            path = os.path.realpath(__file__)
+            dir = os.path.dirname(path)
+            dirs = dir + ('/shard_make')
+            for f in os.listdir(dirs):
+                os.remove(os.path.join(dirs, f))
+            return HttpResponse('file ok')
+    else:
+        test = testForm()
+        ## the html.html need to replace with the frontend stuff i think
+        return render(request,"html.html", {'form':test})
+    
+
+
+### file update ################## works 
+#### need to provide fileID ####
+def fileupdateWhenUpdate(request,fileId):
+    if request.method == 'POST':
+        test = testForm(request.POST, request.FILES)
+        if test.is_valid():
+            file = request.FILES['file']
+            path = os.path.realpath(__file__)
+            dir = os.path.dirname(path)
+            dirs = dir + '/shard_make/' 
+            with open(dirs+ file.name, 'wb+') as destination:
+                for chunk in file.chunks():
+                    destination.write(chunk)
+            fileinfo = os.path.splitext(file.name)
+            filename = fileinfo[0]
+            fileext =  fileinfo[1]
+            ### get current time
+            newtime = timezzzz()
+            ### update new file insert 
+            files = Filetable.objects.filter(file_id = fileId).update(last_change = newtime)
+            ## dun have to use serializer to save data
+            ### first compress the file 
+            compres_file_name = compression(file.name)
+            print('file compressed')
+            ### then encrypt 
+            encrypt_file_name = encrypt_file(compres_file_name)
+            print('file encrypted')
+            ## then split the file, it returns the list of split files
+            split_file_list = ecc_file(encrypt_file_name)
+            print('file split')
+            ## then split the pub key, it returns a list of file names for split
+            split_key_list = pyshmir_split()
+            print('pub key split')
+            ## once file is inserted, the tables will be generated
+            ## retrieve the file_version_id from fileversion_table 
+            file_version_id = fileversionOnUpdate(fileId)
+            print('retrieve file version')
+            ## function to upload the split file parts to the db 
+            upload = filepartsupload(split_file_list, split_key_list, fileId, file_version_id)
+            ## remove all files in folder 
+            path = os.path.realpath(__file__)
+            dir = os.path.dirname(path)
+            dirs = dir + ('/shard_make')
+            for f in os.listdir(dirs):
+                os.remove(os.path.join(dirs, f))
+            return HttpResponse('file ok')
+    else:
+        test = testForm()
+        ## the html.html need to replace with the frontend stuff i think
+        return render(request,"html.html", {'form':test})
+    
+
+### retrieve current file ### will be downloaded ##
+### requires file_id 
+def obtainfile(request, file_id):
+    ## taking info of the file 
+    filename, fileExt = getfileinfo(file_id)
+    ## getting current version of file 
+    fileVer = getCurrentFileversion(file_id)
+    ## getting all the shards from db - returns list of file and key shards 
+    keyname_list, filename_list = getAllfileAndSecretparts(file_id, fileVer)
+    ## combine the file with ecc - returns list of names of recombined file
+    filename_c = combine_file(filename_list)
+    ## combining pub key with sss - returns name of key file
+    key = pyshmir_combine(keyname_list)
+    ## decrypting file - returns name of decryped file
+    filename_d = decrypt(filename_c)
+    ## decompress file -returns name of complete file 
+    decom = decompress(filename_d, fileExt, filename)
+    c_name = filename+fileExt
+    print(c_name)
+    ## uploading file to the frontend
+    with open(decom, 'rb') as f:
+        response = HttpResponse(f.read(), content_type='application/octet-stream')
+        response['Content-Disposition'] = 'attachment; filename="'+ c_name +'"'
+    ## remove all files in folder 
+    path = os.path.realpath(__file__)
+    dir = os.path.dirname(path)
+    dirs = dir + ('/shard_retrieve')
+    for f in os.listdir(dirs):
+        os.remove(os.path.join(dirs, f))
+    return response
+
+### retrieve file of a particular version that is chosen
+### requires file_id and file_Version_id
+def obatainfileOfVersion(request, file_id, fileVersion):
+    ## taking info of the file 
+    filename, fileExt = getfileinfo(file_id)
+    ## getting all the shards from db - returns list of file and key shards 
+    keyname_list, filename_list = getAllfileAndSecretparts(file_id, fileVersion)
+     ## combine the file with ecc - returns list of names of recombined file
+    filename_c = combine_file(filename_list)
+    ## combining pub key with sss - returns name of key file
+    key = pyshmir_combine(keyname_list)
+    ## decrypting file - returns name of decryped file
+    filename_d = decrypt(filename_c)
+    ## decompress file -returns name of complete file 
+    decom = decompress(filename_d, fileExt, filename)
+    c_name = filename+fileExt
+    print(c_name)
+    ## uploading file to the frontend
+    with open(decom, 'rb') as f:
+        response = HttpResponse(f.read(), content_type='application/octet-stream')
+        response['Content-Disposition'] = 'attachment; filename="'+ c_name +'"'
+    ## remove all files in folder 
+    path = os.path.realpath(__file__)
+    dir = os.path.dirname(path)
+    dirs = dir + ('/shard_retrieve')
+    for f in os.listdir(dirs):
+        os.remove(os.path.join(dirs, f))
+    return response
+
+
+## function to delete 
+def deletefile(request, fileId, clientId):
+    # print('e')
+    ## checking if the file exists but does not belong to the current client.
+    if Filetable.objects.filter(file_id = fileId, client = clientId).count() == 0 and Filetable.objects.filter(file_id = fileId).exists():
+        ## response taken from response.py file
+        print('here')
+        return filenotUrsResponse()
+    try:
+        ## delete from file table 
+        print('herte')
+        death = Filetable.objects.filter(file_id =fileId, client= clientId )
+        print(death)
+        death.delete()
+        print('a')
+        ## delete from file servers 
+        d1 = File1.objects.filter(file_id =fileId).using('server1').delete() 
+        print('b')
+        d2 = File2.objects.filter(file_id=fileId).using('server2').delete()
+        print('c')
+        d3 = File3.objects.filter(file_id=fileId).using('server3').delete()
+        print('d')
+        d4 = File4.objects.filter(file_id=fileId).using('server4').delete()
+        print('e')
+        d5 = File5.objects.filter(file_id=fileId).using('server5').delete()
+        detail = {'status':'success',
+                'message': 'file deleted'}
+    except:
+        detail ={'status': 'fail',
+                 'message': 'error occured'}
+    return JsonResponse(detail)

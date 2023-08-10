@@ -82,8 +82,13 @@ WSGI_APPLICATION = "backend.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-DATABASE_ROUTERS = ['app.dbrouters.server1Router', ]
-DATABASE_APPS_MAPPING = {'FileServer1': 'server1'}
+DATABASE_ROUTERS = ['app.dbrouter.server1Router', 'app.dbrouter.server2Router', 'app.dbrouter.server3Router', 
+                    'app.dbrouter.server4Router', 'app.dbrouter.server5Router']
+DATABASE_APPS_MAPPING = {'FileServer1': 'server1',
+                         'FileServer2': 'server2',
+                         'FileServer3': 'server3',
+                         'FileServer4': 'server4',
+                         'FileServer5': 'server5',}
 
 DATABASES = {
     "default": {
@@ -104,6 +109,40 @@ DATABASES = {
         "PORT": "5432",
     },
 
+    "server2": {
+       "ENGINE": "django.db.backends.postgresql",
+        "NAME": "FileServer2",
+        "USER": "postgres",
+        "PASSWORD": "passcanliao",
+        "HOST": "testdb.c9ybbr2jzshu.ap-southeast-1.rds.amazonaws.com",
+        "PORT": "5432",
+    },
+
+    "server3": {
+       "ENGINE": "django.db.backends.postgresql",
+        "NAME": "FileServer3",
+        "USER": "postgres",
+        "PASSWORD": "passcanliao",
+        "HOST": "testdb.c9ybbr2jzshu.ap-southeast-1.rds.amazonaws.com",
+        "PORT": "5432",
+    },
+
+    "server4": {
+       "ENGINE": "django.db.backends.postgresql",
+        "NAME": "FileServer4",
+        "USER": "postgres",
+        "PASSWORD": "passcanliao",
+        "HOST": "testdb.c9ybbr2jzshu.ap-southeast-1.rds.amazonaws.com",
+        "PORT": "5432",
+    },
+    "server5": {
+       "ENGINE": "django.db.backends.postgresql",
+        "NAME": "FileServer5",
+        "USER": "postgres",
+        "PASSWORD": "passcanliao",
+        "HOST": "testdb.c9ybbr2jzshu.ap-southeast-1.rds.amazonaws.com",
+        "PORT": "5432",
+    },
 }
 
 

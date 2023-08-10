@@ -99,3 +99,23 @@ Click save and you will connect to AWS RDS, under database there will be a postg
 metadatadb - this will be our main db \
 fileserver - this will be where we store the file parts 
 
+
+# Python libraries
+## pycrptodome
+### `pip install pycryptodome` 
+https://pycryptodome.readthedocs.io/en/latest/src/introduction.html   \
+This is for the encryption library, most shld have it installed, but just to be sure run it.
+
+## pyshamir 
+### `pip install pyshamir`
+https://pypi.org/project/pyshamir/  \
+This is for shamir secret sharing, to split our pub key
+
+## pyfinite
+### `pip install pyfinite`
+https://pypi.org/project/pyfinite/  \
+https://github.com/emin63/pyfinite   \
+This is the lib for erasure coding. For our file splitting
+
+## zlib 
+For compression we are using zlib which can be found in the base python libraries 
