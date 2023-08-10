@@ -201,7 +201,7 @@ const Navbar = () => {
                   </ListItemIcon>
                   Add another account
                 </MenuItem> */}
-                <Link to="/users/edit" style={{ textDecoration: "none" }}>
+                <Link to="/users/profile" style={{ textDecoration: "none" }}>
                   <MenuItem onClick={handleClose} sx={{ fontSize: 15 }}>
                     <ListItemIcon>
                       <Settings fontSize="small" />
