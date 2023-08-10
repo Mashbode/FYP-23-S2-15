@@ -53,9 +53,9 @@ const Sidebar = () => {
       // https://firebase.google.com/docs/firestore/query-data/get-data#get_a_document
       const docSnap = await getDoc(doc(db, "users", currentUser.uid)); // uid is the document id of "users" to distinguish the users
       if (docSnap.exists()) {
-        // field inside a document = admin => setAdmin true
+        // field inside a document = Admin => setAdmin true
         // field inside a document = else => setAdmin false
-        docSnap.data().type === "admin" ? setAdmin(true) : setAdmin(false);
+        docSnap.data().type === "Admin" ? setAdmin(true) : setAdmin(false);
       } else {
         // docSnap.data() will be undefined in this case
         console.log("No such document!");
@@ -112,7 +112,7 @@ const Sidebar = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/files" style={{ textDecoration: "none" }}>
+                <Link to="/admin-drive" style={{ textDecoration: "none" }}>
                   <InsertDriveFileIcon className="icon" />
                   <span>Files</span>
                 </Link>
@@ -167,7 +167,7 @@ const Sidebar = () => {
           </div>
         </>
       ) : (
-        // User's sidebar
+        // Client's sidebar
         <>
           <div className="top">
             <Link to="/" style={{ textDecoration: "none" }}>

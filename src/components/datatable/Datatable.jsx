@@ -35,6 +35,8 @@ const Datatable = ({ type }) => {
         // https://firebase.google.com/docs/firestore/manage-data/delete-data#delete_documents
         await deleteDoc(doc(db, "users", id)); // doc(db, collection, id)
         setData(data.filter((item) => item.id !== id)); // If used on its own, the data is not deleted when refreshed
+
+        // Write codes to delete the user from the backend
         // ***********************************************************************************
 
         toast("The user also needs to be deleted inside Firebase!", {

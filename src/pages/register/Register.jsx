@@ -8,8 +8,6 @@ import { useNavigate } from "react-router-dom";
 import { auth, db } from "../../firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
-// axios
-// import instance from "../../axios_config";
 
 const Register = () => {
   const [values, setValues] = useState({

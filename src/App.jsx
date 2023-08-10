@@ -8,6 +8,7 @@ import Single from "./pages/single/Single";
 import Edit from "./pages/edit/Edit";
 import OTP from "./pages/otp/OTP";
 import MyDrive from "./pages/mydrive/MyDrive";
+import AdminDrive from "./pages/admindrive/AdminDrive";
 import Shared from "./pages/shared/Shared";
 import Trash from "./pages/trash/Trash";
 
@@ -185,16 +186,22 @@ function App() {
                 }
               />
             </Route>
-            <Route path="enquiries">
-              <Route
-                index
-                element={
-                  <RequireAuth>
-                    <List type="enquiries" />
-                  </RequireAuth>
-                }
-              />
-            </Route>
+            <Route
+              path="admin-drive"
+              element={
+                <RequireAuth>
+                  <AdminDrive />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="enquiries"
+              element={
+                <RequireAuth>
+                  <List type="enquiries" />
+                </RequireAuth>
+              }
+            />
           </Route>
         </Routes>
       </BrowserRouter>
