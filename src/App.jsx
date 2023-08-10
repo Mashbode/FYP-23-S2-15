@@ -6,7 +6,6 @@ import Restore from "./pages/restore/Restore";
 import List from "./pages/list/List";
 import Single from "./pages/single/Single";
 import Edit from "./pages/edit/Edit";
-import ChangePassword from "./pages/password/ChangePassword";
 import OTP from "./pages/otp/OTP";
 import MyDrive from "./pages/mydrive/MyDrive";
 import AdminDrive from "./pages/admindrive/AdminDrive";
@@ -129,14 +128,6 @@ function App() {
                   <RequireAuth>
                     {/* <Edit inputs={userInputs} title="Edit Account" /> */}
                     <Edit />
-                  </RequireAuth>
-                }
-              />
-              <Route
-                path="change-password"
-                element={
-                  <RequireAuth>
-                    <ChangePassword />
                   </RequireAuth>
                 }
               />

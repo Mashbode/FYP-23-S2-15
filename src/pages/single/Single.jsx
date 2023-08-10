@@ -1,4 +1,4 @@
-import "./single2.scss";
+import "./single.scss";
 import Sidebar from "../../components/sidebar/Sidebar";
 import Navbar from "../../components/navbar/Navbar";
 // import Chart from "../../components/chart/chart/Chart";
@@ -177,9 +177,12 @@ const Single = () => {
       <Sidebar />
       <div className="singleContainer">
         <Navbar />
-        <div className="top-container">
-          <div className="top-left">
-            <h3 className="title">Information</h3>
+        <div className="top">
+          <div className="left">
+            <Link to="/users/edit" style={{ textDecoration: "none" }}>
+              <div className="editButton">Edit</div>
+            </Link>
+            <h1 className="title">Information</h1>
             {/* Not gg to use users as a class name -> item would be more general */}
             <div className="item">
               <img
@@ -206,46 +209,33 @@ const Single = () => {
                   <span className="itemValue">{phone}</span>
                 </div>
               </div>
-            </div>
-          </div>
-          <div className="top-right">
-            <div className="button-group">
-              <Link to="/users/edit" style={{ textDecoration: "none" }}>
-                <div className="button">Edit Account</div>
-              </Link>
-              <Link to="/users/change-password" style={{ textDecoration: "none"}}>
-                <div className="button">Change Password</div>
-              </Link>
               <div
-                className="button"
+                className="deleteButton"
                 onClick={() => {
                   setOpen(true);
                 }}
               >
                 Delete Account
               </div>
-
+            </div>
+          </div>
+          <div className="right">
+            {/* <Chart aspect={3 / 1} title={"Storage Usage"} /> */}
+            <h1 className="title">Storage Usage</h1>
+            <Pie />
+            <div className="increaseButton" onClick={handleStorageIncrease}>
+              Increase Storage
+            </div>
+            <div className="decreaseButton" onClick={handleStorageDecrease}>
+              Decrease Storage
             </div>
           </div>
         </div>
-        <div className="bottom-container">
-        {/* <FileManager title="Files" /> */}
-        {/* <Chart aspect={3 / 1} title={"Storage Usage"} /> */}
-          <div className="bottom-left">
-            <h3 className="title">Storage Usage</h3>
-            <Pie />
-          </div>
-          <div className="bottom-right">
-            <div className="button-group">
-              <div className="button" onClick={handleStorageIncrease}>
-                Increase Storage
-              </div>
-              <div className="button" onClick={handleStorageDecrease}>
-                Decrease Storage
-              </div>
-            </div>
-            
-          </div>
+        <div className="bottom">
+          <FileManagerContainer
+            title="My Drive"
+            axiosFileItems={axiosFileItems}
+          />
         </div>
       </div>
     </div>
