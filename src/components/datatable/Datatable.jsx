@@ -146,7 +146,7 @@ const Datatable = ({ type }) => {
       renderCell: (params) => {
         return (
           <div className="cellAction">
-            <Link to="/users/test" style={{ textDecoration: "none" }}>
+            <Link to="/users/profile" style={{ textDecoration: "none" }}>
               <div className="firstActionButton">Reply</div>
             </Link>
             <div
