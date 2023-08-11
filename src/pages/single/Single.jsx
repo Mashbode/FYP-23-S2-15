@@ -1,3 +1,4 @@
+import "./single.scss";
 import "./single2.scss";
 import Sidebar from "../../components/sidebar/Sidebar";
 import Navbar from "../../components/navbar/Navbar";
@@ -26,7 +27,6 @@ import {
   reauthenticateWithCredential,
   deleteUser,
 } from "firebase/auth";
-import FileManagerContainer from "../../components/filemanagercontainer/FileManagerContainer";
 
 const Single = () => {
   const [open, setOpen] = useState(false);
@@ -70,18 +70,8 @@ const Single = () => {
     }
   };
 
-  // ************************************************************ Connect with Django ************************************************************
-  const [axiosFileItems, setAxiosFileItems] = useState([]);
-  const getAxiosMyDriveFileItems = () => {
-    // Write codes to fetch the data from the backend with inside a file directory "currentUser.uid/" in objects inside array format e.g., data.js
-    // When the array is returned make sure to use below setAxiosFileItems(return value)
-    setAxiosFileItems();
-  };
-  // *********************************************************************************************************************************************
-
   useEffect(() => {
     fetchUserData();
-    getAxiosMyDriveFileItems();
   }, []);
 
   const handleDeleteUser = () => {
@@ -213,7 +203,10 @@ const Single = () => {
               <Link to="/users/edit" style={{ textDecoration: "none" }}>
                 <div className="button">Edit Account</div>
               </Link>
-              <Link to="/users/change-password" style={{ textDecoration: "none"}}>
+              <Link
+                to="/users/change-password"
+                style={{ textDecoration: "none" }}
+              >
                 <div className="button">Change Password</div>
               </Link>
               <div
@@ -224,13 +217,12 @@ const Single = () => {
               >
                 Delete Account
               </div>
-
             </div>
           </div>
         </div>
         <div className="bottom-container">
-        {/* <FileManager title="Files" /> */}
-        {/* <Chart aspect={3 / 1} title={"Storage Usage"} /> */}
+          {/* <FileManager title="Files" /> */}
+          {/* <Chart aspect={3 / 1} title={"Storage Usage"} /> */}
           <div className="bottom-left">
             <h3 className="title">Storage Usage</h3>
             <Pie />
@@ -244,7 +236,6 @@ const Single = () => {
                 Decrease Storage
               </div>
             </div>
-            
           </div>
         </div>
       </div>
