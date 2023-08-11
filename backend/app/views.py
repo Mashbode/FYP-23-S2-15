@@ -427,7 +427,7 @@ def uploadingFile(request, client_id):
             ###
             print('insert into file tab')
             ### insert into file table first to generate file_id (uuid)
-            files = Filetable.objects.create(filename = filename, filetype = fileext, client_id = c_id)
+            files = Filetable.objects.create(filename = filename, filetype = fileext, client_id = c_id, filesize=file.size)
             ## dun have to use serializer to save data
             serializers = FileSerializer(data = files)
             if serializers.is_valid():
@@ -486,7 +486,7 @@ def fileupdateWhenUpdate(request,fileId):
             ### get current time
             newtime = timezzzz()
             ### update new file insert 
-            files = Filetable.objects.filter(file_id = fileId).update(last_change = newtime)
+            files = Filetable.objects.filter(file_id = fileId).update(last_change = newtime, filesize=file.size)
             ## dun have to use serializer to save data
             ### first compress the file 
             compres_file_name = compression(file.name)
@@ -582,8 +582,8 @@ def obatainfileOfVersion(request, file_id, fileVersion):
 
 ## function to delete 
 def deletefile(request, fileId, clientId):
-    # print('e')
-    ## checking if the file exists but does not belong to the current client.
+    print('e')
+    # checking if the file exists but does not belong to the current client.
     if Filetable.objects.filter(file_id = fileId, client = clientId).count() == 0 and Filetable.objects.filter(file_id = fileId).exists():
         ## response taken from response.py file
         print('here')
@@ -596,18 +596,162 @@ def deletefile(request, fileId, clientId):
         death.delete()
         print('a')
         ## delete from file servers 
-        d1 = File1.objects.filter(file_id =fileId).using('server1').delete() 
+        File1.objects.filter(file_id =fileId).using('server1').delete() 
         print('b')
-        d2 = File2.objects.filter(file_id=fileId).using('server2').delete()
+        File2.objects.filter(file_id=fileId).using('server2').delete()
         print('c')
-        d3 = File3.objects.filter(file_id=fileId).using('server3').delete()
+        File3.objects.filter(file_id=fileId).using('server3').delete()
         print('d')
-        d4 = File4.objects.filter(file_id=fileId).using('server4').delete()
+        File4.objects.filter(file_id=fileId).using('server4').delete()
         print('e')
-        d5 = File5.objects.filter(file_id=fileId).using('server5').delete()
+        File5.objects.filter(file_id=fileId).using('server5').delete()
+        print('f')
         detail = {'status':'success',
                 'message': 'file deleted'}
     except:
         detail ={'status': 'fail',
                  'message': 'error occured'}
     return JsonResponse(detail)
+        # print('herte')
+        # death = Filetable.objects.filter(file_id =fileId, client= clientId )
+        # print(death)
+        # death.delete()
+        # print('a')
+        # ## delete from file servers 
+        # File1.objects.filter(file_id =fileId).using('server1').delete() 
+        # print('b')
+        # File2.objects.filter(file_id=fileId).using('server2').delete()
+        # print('c')
+        # File3.objects.filter(file_id=fileId).using('server3').delete()
+        # print('d')
+        # File4.objects.filter(file_id=fileId).using('server4').delete()
+        # print('e')
+        # File5.objects.filter(file_id=fileId).using('server5').delete()
+        # print('f')
+        # detail = {'status':'success',
+        #         'message': 'file deleted'}
+        # return JsonResponse(detail)
+
+
+def restorefile(request,file_id):
+    chk = FileLog.objects.filter(file_id=file_id).exists()
+    print(chk)
+    ## get file from filelog
+    log = FileLog.objects.filter(file_id=file_id).values('file_id','filename', 'filetype', 'client_id', 'last_change','uploadtime', 'filesize')
+    print(log[0]['file_id'])
+    print(log[0]['uploadtime'])
+    ## re-insert to file table 
+    filei= Filetable(file_id=log[0]['file_id'],filename=log[0]['filename'], filetype= log[0]['filetype'], 
+                   client_id=log[0]['client_id'], last_change=log[0]['last_change'], uploadtime=log[0]['uploadtime'], filesize=log[0]['filesize'])
+    filei.save()
+    ## need to remove new auto created fileversion, fileparts, fileserver entries
+    
+    # get the new fileversion 
+    fiver = Fileversion.objects.filter(file_id=file_id).values('file_version_id')
+    fed = fiver[0]['file_version_id']
+    # remove from fileserver first
+    Server1.objects.filter(file_id=file_id, file_version_id=fed).delete()
+    Server2.objects.filter(file_id=file_id, file_version_id=fed).delete()
+    Server3.objects.filter(file_id=file_id, file_version_id=fed).delete()
+    Server4.objects.filter(file_id=file_id, file_version_id=fed).delete()
+    Server5.objects.filter(file_id=file_id, file_version_id=fed).delete()
+    ##delete from logs 
+    Server1Logs.objects.filter(file_id=file_id, file_version_id=fed).delete()
+    Server2Logs.objects.filter(file_id=file_id, file_version_id=fed).delete()
+    Server3Logs.objects.filter(file_id=file_id, file_version_id=fed).delete()
+    Server4Logs.objects.filter(file_id=file_id, file_version_id=fed).delete()
+    Server5Logs.objects.filter(file_id=file_id, file_version_id=fed).delete()
+    ##delete from fileparts
+    Fileparts.objects.filter(file_id=file_id, file_version_id=fed).delete()
+    ##delete from filepartslog
+    FilePartsLog.objects.filter(file_id=file_id, file_version_id=fed).delete()
+    ##delete from fileversion
+    Fileversion.objects.filter(file_id=file_id).delete()
+    ##delete from fileversionlog 
+    FileVersionLog.objects.filter(file_id=file_id, file_version_id=fed).delete()
+
+    ## re-insert the original fileversions, fileparts, and fileserver entries 
+    ### add back into fileversion
+    fvlist = FileVersionLog.objects.filter(file_id=file_id).values('file_version_id','file_id','file_version','last_change')
+    for i in range(len(fvlist)):
+        less = Fileversion(file_version_id=fvlist[i]['file_version_id'], file_id=fvlist[i]['file_id'], file_version=fvlist[i]['file_version'], last_change=fvlist[i]['last_change'])
+        less.save()
+    ## delete from fileversion log 
+    FileVersionLog.objects.filter(file_id=file_id).delete()
+    ### add back to fileparts
+    fplist= FilePartsLog.objects.filter(file_id=file_id).values('file_part_id','part_number','server_name','file_id','file_version_id', 'last_change')
+    for i in range(len(fplist)):
+        ah = Fileparts(file_part_id=fplist[i]['file_part_id'], part_number=fplist[i]['part_number'], server_name=fplist[i]['server_name'], 
+                       file_id=fplist[i]['file_id'], file_version_id=fplist[i]['file_version_id'], last_change=fplist[i]['last_change'])
+        ah.save()
+    ## then delete from filepart log
+    FilePartsLog.objects.filter(file_id=file_id).delete()
+
+    ### add back to fileserver
+    f1 = Server1Logs.objects.filter(file_id=file_id).values('file_id','file_version_id','file_part_id', 'server1_id')
+    f2 = Server2Logs.objects.filter(file_id=file_id).values('file_id','file_version_id', 'file_part_id', 'server2_id')
+    f3 = Server3Logs.objects.filter(file_id=file_id).values('file_id','file_version_id', 'file_part_id', 'server3_id')
+    f4 = Server4Logs.objects.filter(file_id=file_id).values('file_id','file_version_id', 'file_part_id', 'server4_id')
+    f5 = Server5Logs.objects.filter(file_id=file_id).values('file_id','file_version_id', 'file_part_id', 'server5_id')
+    for i in range(len(f1)):
+        ff1 = Server1(file_id=f1[i]['file_id'], file_version_id=f1[i]['file_version_id'], file_part_id=f1[i]['file_part_id'], server1_id=f1[i]['server1_id'])
+        ff1.save()
+    for i in range(len(f2)):    
+        ff2 = Server2(file_id=f2[i]['file_id'], file_version_id=f2[i]['file_version_id'], file_part_id=f2[i]['file_part_id'], server2_id=f2[i]['server2_id'])
+        ff2.save()
+    for i in range(len(f3)):
+        ff3 = Server3(file_id=f3[i]['file_id'], file_version_id=f3[i]['file_version_id'], file_part_id=f3[i]['file_part_id'], server3_id=f3[i]['server3_id'])
+        ff3.save()
+    for i in range(len(f4)):
+        ff4 = Server4(file_id=f4[i]['file_id'], file_version_id=f4[i]['file_version_id'], file_part_id=f4[i]['file_part_id'], server4_id=f4[i]['server4_id'])
+        ff4.save()
+    for i in range(len(f5)):
+        ff5 = Server5(file_id=f5[i]['file_id'], file_version_id=f5[i]['file_version_id'], file_part_id=f5[i]['file_part_id'], server5_id=f5[i]['server5_id'])
+        ff5.save()
+    ## then delete from server logs 
+    Server1Logs.objects.filter(file_id=file_id).delete()
+    Server2Logs.objects.filter(file_id=file_id).delete()
+    Server3Logs.objects.filter(file_id=file_id).delete()
+    Server4Logs.objects.filter(file_id=file_id).delete()
+    Server5Logs.objects.filter(file_id=file_id).delete()
+
+    # delete from file log 
+    FileLog.objects.filter(file_id=file_id).delete()
+
+    ## reinsert from file servers 
+    # take info from file logs
+    fs1 = File1_log.objects.filter(file_id=file_id).values('file_id', 'file_version_id', 'data', 'fileserver1_id', 'secret').using('server1')
+    fs2 = File2_log.objects.filter(file_id=file_id).values('file_id', 'file_version_id', 'data', 'fileserver2_id', 'secret').using('server2')
+    fs3 = File3_log.objects.filter(file_id=file_id).values('file_id', 'file_version_id', 'data', 'fileserver3_id', 'secret').using('server3')
+    fs4 = File4_log.objects.filter(file_id=file_id).values('file_id', 'file_version_id', 'data', 'fileserver4_id', 'secret').using('server4')
+    fs5 = File5_log.objects.filter(file_id=file_id).values('file_id', 'file_version_id', 'data', 'fileserver5_id', 'secret').using('server5')
+
+    # insert into file
+    for i in range(len(fs1)):
+        ffs1 = File1(file_id=fs1[i]['file_id'], data=fs1[i]['data'], file_version_id=fs1[i]['file_version_id'], fileserver1_id=fs1[i]['fileserver1_id'], secret=fs1[i]['secret'])
+        ffs1.save(using='server1')
+    for i in range(len(fs2)):
+        ffs2 = File2(file_id=fs2[i]['file_id'], data=fs2[i]['data'], file_version_id=fs2[i]['file_version_id'], fileserver2_id=fs2[i]['fileserver2_id'], secret=fs2[i]['secret'])
+        ffs2.save(using='server2')
+    for i in range(len(fs3)):
+        ffs3 = File3(file_id=fs3[i]['file_id'], data=fs3[i]['data'], file_version_id=fs3[i]['file_version_id'], fileserver3_id=fs3[i]['fileserver3_id'], secret=fs3[i]['secret'])
+        ffs3.save(using='server3')    
+    for i in range(len(fs4)):
+        ffs4 = File4(file_id=fs4[i]['file_id'], data=fs4[i]['data'], file_version_id=fs4[i]['file_version_id'], fileserver4_id=fs4[i]['fileserver4_id'], secret=fs4[i]['secret'])
+        ffs4.save(using='server4')
+    for i in range(len(fs5)):
+        ffs5 = File5(file_id=fs5[i]['file_id'], data=fs5[i]['data'], file_version_id=fs5[i]['file_version_id'], fileserver5_id=fs5[i]['fileserver5_id'], secret=fs5[i]['secret'])
+        ffs5.save(using='server5')
+    # delete from logs 
+    File1_log.objects.filter(file_id=file_id).using('server1').delete()
+    File2_log.objects.filter(file_id=file_id).using('server2').delete()
+    File3_log.objects.filter(file_id=file_id).using('server3').delete()
+    File4_log.objects.filter(file_id=file_id).using('server4').delete()
+    File5_log.objects.filter(file_id=file_id).using('server5').delete()
+    return HttpResponse('restored')
+
+
+def test(request, fid):
+    test = File1.objects.filter(file_id =fid).using('server1')
+    print(test)
+    return HttpResponse('ok')
