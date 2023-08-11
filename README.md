@@ -99,6 +99,9 @@ Click save and you will connect to AWS RDS, under database there will be a postg
 metadatadb - this will be our main db \
 fileserver - this will be where we store the file parts 
 
+## in django, there is a file named requirements .txt 
+to run it do `pip install -r requirements.txt` this will install all the required libraries
+
 
 # Python libraries
 ## pycrptodome
@@ -119,3 +122,6 @@ This is the lib for erasure coding. For our file splitting
 
 ## zlib 
 For compression we are using zlib which can be found in the base python libraries 
+
+## psycopg2
+### `pip install psycopg2`
