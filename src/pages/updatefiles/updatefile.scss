@@ -1,0 +1,22 @@
+.updatefile {
+    display: flex;
+
+    .updatefileContainer {
+        flex: 6; // https://css-tricks.com/almanac/properties/f/flex/
+
+        .updatefileContent {
+            height: 600px;
+            padding: 20px;
+
+            .updatefileTitle {
+                width: 100%;
+                font-size: 24px;
+                color: gray;
+                margin-bottom: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+        }
+    }
+}

@@ -1,15 +1,15 @@
-import "./uploadfile.scss";
+import "./updatefile.scss";
 import Sidebar from "../../components/sidebar/Sidebar";
 import Navbar from "../../components/navbar/Navbar";
 
-const UploadFile = () => {
+const UpdateFile = () => {
   return (
-    <div className="uploadfile">
+    <div className="updatefile">
       <Sidebar />
-      <div className="uploadfileContainer">
+      <div className="updatefileContainer">
         <Navbar />
-        <div className="uploadfileContent">
-          <div className="uploadfileTitle">Upload File</div>
+        <div className="updatefileContent">
+          <div className="updatefileTitle">Update File</div>
           <form method="POST" class="post-form" enctype="multipart/form-data">
             <p>
               <label for="id_file">File:</label>
@@ -25,4 +25,4 @@ const UploadFile = () => {
   );
 };
 
-export default UploadFile;
+export default UpdateFile;

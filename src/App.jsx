@@ -12,6 +12,8 @@ import MyDrive from "./pages/mydrive/MyDrive";
 import AdminDrive from "./pages/admindrive/AdminDrive";
 import Shared from "./pages/shared/Shared";
 import Trash from "./pages/trash/Trash";
+import UploadFile from "./pages/uploadfile/UploadFile";
+import UpdateFile from "./pages/updatefiles/UpdateFile";
 
 import "./style/dark.scss";
 import "devextreme/dist/css/dx.light.css";
@@ -21,7 +23,6 @@ import { AuthContext } from "./context/AuthContext";
 
 import { useContext } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import UploadFile from "./pages/uploadfile/UploadFile";
 
 const userInputs = [
   // Changed id to its actual name w/ adoption of firebase
@@ -156,6 +157,14 @@ function App() {
                 element={
                   <RequireAuth>
                     <UploadFile />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="update"
+                element={
+                  <RequireAuth>
+                    <UpdateFile />
                   </RequireAuth>
                 }
               />
