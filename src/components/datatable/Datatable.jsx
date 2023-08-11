@@ -8,7 +8,9 @@ import { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import {
   collection,
-  // getDocs,
+  getDocs,
+  query,
+  where,
   doc,
   deleteDoc,
   onSnapshot,
@@ -19,6 +21,7 @@ import {
   fileColumns,
   enquiryColumns,
 } from "../../datatablesource";
+import { getStorage, ref, deleteObject } from "firebase/storage";
 
 // Pass type prop if u want to apply it to both users & products
 const Datatable = ({ type }) => {
@@ -50,31 +53,74 @@ const Datatable = ({ type }) => {
     }
   };
 
-  // const handleFileDelete = async (params) => {
-  //   try {
-  //     if (window.confirm("Are you sure to delete the file?")) {
-  //       // Delete the document
-  //       await deleteDoc(doc(db, "files", params.row.id)); // doc(db, collection, id)
+  // ****************************************************** Connect with Django ******************************************************
 
-  //       // Delete the file inside storage
-  //       const name = `${currentUser.uid}_files/${params.row.filename}`;
-  //       const storageRef = ref(storage, name);
+  const getUserIDWithEmail = async (email) => {
+    const q = query(collection(db, "users"), where("email", "==", email));
+    const querySnapshot = await getDocs(q);
 
-  //       // Delete the file
-  //       deleteObject(storageRef)
-  //         .then(() => {
-  //           console.log("File deleted successfully");
-  //         })
-  //         .catch((error) => {
-  //           console.log(error);
-  //         });
+    try {
+      querySnapshot.forEach((doc) => {
+        // doc.data() is never undefined for query doc snapshots
+        console.log(doc.id, " => ", doc.data());
+        return doc.id;
+      });
+    } catch (error) {
+      switch (error) {
+        case "case1":
+          toast.error("case1 error");
+          break;
+        case "case2":
+          toast.error("case2 error");
+          break;
+        default:
+          toast.error(`Contact admin: ${error}`);
+          break;
+      }
+    }
+  };
+  // *********************************************************************************************************************************
 
-  //       setData(data.filter((item) => item.id !== params.row.id)); // If used on its own, when refreshed the data is not deleted
-  //     } else {
-  //       return;
-  //     }
-  //   } catch (error) {}
-  // };
+  const handleFileShare = (params) => {
+    try {
+      // ****************************************************** Connect with Django ******************************************************
+      var email = prompt("Please enter a user's email to share");
+      var userToShareID = getUserIDWithEmail(email);
+      console.log(params.row.id); // fileID to share
+      // *********************************************************************************************************************************
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleFileDelete = async (params) => {
+    try {
+      if (window.confirm("Are you sure to delete the file?")) {
+        // Delete the document
+        await deleteDoc(doc(db, "files", params.row.id)); // doc(db, collection, id)
+
+        // Delete the file inside storage
+        const name = `${currentUser.uid}_files/${params.row.filename}`;
+        const storage = getStorage();
+        const storageRef = ref(storage, name);
+
+        // Delete the file
+        deleteObject(storageRef)
+          .then(() => {
+            console.log("File deleted successfully");
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+
+        setData(data.filter((item) => item.id !== params.row.id)); // If used on its own, when refreshed the data is not deleted
+      } else {
+        return;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   // These actionColumns will be concat to columns below
   const actionUserColumn = [
@@ -92,7 +138,7 @@ const Datatable = ({ type }) => {
               to={`/users/${params.row.id}`}
               style={{ textDecoration: "none" }}
             >
-              <div className="firstActionButton">View</div>
+              <div className="actionButton">View</div>
             </Link>
             <div
               className="deleteButton"
@@ -106,37 +152,43 @@ const Datatable = ({ type }) => {
     },
   ];
 
-  // const actionFileColumn = [
-  //   {
-  //     field: "action",
-  //     headerName: "Action",
-  //     width: 200,
-  //     renderCell: (params) => {
-  //       return (
-  //         <div className="cellAction">
-  //           {/* <Link to="/files/test" style={{ textDecoration: "none" }}>
-  //             <div className="firstActionButton">Download</div>
-  //           </Link> */}
-  //           <a href={params.row.file} className="firstActionButton" download>
-  //             Download
-  //           </a>
-  //           {/* <div
-  //             className="firstActionButton"
-  //             onClick={() => handleFileDownload(params)}
-  //           >
-  //             Download
-  //           </div> */}
-  //           <div
-  //             className="deleteButton"
-  //             onClick={() => handleFileDelete(params)}
-  //           >
-  //             Delete
-  //           </div>
-  //         </div>
-  //       );
-  //     },
-  //   },
-  // ];
+  const actionFileColumn = [
+    {
+      field: "action",
+      headerName: "Action",
+      width: 200,
+      renderCell: (params) => {
+        return (
+          <div className="cellAction">
+            {/* <Link to="/files/test" style={{ textDecoration: "none" }}>
+              <div className="actionButton">Download</div>
+            </Link> */}
+            <a href={params.row.file} className="actionButton" download>
+              Download
+            </a>
+            {/* <div
+              className="actionButton"
+              onClick={() => handleFileDownload(params)}
+            >
+              Download
+            </div> */}
+            <div
+              className="actionButton"
+              onClick={() => handleFileShare(params)}
+            >
+              Share
+            </div>
+            <div
+              className="deleteButton"
+              onClick={() => handleFileDelete(params)}
+            >
+              Delete
+            </div>
+          </div>
+        );
+      },
+    },
+  ];
 
   const actionEnquiryColumn = [
     {
@@ -146,8 +198,8 @@ const Datatable = ({ type }) => {
       renderCell: (params) => {
         return (
           <div className="cellAction">
-            <Link to="/users/profile" style={{ textDecoration: "none" }}>
-              <div className="firstActionButton">Reply</div>
+            <Link to="/users/test" style={{ textDecoration: "none" }}>
+              <div className="actionButton">Reply</div>
             </Link>
             <div
               className="deleteButton"
@@ -171,7 +223,7 @@ const Datatable = ({ type }) => {
       break;
     case "files":
       columns = fileColumns;
-      actionColumn = [];
+      actionColumn = actionFileColumn;
       break;
     case "enquiries":
       columns = enquiryColumns;

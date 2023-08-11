@@ -11,6 +11,8 @@ import SupportAgentIcon from "@mui/icons-material/SupportAgent";
 import StorageIcon from "@mui/icons-material/Storage";
 import PeopleAltOutlinedIcon from "@mui/icons-material/PeopleAltOutlined";
 import DeleteIcon from "@mui/icons-material/Delete";
+import UploadFileIcon from "@mui/icons-material/UploadFile";
+import UpdateIcon from "@mui/icons-material/Update";
 import Box from "@mui/material/Box";
 import LinearProgress from "@mui/joy/LinearProgress";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
@@ -24,23 +26,6 @@ import { AuthContext } from "../../context/AuthContext";
 import { doc, getDoc } from "firebase/firestore";
 import { db, auth } from "../../firebase";
 import { signOut } from "firebase/auth";
-
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: "#FF5733",
-      // light: will be calculated from palette.primary.main,
-      // dark: will be calculated from palette.primary.main,
-      // contrastText: will be calculated to contrast with palette.primary.main
-    },
-    secondary: {
-      main: "#E0C2FF",
-      light: "#F5EBFF",
-      // dark: will be calculated from palette.secondary.main,
-      contrastText: "#47008F",
-    },
-  },
-});
 
 const Sidebar = () => {
   const { currentUser } = useContext(AuthContext);
@@ -104,6 +89,7 @@ const Sidebar = () => {
                   <span>Dashboard</span>
                 </Link>
               </li>
+
               <p className="title">LISTS</p>
               <li>
                 <Link to="/users" style={{ textDecoration: "none" }}>
@@ -190,6 +176,18 @@ const Sidebar = () => {
                 <Link to="/my-drive" style={{ textDecoration: "none" }}>
                   <StorageIcon className="icon" />
                   <span>My Drive</span>
+                </Link>
+              </li>
+              <li>
+                <Link to="/files/upload" style={{ textDecoration: "none" }}>
+                  <UploadFileIcon className="icon" />
+                  <span>Upload Files</span>
+                </Link>
+              </li>
+              <li>
+                <Link to="/files/update" style={{ textDecoration: "none" }}>
+                  <UpdateIcon className="icon" />
+                  <span>Update Files</span>
                 </Link>
               </li>
               <p className="title">LISTS</p>

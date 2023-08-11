@@ -12,6 +12,8 @@ import MyDrive from "./pages/mydrive/MyDrive";
 import AdminDrive from "./pages/admindrive/AdminDrive";
 import Shared from "./pages/shared/Shared";
 import Trash from "./pages/trash/Trash";
+import UploadFile from "./pages/uploadfile/UploadFile";
+import UpdateFile from "./pages/updatefiles/UpdateFile";
 
 import "./style/dark.scss";
 import "devextreme/dist/css/dx.light.css";
@@ -132,21 +134,37 @@ function App() {
                   </RequireAuth>
                 }
               />
-              <Route
-                path="change-password"
-                element={
-                  <RequireAuth>
-                    <ChangePassword />
-                  </RequireAuth>
-                }
-              />
             </Route>
+            <Route
+              path="change-password"
+              element={
+                <RequireAuth>
+                  <ChangePassword />
+                </RequireAuth>
+              }
+            />
             <Route path="files">
               <Route
                 index
                 element={
                   <RequireAuth>
                     <List type="files" />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="upload"
+                element={
+                  <RequireAuth>
+                    <UploadFile />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="update"
+                element={
+                  <RequireAuth>
+                    <UpdateFile />
                   </RequireAuth>
                 }
               />

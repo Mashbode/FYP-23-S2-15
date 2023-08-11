@@ -1,24 +1,24 @@
-import React, { useState } from 'react';
-import { auth } from '../../firebase';
-import { 
-    EmailAuthProvider, 
-    reauthenticateWithCredential, 
-    updatePassword 
+import React, { useState } from "react";
+import { auth } from "../../firebase";
+import {
+  EmailAuthProvider,
+  reauthenticateWithCredential,
+  updatePassword,
 } from "firebase/auth";
 
 const ChangePassword = () => {
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [error, setError] = useState('');
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [error, setError] = useState("");
 
   const handleChangePassword = async () => {
-    setError('');
+    setError("");
 
     try {
       const user = auth.currentUser;
 
       if (!user) {
-        setError('User not authenticated.'); // Handle the case where user is not authenticated
+        setError("User not authenticated."); // Handle the case where user is not authenticated
         return;
       }
 
@@ -32,10 +32,10 @@ const ChangePassword = () => {
       // Update password
       await updatePassword(user, newPassword); // Use auth.updatePassword()
 
-      console.log('Password updated successfully');
+      console.log("Password updated successfully");
     } catch (error) {
       setError(error.message);
-      console.error('Error changing password:', error);
+      console.error("Error changing password:", error);
     }
   };
 
