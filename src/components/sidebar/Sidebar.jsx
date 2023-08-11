@@ -11,6 +11,8 @@ import SupportAgentIcon from "@mui/icons-material/SupportAgent";
 import StorageIcon from "@mui/icons-material/Storage";
 import PeopleAltOutlinedIcon from "@mui/icons-material/PeopleAltOutlined";
 import DeleteIcon from "@mui/icons-material/Delete";
+import UploadFileIcon from "@mui/icons-material/UploadFile";
+import UpdateIcon from "@mui/icons-material/Update";
 import Box from "@mui/material/Box";
 import LinearProgress from "@mui/joy/LinearProgress";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
@@ -25,23 +27,6 @@ import { doc, getDoc } from "firebase/firestore";
 import { db, auth } from "../../firebase";
 import { signOut } from "firebase/auth";
 
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: "#FF5733",
-      // light: will be calculated from palette.primary.main,
-      // dark: will be calculated from palette.primary.main,
-      // contrastText: will be calculated to contrast with palette.primary.main
-    },
-    secondary: {
-      main: "#E0C2FF",
-      light: "#F5EBFF",
-      // dark: will be calculated from palette.secondary.main,
-      contrastText: "#47008F",
-    },
-  },
-});
-
 const Sidebar = () => {
   const { currentUser } = useContext(AuthContext);
 
@@ -53,9 +38,9 @@ const Sidebar = () => {
       // https://firebase.google.com/docs/firestore/query-data/get-data#get_a_document
       const docSnap = await getDoc(doc(db, "users", currentUser.uid)); // uid is the document id of "users" to distinguish the users
       if (docSnap.exists()) {
-        // field inside a document = admin => setAdmin true
+        // field inside a document = Admin => setAdmin true
         // field inside a document = else => setAdmin false
-        docSnap.data().type === "admin" ? setAdmin(true) : setAdmin(false);
+        docSnap.data().type === "Admin" ? setAdmin(true) : setAdmin(false);
       } else {
         // docSnap.data() will be undefined in this case
         console.log("No such document!");
@@ -104,6 +89,7 @@ const Sidebar = () => {
                   <span>Dashboard</span>
                 </Link>
               </li>
+
               <p className="title">LISTS</p>
               <li>
                 <Link to="/users" style={{ textDecoration: "none" }}>
@@ -112,7 +98,7 @@ const Sidebar = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/files" style={{ textDecoration: "none" }}>
+                <Link to="/admin-drive" style={{ textDecoration: "none" }}>
                   <InsertDriveFileIcon className="icon" />
                   <span>Files</span>
                 </Link>
@@ -138,7 +124,7 @@ const Sidebar = () => {
               </li>
               <p className="title">USER</p>
               <li>
-                <Link to="/users/test" style={{ textDecoration: "none" }}>
+                <Link to="/users/profile" style={{ textDecoration: "none" }}>
                   <AccountCircleOutlinedIcon className="icon" />
                   <span>Profile</span>
                 </Link>
@@ -167,7 +153,7 @@ const Sidebar = () => {
           </div>
         </>
       ) : (
-        // User's sidebar
+        // Client's sidebar
         <>
           <div className="top">
             <Link to="/" style={{ textDecoration: "none" }}>
@@ -190,6 +176,18 @@ const Sidebar = () => {
                 <Link to="/my-drive" style={{ textDecoration: "none" }}>
                   <StorageIcon className="icon" />
                   <span>My Drive</span>
+                </Link>
+              </li>
+              <li>
+                <Link to="/files/upload" style={{ textDecoration: "none" }}>
+                  <UploadFileIcon className="icon" />
+                  <span>Upload Files</span>
+                </Link>
+              </li>
+              <li>
+                <Link to="/files/update" style={{ textDecoration: "none" }}>
+                  <UpdateIcon className="icon" />
+                  <span>Update Files</span>
                 </Link>
               </li>
               <p className="title">LISTS</p>
@@ -224,7 +222,7 @@ const Sidebar = () => {
               </li>
               <p className="title">USER</p>
               <li>
-                <Link to="/users/test" style={{ textDecoration: "none" }}>
+                <Link to="/users/profile" style={{ textDecoration: "none" }}>
                   <AccountCircleOutlinedIcon className="icon" />
                   <span>Profile</span>
                 </Link>

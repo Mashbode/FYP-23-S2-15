@@ -388,6 +388,7 @@ class Users(models.Model):
     phone_number = models.CharField(max_length=20)
     usertype = models.CharField(max_length=10)
     u_id = models.CharField(primary_key=True, unique=True, max_length=100)
+
     class Meta:
         managed = False
         db_table = 'users'

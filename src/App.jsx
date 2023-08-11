@@ -6,10 +6,14 @@ import Restore from "./pages/restore/Restore";
 import List from "./pages/list/List";
 import Single from "./pages/single/Single";
 import Edit from "./pages/edit/Edit";
+import ChangePassword from "./pages/password/ChangePassword";
 import OTP from "./pages/otp/OTP";
 import MyDrive from "./pages/mydrive/MyDrive";
+import AdminDrive from "./pages/admindrive/AdminDrive";
 import Shared from "./pages/shared/Shared";
 import Trash from "./pages/trash/Trash";
+import UploadFile from "./pages/uploadfile/UploadFile";
+import UpdateFile from "./pages/updatefiles/UpdateFile";
 
 import "./style/dark.scss";
 import "devextreme/dist/css/dx.light.css";
@@ -131,12 +135,36 @@ function App() {
                 }
               />
             </Route>
+            <Route
+              path="change-password"
+              element={
+                <RequireAuth>
+                  <ChangePassword />
+                </RequireAuth>
+              }
+            />
             <Route path="files">
               <Route
                 index
                 element={
                   <RequireAuth>
                     <List type="files" />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="upload"
+                element={
+                  <RequireAuth>
+                    <UploadFile />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="update"
+                element={
+                  <RequireAuth>
+                    <UpdateFile />
                   </RequireAuth>
                 }
               />
@@ -185,16 +213,22 @@ function App() {
                 }
               />
             </Route>
-            <Route path="enquiries">
-              <Route
-                index
-                element={
-                  <RequireAuth>
-                    <List type="enquiries" />
-                  </RequireAuth>
-                }
-              />
-            </Route>
+            <Route
+              path="admin-drive"
+              element={
+                <RequireAuth>
+                  <AdminDrive />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="enquiries"
+              element={
+                <RequireAuth>
+                  <List type="enquiries" />
+                </RequireAuth>
+              }
+            />
           </Route>
         </Routes>
       </BrowserRouter>

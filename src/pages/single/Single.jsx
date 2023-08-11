@@ -1,4 +1,5 @@
 import "./single.scss";
+import "./single2.scss";
 import Sidebar from "../../components/sidebar/Sidebar";
 import Navbar from "../../components/navbar/Navbar";
 // import Chart from "../../components/chart/chart/Chart";
@@ -39,15 +40,13 @@ const Single = () => {
   const [email, setEmail] = useState("");
   const [phone, setPhoneNumber] = useState("");
   const [registeredDate, setRegisteredDate] = useState();
-  
-  // convert firebase timestamp to date format. (Ex. 8/26/2023)  
-  let date = new Date(registeredDate)
-  let myDate = date.toLocaleDateString()
-  let myTime = date.toLocaleTimeString()
-  myDate = myDate.replaceAll('/', '-')
-  const mmddyyyy =  myDate + " " + myTime
 
-
+  // Convert firebase timestamp to date format. (Ex. 8/26/2023)
+  let date = new Date(registeredDate);
+  let myDate = date.toLocaleDateString();
+  let myTime = date.toLocaleTimeString();
+  myDate = myDate.replaceAll("/", "-");
+  const mmddyyyy = myDate + " " + myTime;
 
   // Function to fetch the authenticated user's data from Firestore
   const fetchUserData = async () => {
@@ -75,12 +74,11 @@ const Single = () => {
     fetchUserData();
   }, []);
 
-  
-
   const handleDeleteUser = () => {
     // https://firebase.google.com/docs/auth/web/manage-users#delete_a_user
     deleteUser(auth.currentUser)
       .then(() => {
+        // ************************************************************ Connect with Django ************************************************************
         // User deleted.
         // https://firebase.google.com/docs/firestore/manage-data/delete-data#delete_documents
         deleteDoc(doc(db, "users", currentUser.uid));
@@ -88,6 +86,9 @@ const Single = () => {
         setTimeout(() => {
           dispatch({ type: "LOGOUT" });
         }, 2000);
+
+        // Write codes to delete the user from the backend
+        // *********************************************************************************************************************************************
       })
       .catch((error) => {
         // An error ocurred
@@ -166,12 +167,9 @@ const Single = () => {
       <Sidebar />
       <div className="singleContainer">
         <Navbar />
-        <div className="top">
-          <div className="left">
-            <Link to="/users/edit" style={{ textDecoration: "none" }}>
-              <div className="editButton">Edit</div>
-            </Link>
-            <h1 className="title">Information</h1>
+        <div className="top-container">
+          <div className="top-left">
+            <h3 className="title">Information</h3>
             {/* Not gg to use users as a class name -> item would be more general */}
             <div className="item">
               <img
@@ -198,8 +196,21 @@ const Single = () => {
                   <span className="itemValue">{phone}</span>
                 </div>
               </div>
+            </div>
+          </div>
+          <div className="top-right">
+            <div className="button-group">
+              <Link to="/users/edit" style={{ textDecoration: "none" }}>
+                <div className="button">Edit Account</div>
+              </Link>
+              <Link
+                to="/users/change-password"
+                style={{ textDecoration: "none" }}
+              >
+                <div className="button">Change Password</div>
+              </Link>
               <div
-                className="deleteButton"
+                className="button"
                 onClick={() => {
                   setOpen(true);
                 }}
@@ -208,19 +219,25 @@ const Single = () => {
               </div>
             </div>
           </div>
-          <div className="right">
-            {/* <Chart aspect={3 / 1} title={"Storage Usage"} /> */}
-            <h1 className="title">Storage Usage</h1>
+        </div>
+        <div className="bottom-container">
+          {/* <FileManager title="Files" /> */}
+          {/* <Chart aspect={3 / 1} title={"Storage Usage"} /> */}
+          <div className="bottom-left">
+            <h3 className="title">Storage Usage</h3>
             <Pie />
-            <div className="increaseButton" onClick={handleStorageIncrease}>
-              Increase Storage
-            </div>
-            <div className="decreaseButton" onClick={handleStorageDecrease}>
-              Decrease Storage
+          </div>
+          <div className="bottom-right">
+            <div className="button-group">
+              <div className="button" onClick={handleStorageIncrease}>
+                Increase Storage
+              </div>
+              <div className="button" onClick={handleStorageDecrease}>
+                Decrease Storage
+              </div>
             </div>
           </div>
         </div>
-        <div className="bottom">{/* <FileManager title="Files" /> */}</div>
       </div>
     </div>
   );
