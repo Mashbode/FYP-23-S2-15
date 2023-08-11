@@ -53,10 +53,12 @@ class FileLog(models.Model):
     filename = models.CharField(max_length=50, blank=True, null=True)
     filetype = models.CharField(max_length=50, blank=True, null=True)
     numberofparts = models.IntegerField(blank=True, null=True)
+    encryptiontype = models.CharField(max_length=50, blank=True, null=True)
     client_id = models.IntegerField(blank=True, null=True)
     uploadtime = models.DateTimeField(blank=True, null=True)
     last_change = models.DateTimeField(blank=True, null=True)
     delete_time = models.DateTimeField(auto_now_add=True)
+    filesize = models.CharField(max_length=250)
 
     class Meta:
         managed = False
@@ -80,7 +82,7 @@ class FilePartsLog(models.Model):
 class FileVersionLog(models.Model):
     file_version_id = models.UUIDField(primary_key=True)
     file_id = models.UUIDField(blank=True, null=True)
-    version_file = models.IntegerField(blank=True, null=True)
+    file_version = models.IntegerField(blank=True, null=True)
     last_change = models.DateTimeField(auto_now_add=True)
     delete_time = models.DateTimeField(auto_now_add=True)
 
@@ -120,9 +122,10 @@ class Filetable(models.Model):
     filetype = models.CharField(max_length=50, blank=True, null=True)
     numberofparts = models.IntegerField(default = 5,blank=True, null=True)
     encryptiontype = models.ForeignKey(Encryption, models.DO_NOTHING, db_column='encryptiontype', default = 'AES',blank=True, null=True)
-    client_id = models.ForeignKey(Client, models.DO_NOTHING)
+    client = models.ForeignKey(Client, models.DO_NOTHING,  db_column='client_id')
     last_change = models.DateTimeField(auto_now=True)
     uploadtime = models.DateTimeField(auto_now_add=True)
+    filesize = models.CharField(max_length=250)
 
     class Meta:
         managed = False
@@ -226,9 +229,9 @@ class Permission(models.Model):
 class Server1(models.Model):
 
     server1_id = models.AutoField(primary_key=True)
-    file_id = models.ForeignKey(Filetable, models.DO_NOTHING)
-    file_version = models.ForeignKey(Fileversion, models.DO_NOTHING)
-    file_part = models.ForeignKey(Fileparts, models.DO_NOTHING)
+    file_id = models.UUIDField()
+    file_version_id = models.UUIDField()
+    file_part = models.ForeignKey(Fileparts, models.DO_NOTHING, db_column='file_part_id')
 
     class Meta:
         managed = False
@@ -250,9 +253,9 @@ class Server1Logs(models.Model):
 
 class Server2(models.Model):
     server2_id = models.AutoField(primary_key=True)
-    file_id = models.ForeignKey(Filetable, models.DO_NOTHING)
-    file_version = models.ForeignKey(Fileversion, models.DO_NOTHING)
-    file_part = models.ForeignKey(Fileparts, models.DO_NOTHING)
+    file_id = models.UUIDField()
+    file_version_id = models.UUIDField()
+    file_part = models.ForeignKey(Fileparts, models.DO_NOTHING, db_column='file_part_id')
 
     class Meta:
         managed = False
@@ -273,9 +276,9 @@ class Server2Logs(models.Model):
 
 class Server3(models.Model):
     server3_id = models.AutoField(primary_key=True)
-    file_id =models.ForeignKey(Filetable, models.DO_NOTHING)
-    file_version = models.ForeignKey(Fileversion, models.DO_NOTHING)
-    file_part = models.ForeignKey(Fileparts, models.DO_NOTHING, blank=True, null=True)
+    file_id = models.UUIDField()
+    file_version_id = models.UUIDField()
+    file_part = models.ForeignKey(Fileparts, models.DO_NOTHING, db_column='file_part_id')
 
     class Meta:
         managed = False
@@ -296,9 +299,9 @@ class Server3Logs(models.Model):
 
 class Server4(models.Model):
     server4_id = models.AutoField(primary_key=True)
-    file_id = models.ForeignKey(Filetable, models.DO_NOTHING)
-    file_version = models.ForeignKey(Fileversion, models.DO_NOTHING)
-    file_part = models.ForeignKey(Fileparts, models.DO_NOTHING)
+    file_id = models.UUIDField() 
+    file_version_id = models.UUIDField()
+    file_part = models.ForeignKey(Fileparts, models.DO_NOTHING, db_column='file_part_id')
 
     class Meta:
         managed = False
@@ -317,6 +320,28 @@ class Server4Logs(models.Model):
         managed = False
         db_table = 'server4_logs'
 
+
+class Server5(models.Model):
+    server5_id = models.AutoField(primary_key=True)
+    file_id = models.UUIDField() 
+    file_version_id = models.UUIDField()
+    file_part = models.ForeignKey(Fileparts, models.DO_NOTHING, db_column='file_part_id')
+
+    class Meta:
+        managed = False
+        db_table = 'server5'
+
+
+class Server5Logs(models.Model):
+    server5_id = models.IntegerField(primary_key=True, blank=True)
+    file_id = models.UUIDField()
+    file_version_id = models.UUIDField()
+    file_part_id = models.UUIDField()
+    delete_time = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        managed = False
+        db_table = 'server5_logs'
 
 class Sharedfileaccess(models.Model):
     file = models.ForeignKey(Filetable, models.DO_NOTHING, db_column='file_id')
@@ -356,13 +381,13 @@ class Subscription(models.Model):
 
 
 class Users(models.Model):
-    u_id = models.CharField(primary_key=True, unique=True, max_length=100)
     username = models.CharField(max_length=50)
     f_name = models.CharField(max_length=50)
     l_name = models.CharField(max_length=50)
     email = models.CharField(max_length=50)
     phone_number = models.CharField(max_length=20)
     usertype = models.CharField(max_length=10)
+    u_id = models.CharField(primary_key=True, unique=True, max_length=100)
 
     class Meta:
         managed = False
@@ -490,17 +515,17 @@ class File5(models.Model):
     file_version_id = models.UUIDField()
     file_id = models.UUIDField()
     data = models.BinaryField(blank=True, null=True, editable=True)
-    secret = models.BinaryField(editable=True)
+    secret = models.BinaryField()
 
     class Meta:
         managed = False
         db_table = 'file5'
 
 class File5_log(models.Model):
+    fileserver5_id = models.AutoField(primary_key=True)
+    file_version_id = models.UUIDField()
     file_id = models.UUIDField()
     data = models.BinaryField(blank=True, null=True)
-    file_version_id = models.UUIDField()
-    fileserver5_id = models.AutoField(primary_key=True)
     secret = models.BinaryField()
     delete_time = models.DateTimeField(auto_now=True)
 

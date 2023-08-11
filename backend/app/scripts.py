@@ -25,11 +25,11 @@ def compression(file):
     dir = os.path.dirname(path)
     print(dir)
     dirs = dir + ('/shard_make')
-    print(dirs)
+    # print(dirs)
     os.chdir(dirs)
     # opening the file
     org = open(file, "rb").read()
-    compr_d = zlib.compress(org, wbits=15)
+    compr_d = zlib.compress(org)
     temptuple = os.path.splitext(file)
     # create new name
     new_name = temptuple[0]+ '.zipped'
