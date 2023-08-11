@@ -104,6 +104,7 @@ const Sidebar = () => {
                   <span>Dashboard</span>
                 </Link>
               </li>
+
               <p className="title">LISTS</p>
               <li>
                 <Link to="/users" style={{ textDecoration: "none" }}>
@@ -190,6 +191,12 @@ const Sidebar = () => {
                 <Link to="/my-drive" style={{ textDecoration: "none" }}>
                   <StorageIcon className="icon" />
                   <span>My Drive</span>
+                </Link>
+              </li>
+              <li>
+                <Link to="/files/upload" style={{ textDecoration: "none" }}>
+                  <InsertDriveFileIcon className="icon" />
+                  <span>Files</span>
                 </Link>
               </li>
               <p className="title">LISTS</p>

@@ -137,7 +137,13 @@ const FileManagerContainer = ({ title, axiosFileItems }) => {
     // Things to send to file system
     // 1. fileID = console.log(fileItems.__KEY__)
     // 2. userID = console.log(currentUser.uid)
-    console.log(fileItems);
+    // console.log(fileItems);
+    // const file = JSON.stringify(fileItems[5]);
+    const items = JSON.stringify(fileItems);
+    console.log(items);
+    // console.log(file);
+    // console.log(toJSON(fileItems));
+    // console.log(fileItems[5].toJSON());
   };
   // *****************************************************************************************************************
 

@@ -21,6 +21,7 @@ import { AuthContext } from "./context/AuthContext";
 
 import { useContext } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import UploadFile from "./pages/uploadfile/UploadFile";
 
 const userInputs = [
   // Changed id to its actual name w/ adoption of firebase
@@ -132,21 +133,29 @@ function App() {
                   </RequireAuth>
                 }
               />
-              <Route
-                path="change-password"
-                element={
-                  <RequireAuth>
-                    <ChangePassword />
-                  </RequireAuth>
-                }
-              />
             </Route>
+            <Route
+              path="change-password"
+              element={
+                <RequireAuth>
+                  <ChangePassword />
+                </RequireAuth>
+              }
+            />
             <Route path="files">
               <Route
                 index
                 element={
                   <RequireAuth>
                     <List type="files" />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="upload"
+                element={
+                  <RequireAuth>
+                    <UploadFile />
                   </RequireAuth>
                 }
               />
