@@ -5,16 +5,20 @@ urlpatterns = [
    ############################# put a comment on urls that are being used so we can clean up ######################
         #######################################################################
         ########################## important functions ########################
-    path('api/testing/fileinsert<int:client_id>', FileUploadView.as_view()),
+    
     
     ############## file upload functions  ################
 
         # this url for getting file versions 
     path('api/file/versions/<uuid:file_id>', getFileversions.as_view()),
         # url for uploading file, require client_id
-    path('api/fileupload/<int:client_id>', uploadingFile, name='file-upload'),
+    # path('api/fileupload/<int:client_id>', uploadingFile, name='file-upload'),
+        ## use this for file upload##
+    path('api/fileinsert<int:client_id>', FileUploadView.as_view()),
         # url for updating file, require file_id
-    path('api/fileupdate/<uuid:fileId>', fileupdateWhenUpdate),
+    # path('api/fileupdate/<uuid:fileId>', fileupdateWhenUpdate),
+    path('api/fileupdate/<uuid:fileId>',fileupdateWhenUpdateView.as_view() ),
+
 
     ############### file retreival functions (i.e. download)##########
 

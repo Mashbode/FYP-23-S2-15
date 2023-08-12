@@ -757,7 +757,7 @@ def queryclientId(request, u_id):
 
 
 
-
+## for insert
 class FileUploadView(APIView):
     parser_classes = (MultiPartParser, FormParser)
 
@@ -806,6 +806,52 @@ class FileUploadView(APIView):
             ## function to upload the split file parts to the db 
         upload = filepartsupload(split_file_list, split_key_list, file_id, file_version_id)
             ## remove files in folder 
+        path = os.path.realpath(__file__)
+        dir = os.path.dirname(path)
+        dirs = dir + ('/shard_make')
+        for f in os.listdir(dirs):
+            os.remove(os.path.join(dirs, f))
+        return HttpResponse('file ok')
+
+## for update
+class fileupdateWhenUpdateView(APIView):
+    parser_classes = (MultiPartParser, FormParser)
+
+    def post(self, request,fileId):
+        file = request.FILES['file']
+        path = os.path.realpath(__file__)
+        dir = os.path.dirname(path)
+        dirs = dir + '/shard_make/' 
+        with open(dirs+ file.name, 'wb+') as destination:
+            for chunk in file.chunks():
+                destination.write(chunk)
+        fileinfo = os.path.splitext(file.name)
+        filename = fileinfo[0]
+        fileext =  fileinfo[1]
+            ### get current time
+        newtime = timezzzz()
+            ### update new file insert 
+        files = Filetable.objects.filter(file_id = fileId).update(last_change = newtime, filesize=file.size, filename=filename, filetype=fileext)
+            ## dun have to use serializer to save data
+            ### first compress the file 
+        compres_file_name = compression(file.name)
+        print('file compressed')
+            ### then encrypt 
+        encrypt_file_name = encrypt_file(compres_file_name)
+        print('file encrypted')
+            ## then split the file, it returns the list of split files
+        split_file_list = ecc_file(encrypt_file_name)
+        print('file split')
+            ## then split the pub key, it returns a list of file names for split
+        split_key_list = pyshmir_split()
+        print('pub key split')
+            ## once file is inserted, the tables will be generated
+            ## retrieve the file_version_id from fileversion_table 
+        file_version_id = fileversionOnUpdate(fileId)
+        print('retrieve file version')
+            ## function to upload the split file parts to the db 
+        upload = filepartsupload(split_file_list, split_key_list, fileId, file_version_id)
+            ## remove all files in folder 
         path = os.path.realpath(__file__)
         dir = os.path.dirname(path)
         dirs = dir + ('/shard_make')
