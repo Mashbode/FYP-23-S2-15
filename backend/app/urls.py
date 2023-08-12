@@ -5,6 +5,8 @@ urlpatterns = [
    ############################# put a comment on urls that are being used so we can clean up ######################
         #######################################################################
         ########################## important functions ########################
+    path('api/testing/fileinsert<int:client_id>', FileUploadView.as_view()),
+    
     ############## file upload functions  ################
 
         # this url for getting file versions 

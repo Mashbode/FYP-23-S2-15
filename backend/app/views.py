@@ -411,8 +411,8 @@ def getfoldersThatClientShared(request, client_id):
 ## need to provide client_id # not user_id 
 def uploadingFile(request, client_id):
     if request.method == 'POST':
-        test = testForm(request.POST, request.FILES)
-        if test.is_valid():
+        # test = testForm(request.POST, request.FILES)
+        # if test.is_valid():
             file = request.FILES['file']
             path = os.path.realpath(__file__)
             dir = os.path.dirname(path)
@@ -460,11 +460,11 @@ def uploadingFile(request, client_id):
             for f in os.listdir(dirs):
                 os.remove(os.path.join(dirs, f))
             return HttpResponse('file ok')
-    else:
-        test = testForm()
-        ## the html.html need to replace with the frontend stuff i think
-        return render(request,"html.html", {'form':test})
-    
+    # else:
+    #     test = testForm()
+    #     ## the html.html need to replace with the frontend stuff i think
+    #     return render(request,"html.html", {'form':test})
+    return HttpResponse('waiting')
 
 
 ### file update ################## works 
@@ -754,3 +754,61 @@ def restorefile(request,file_id):
 def queryclientId(request, u_id):
     set = Client.objects.filter(u_id=u_id).values('client_id')
     return JsonResponse(set[0], safe = False)
+
+
+
+
+class FileUploadView(APIView):
+    parser_classes = (MultiPartParser, FormParser)
+
+    def post(self, request,client_id):
+        file = request.FILES['file']
+        path = os.path.realpath(__file__)
+        dir = os.path.dirname(path)
+        dirs = dir + '/shard_make/' 
+        with open(dirs+ file.name, 'wb+') as destination:
+            for chunk in file.chunks():
+                destination.write(chunk)
+        fileinfo = os.path.splitext(file.name)
+        filename = fileinfo[0]
+        fileext =  fileinfo[1]
+            ## temp (if can get it through the hidden post field from react side it would be great)
+            # c_id = request.POST['client_id']
+        c_id = client_id
+            # c_id = 2
+            ###
+        print('insert into file tab')
+            ### insert into file table first to generate file_id (uuid)
+        files = Filetable.objects.create(filename = filename, filetype = fileext, client_id = c_id, filesize=file.size)
+            ## dun have to use serializer to save data
+        serializers = FileSerializer(data = files)
+        if serializers.is_valid():
+                serializers.save()
+            ### first compress the file 
+        compres_file_name= compression(file.name)
+        print('file compressed')
+            ### then encrypt 
+        encrypt_file_name = encrypt_file(compres_file_name)
+        print('file encrypted')
+            ## then split the file, it returns the list of split files
+        split_file_list = ecc_file(encrypt_file_name)
+        print('file split')
+            ## then split the pub key, it returns a list of file names for split
+        split_key_list = pyshmir_split()
+        print('pub key split')
+            ## once file is inserted, the tables will be generated
+            ## need to retrieve the file_id 
+        file_id = filegetting()
+        print('retrieve fileid')
+            ## retrieve the file_version_id from fileversion_table 
+        file_version_id = fileversionOnInsert(file_id)
+        print('retrieve file version')
+            ## function to upload the split file parts to the db 
+        upload = filepartsupload(split_file_list, split_key_list, file_id, file_version_id)
+            ## remove files in folder 
+        path = os.path.realpath(__file__)
+        dir = os.path.dirname(path)
+        dirs = dir + ('/shard_make')
+        for f in os.listdir(dirs):
+            os.remove(os.path.join(dirs, f))
+        return HttpResponse('file ok')
