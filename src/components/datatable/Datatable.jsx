@@ -262,7 +262,7 @@ const Datatable = ({ type }) => {
               className="deleteButton"
               onClick={() => handleFileDeleteForever(params)}
             >
-              Delete
+              Delete forever
             </div>
           </div>
         );
