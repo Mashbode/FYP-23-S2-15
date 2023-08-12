@@ -19,6 +19,7 @@ import { db, auth } from "../../firebase";
 import {
   userColumns,
   fileColumns,
+  sharedColumns,
   enquiryColumns,
 } from "../../datatablesource";
 import { getStorage, ref, deleteObject } from "firebase/storage";
@@ -31,8 +32,8 @@ const Datatable = ({ type }) => {
   const { currentUser } = useContext(AuthContext);
   // axios
   // const [ userID, setUID ] = useState(""); // get user id
-  const [ clientID, setClientID ] = useState(""); // get client id
-  const [ userFiles, setUserFiles ] = useState([]); // get all client id's file
+  const [clientID, setClientID] = useState(""); // get client id
+  const [userFiles, setUserFiles] = useState([]); // get all client id's file
   // const [ fileID, setFilesID ] = useState(); // get file's ID
   // const [ fileName, setFilesName ] = useState(""); // get file's name
   // const [ fileLastModified, setFileLastModified] = useState(); // get file's last modified timestamp
@@ -95,6 +96,14 @@ const Datatable = ({ type }) => {
       var email = prompt("Please enter a user's email to share");
       var userToShareID = getUserIDWithEmail(email);
       console.log(params.row.id); // fileID to share
+      // *********************************************************************************************************************************
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const handleFileUnshare = (params) => {
+    try {
+      // ****************************************************** Connect with Django ******************************************************
       // *********************************************************************************************************************************
     } catch (error) {
       console.log(error);
@@ -198,6 +207,24 @@ const Datatable = ({ type }) => {
     },
   ];
 
+  const actionSharedColumns = [
+    {
+      field: "action",
+      headerName: "Action",
+      width: 200,
+      renderCell: (params) => {
+        return (
+          <div className="cellAction">
+            {/* Same with actionFileColumn above */}
+            <a href={params.row.file} className="actionButton" download>
+              Download
+            </a>
+          </div>
+        );
+      },
+    },
+  ];
+
   const actionEnquiryColumn = [
     {
       field: "action",
@@ -214,6 +241,12 @@ const Datatable = ({ type }) => {
               onClick={() => handleUserDelete(params.row.id)}
             >
               Delete
+            </div>
+            <div
+              className="actionButton"
+              onClick={() => handleFileUnshare(params)}
+            >
+              Unshare
             </div>
           </div>
         );
@@ -233,6 +266,10 @@ const Datatable = ({ type }) => {
       columns = fileColumns;
       actionColumn = actionFileColumn;
       break;
+    case "shared":
+      columns = sharedColumns;
+      actionColumn = actionSharedColumns;
+      break;
     case "enquiries":
       columns = enquiryColumns;
       actionColumn = actionEnquiryColumn;
@@ -244,55 +281,54 @@ const Datatable = ({ type }) => {
   // Run only once when the component is build
   useEffect(() => {
     // ************************** Connect with Django **************************
-
     console.log("u_id: ", auth.currentUser.uid);
 
-    instance.get("client/" + auth.currentUser.uid)
-      .then( (res) => {
-          setClientID(res.data.client_id); // get client_id from url: api/Client
-          console.log("ClientID: ", res.data.client_id);
-          // console.log('current client id: ', clientID );
-        })
+    instance
+      .get("client/" + auth.currentUser.uid)
+      .then((res) => {
+        setClientID(res.data.client_id); // get client_id from url: api/Client
+        console.log("ClientID: ", res.data.client_id);
+        // console.log('current client id: ', clientID );
+      })
       .catch((err) => {
         console.log(err);
-      })
-    
-
-
-    // Return a cleanup function to stop listening
-
+      });
     // *************************************************************************
   }, []);
 
-  useEffect (() => {
+  useEffect(() => {
     console.log("Client__ID: ", clientID);
     if (clientID != "") {
-        // load all the user's files
-        // let client_file_id_url = `client/file/${clientID}`
-        instance.get("client/file/" + clientID) // retrieve list of files under client_id
-          .then((response) => {
-            console.log(response.data);
+      // load all the user's files
+      // let client_file_id_url = `client/file/${clientID}`
+      instance
+        .get("client/file/" + clientID) // retrieve list of files under client_id
+        .then((response) => {
+          console.log(response.data);
 
-            const data = response.data; // Assuming the response contains the data you provided
+          const data = response.data; // Assuming the response contains the data you provided
 
-            const data_list = data.map(entry => ({
-              id: entry.file_id,
-              filename: entry.filename,
-              username: entry.client,
-              timeStamp: entry.last_change
-            }));
-            console.log("Data_list: ", data_list);
-            setUserFiles(data_list);
+          const data_list = data.map((entry) => ({
+            id: entry.file_id,
+            filename: entry.filename,
+            username: entry.client,
+            timeStamp: entry.last_change,
+          }));
+          console.log("Data_list: ", data_list);
+          setUserFiles(data_list);
 
-            // console.log("userFiles: ", userFiles); it wont load in yet
-            
-            console.log("Data table retrieved list of files under client", clientID);
-          })
-          .catch((err) => {
-            console.log(err);
-          })
+          // console.log("userFiles: ", userFiles); it wont load in yet
+
+          console.log(
+            "Data table retrieved list of files under client",
+            clientID
+          );
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     }
-  },[clientID])
+  }, [clientID]);
 
   return (
     <div className="datatable">
@@ -308,7 +344,8 @@ const Datatable = ({ type }) => {
       {/* https://mui.com/x/react-data-grid/ */}
       <DataGrid
         className="datagrid"
-        rows={userFiles} // previous was data param
+        // rows={data}
+        rows={userFiles}
         columns={columns.concat(actionColumn)}
         slots={{
           toolbar: GridToolbar,

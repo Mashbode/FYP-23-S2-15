@@ -198,7 +198,7 @@ const Sidebar = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/my-drive/shared" style={{ textDecoration: "none" }}>
+                <Link to="/files/shared" style={{ textDecoration: "none" }}>
                   <PeopleAltOutlinedIcon className="icon" />
                   <span>Shared</span>
                 </Link>
