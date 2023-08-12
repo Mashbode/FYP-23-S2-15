@@ -751,7 +751,6 @@ def restorefile(request,file_id):
     return HttpResponse('restored')
 
 
-def test(request, fid):
-    test = File1.objects.filter(file_id =fid).using('server1')
-    print(test)
-    return HttpResponse('ok')
+def queryclientId(request, u_id):
+    set = Client.objects.filter(u_id=u_id).values('client_id')
+    return JsonResponse(set[0], safe = False)
