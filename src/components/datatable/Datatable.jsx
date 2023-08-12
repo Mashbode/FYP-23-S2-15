@@ -15,19 +15,27 @@ import {
   deleteDoc,
   onSnapshot,
 } from "firebase/firestore";
-import { db } from "../../firebase";
+import { db, auth } from "../../firebase";
 import {
   userColumns,
   fileColumns,
   enquiryColumns,
 } from "../../datatablesource";
 import { getStorage, ref, deleteObject } from "firebase/storage";
+import instance from "../../axios_config";
 
 // Pass type prop if u want to apply it to both users & products
 const Datatable = ({ type }) => {
   // const [data, setData] = useState(userRows);
   const [data, setData] = useState([]);
   const { currentUser } = useContext(AuthContext);
+  // axios
+  // const [ userID, setUID ] = useState(""); // get user id
+  const [ clientID, setClientID ] = useState(""); // get client id
+  const [ userFiles, setUserFiles ] = useState([]); // get all client id's file
+  // const [ fileID, setFilesID ] = useState(); // get file's ID
+  // const [ fileName, setFilesName ] = useState(""); // get file's name
+  // const [ fileLastModified, setFileLastModified] = useState(); // get file's last modified timestamp
 
   // 1. Delete the user from the database
   // 2. The user needs to be deleted from the Firebase -> Authentication -> Users manually as re-authentication requires the user's password (https://firebase.google.com/docs/auth/web/manage-users#re-authenticate_a_user)
@@ -235,47 +243,56 @@ const Datatable = ({ type }) => {
 
   // Run only once when the component is build
   useEffect(() => {
-    // const fetchData = async () => {
-    //   var list = [];
-    //   try {
-    //     // DB and collection name
-    //     const querySnapshot = await getDocs(collection(db, type));
-    //     querySnapshot.forEach((doc) => {
-    //       // doc.data() is never undefined for query doc snapshots
-    //       // console.log(doc.id, " => ", doc.data());
-    //       list.push({ id: doc.id, ...doc.data() });
-    //     });
-    //     setData(list);
-    //   } catch (err) {
-    //     console.log(err);
-    //   }
-    // };
-    // fetchData();
-
     // ************************** Connect with Django **************************
-    // https://firebase.google.com/docs/firestore/query-data/listen
-    // Listen to data real-time + doc id is not required + doc chnged to snapShot
-    const unsub = onSnapshot(collection(db, "users"), (snapShot) => {
-      var list = [];
-      // console.log("Current data: ", doc.data());
-      // Refer upper querySnapshot
-      snapShot.docs.forEach(
-        (doc) => {
-          list.push({ id: doc.id, ...doc.data() });
-          setData(list);
-        },
-        (error) => {
-          console.log(error);
-        }
-      );
-    });
+
+    console.log("u_id: ", auth.currentUser.uid);
+
+    instance.get("client/" + auth.currentUser.uid)
+      .then( (res) => {
+          setClientID(res.data.client_id); // get client_id from url: api/Client
+          console.log("ClientID: ", res.data.client_id);
+          // console.log('current client id: ', clientID );
+        })
+      .catch((err) => {
+        console.log(err);
+      })
+    
+
 
     // Return a cleanup function to stop listening
-    return () => {
-      unsub();
-    };
+
     // *************************************************************************
   }, []);
+
+  useEffect (() => {
+    console.log("Client__ID: ", clientID);
+    if (clientID != "") {
+        // load all the user's files
+        // let client_file_id_url = `client/file/${clientID}`
+        instance.get("client/file/" + clientID) // retrieve list of files under client_id
+          .then((response) => {
+            console.log(response.data);
+
+            const data = response.data; // Assuming the response contains the data you provided
+
+            const data_list = data.map(entry => ({
+              id: entry.file_id,
+              filename: entry.filename,
+              username: entry.client,
+              timeStamp: entry.last_change
+            }));
+            console.log("Data_list: ", data_list);
+            setUserFiles(data_list);
+
+            // console.log("userFiles: ", userFiles); it wont load in yet
+            
+            console.log("Data table retrieved list of files under client", clientID);
+          })
+          .catch((err) => {
+            console.log(err);
+          })
+    }
+  },[clientID])
 
   return (
     <div className="datatable">
@@ -291,7 +308,7 @@ const Datatable = ({ type }) => {
       {/* https://mui.com/x/react-data-grid/ */}
       <DataGrid
         className="datagrid"
-        rows={data}
+        rows={userFiles} // previous was data param
         columns={columns.concat(actionColumn)}
         slots={{
           toolbar: GridToolbar,

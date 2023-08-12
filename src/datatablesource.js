@@ -92,8 +92,7 @@ export const fileColumns = [
     width: 150,
     renderCell: (params) => {
       let lastModifiedDate = new Date(
-        params.row.timeStamp.toDate() // Returns Date object (Firebase)
-      ).toDateString(); // turns Data object into readable string (React)
+        params.row.timeStamp).toDateString(); // turns Data object into readable string (React)
       return <div className="cellWithLastModified">{lastModifiedDate}</div>;
     },
   },
