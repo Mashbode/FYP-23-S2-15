@@ -10,14 +10,13 @@ const UploadFile = () => {
         <Navbar />
         <div className="uploadfileContent">
           <div className="uploadfileTitle">Upload File</div>
-          <form method="POST" class="post-form" enctype="multipart/form-data">
+          {/* <form method="POST" class="post-form" enctype="multipart/form-data"> */}
+          <form method="POST">
             <p>
               <label for="id_file">File:</label>
               <input type="file" name="file" required id="id_file" />
             </p>
-            <button type="submit" class="save btn btn-default">
-              Save
-            </button>
+            <button type="submit">Save</button>
           </form>
         </div>
       </div>
