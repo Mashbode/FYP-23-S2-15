@@ -24,6 +24,7 @@ import {
   enquiryColumns,
 } from "../../datatablesource";
 import { getStorage, ref, deleteObject } from "firebase/storage";
+import { ThreeDots } from "react-loader-spinner" // npm install react-loader-spinner --save
 import instance from "../../axios_config";
 
 // Pass type prop if u want to apply it to both users & products
@@ -32,9 +33,9 @@ const Datatable = ({ type }) => {
   const [data, setData] = useState([]);
   const { currentUser } = useContext(AuthContext);
   // axios
+  const [isLoading, setLoading] = useState(true); // loading icon shown or not
   // const [ userID, setUID ] = useState(""); // get user id
   const [clientID, setClientID] = useState(""); // get client id
-  const [userFiles, setUserFiles] = useState([]); // get all client id's file
   // const [ fileID, setFilesID ] = useState(); // get file's ID
   // const [ fileName, setFilesName ] = useState(""); // get file's name
   // const [ fileLastModified, setFileLastModified] = useState(); // get file's last modified timestamp
@@ -333,7 +334,7 @@ const Datatable = ({ type }) => {
     console.log("u_id: ", auth.currentUser.uid);
 
     instance
-      .get("client/" + auth.currentUser.uid)
+      .get(`client/getid/${auth.currentUser.uid}`)
       .then((res) => {
         setClientID(res.data.client_id); // get client_id from url: api/Client
         console.log("ClientID: ", res.data.client_id);
@@ -342,6 +343,8 @@ const Datatable = ({ type }) => {
       .catch((err) => {
         console.log(err);
       });
+
+      setLoading(false); // set loading icon false
     // *************************************************************************
   }, []);
 
@@ -351,7 +354,7 @@ const Datatable = ({ type }) => {
       // load all the user's files
       // let client_file_id_url = `client/file/${clientID}`
       instance
-        .get("client/file/" + clientID) // retrieve list of files under client_id
+        .get(`client/file/${clientID}`) // retrieve list of files under client_id
         .then((response) => {
           console.log(response.data);
 
@@ -364,9 +367,9 @@ const Datatable = ({ type }) => {
             timeStamp: entry.last_change,
           }));
           console.log("Data_list: ", data_list);
-          setUserFiles(data_list);
+          setData(data_list);
 
-          // console.log("userFiles: ", userFiles); it wont load in yet
+          // console.log("Data: ", data); it wont load in yet
 
           console.log(
             "Data table retrieved list of files under client",
@@ -379,36 +382,49 @@ const Datatable = ({ type }) => {
     }
   }, [clientID]);
 
-  return (
-    <div className="datatable">
-      {/* https://react-hot-toast.com/ */}
-      <Toaster toastOptions={{ duration: 3000 }} />
-      <div className="datatableTitle">
-        {/* Title of the datatable = Type with the first letter changed to upper case */}
-        {type.replace(/^./, type[0].toUpperCase())}
-        {/* <Link to={`/${type}/new`} className="link">
-          Add New
-        </Link> */}
-      </div>
-      {/* https://mui.com/x/react-data-grid/ */}
-      <DataGrid
-        className="datagrid"
-        // rows={data}
-        rows={userFiles}
-        columns={columns.concat(actionColumn)}
-        slots={{
-          toolbar: GridToolbar,
-        }} // https://mui.com/x/react-data-grid/filtering/
-        initialState={{
-          pagination: {
-            paginationModel: { page: 0, pageSize: 5 },
-          },
-        }}
-        pageSizeOptions={[5, 10]}
-        checkboxSelection
+     if (isLoading) {
+      return (
+        <div  className="loadingContainer">
+        <ThreeDots
+        type="ThreeDots"
+        color="#00b22d"
+        height={100}
+        width={100}
+        //3 secs
       />
-    </div>
-  );
+      </div>
+      )
+    } else {
+      return (
+        <div className="datatable">
+          {/* https://react-hot-toast.com/ */}
+          <Toaster toastOptions={{ duration: 3000 }} />
+          <div className="datatableTitle">
+            {/* Title of the datatable = Type with the first letter changed to upper case */}
+            {type.replace(/^./, type[0].toUpperCase())}
+            {/* <Link to={`/${type}/new`} className="link">
+              Add New
+            </Link> */}
+          </div>
+          {/* https://mui.com/x/react-data-grid/ */}
+          <DataGrid
+            className="datagrid"
+            rows={data} // previous was data param
+            columns={columns.concat(actionColumn)}
+            slots={{
+              toolbar: GridToolbar,
+            }} // https://mui.com/x/react-data-grid/filtering/
+            initialState={{
+              pagination: {
+                paginationModel: { page: 0, pageSize: 5 },
+              },
+            }}
+            pageSizeOptions={[5, 10]}
+            checkboxSelection
+          />
+        </div>
+      );
+    }
 };
 
 export default Datatable;
