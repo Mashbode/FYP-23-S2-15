@@ -92,15 +92,20 @@ export const fileColumns = [
     width: 150,
     renderCell: (params) => {
       let lastModifiedDate = new Date(
-        params.row.timeStamp).toDateString(); // turns Data object into readable string (React)
+        //   params.row.timeStamp.toDate() // Returns Date object (Firebase)
+        // ).toDateString(); // turns Data object into readable string (React)
+        params.row.timeStamp
+      ).toDateString(); // turns Data object into readable string (React)
       return <div className="cellWithLastModified">{lastModifiedDate}</div>;
     },
   },
 ];
 // *************************************************************************
 
-export const sharedFileColumns = [
-  { field: "id", headerName: "ID", width: 100 },
+// ************************** Connect with Django **************************
+// Change the field according to the data fetched from Datatabls.jsx -> useEffect()
+export const sharedColumns = [
+  { field: "id", headerName: "ID", width: 250 },
   {
     field: "filename",
     headerName: "File Name",
@@ -108,7 +113,7 @@ export const sharedFileColumns = [
   },
   {
     field: "username",
-    headerName: "Shared by",
+    headerName: "Uploader",
     width: 230,
   },
 
@@ -118,12 +123,15 @@ export const sharedFileColumns = [
     width: 150,
     renderCell: (params) => {
       let lastModifiedDate = new Date(
-        params.row.timeStamp.toDate() // Returns Date object (Firebase)
-      ).toDateString(); // Into readable string (React JS)
+        //   params.row.timeStamp.toDate() // Returns Date object (Firebase)
+        // ).toDateString(); // turns Data object into readable string (React)
+        params.row.timeStamp
+      ).toDateString(); // turns Data object into readable string (React)
       return <div className="cellWithLastModified">{lastModifiedDate}</div>;
     },
   },
 ];
+// *************************************************************************
 
 export const deletedFileColumns = [
   { field: "id", headerName: "ID", width: 250 },

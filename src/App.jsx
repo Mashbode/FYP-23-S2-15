@@ -153,6 +153,14 @@ function App() {
                 }
               />
               <Route
+                path="shared"
+                element={
+                  <RequireAuth>
+                    <List type="shared" />
+                  </RequireAuth>
+                }
+              />
+              <Route
                 path="upload"
                 element={
                   <RequireAuth>
