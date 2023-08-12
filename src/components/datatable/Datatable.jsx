@@ -20,6 +20,7 @@ import {
   userColumns,
   fileColumns,
   sharedColumns,
+  trashColumns,
   enquiryColumns,
 } from "../../datatablesource";
 import { getStorage, ref, deleteObject } from "firebase/storage";
@@ -111,6 +112,24 @@ const Datatable = ({ type }) => {
   };
 
   const handleFileDelete = async (params) => {
+    try {
+      // ****************************************************** Connect with Django ******************************************************
+      // *********************************************************************************************************************************
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleFileRestore = (params) => {
+    try {
+      // ****************************************************** Connect with Django ******************************************************
+      // *********************************************************************************************************************************
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleFileDeleteForever = async (params) => {
     try {
       if (window.confirm("Are you sure to delete the file?")) {
         // Delete the document
@@ -225,6 +244,32 @@ const Datatable = ({ type }) => {
     },
   ];
 
+  const actionTrashColumns = [
+    {
+      field: "action",
+      headerName: "Action",
+      width: 200,
+      renderCell: (params) => {
+        return (
+          <div className="cellAction">
+            <div
+              className="actionButton"
+              onClick={() => handleFileRestore(params)}
+            >
+              Share
+            </div>
+            <div
+              className="deleteButton"
+              onClick={() => handleFileDeleteForever(params)}
+            >
+              Delete
+            </div>
+          </div>
+        );
+      },
+    },
+  ];
+
   const actionEnquiryColumn = [
     {
       field: "action",
@@ -269,6 +314,10 @@ const Datatable = ({ type }) => {
     case "shared":
       columns = sharedColumns;
       actionColumn = actionSharedColumns;
+      break;
+    case "trash":
+      columns = trashColumns;
+      actionColumn = actionTrashColumns;
       break;
     case "enquiries":
       columns = enquiryColumns;

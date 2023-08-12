@@ -161,6 +161,14 @@ function App() {
                 }
               />
               <Route
+                path="trash"
+                element={
+                  <RequireAuth>
+                    <List type="trash" />
+                  </RequireAuth>
+                }
+              />
+              <Route
                 path="upload"
                 element={
                   <RequireAuth>

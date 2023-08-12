@@ -204,7 +204,7 @@ const Sidebar = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/my-drive/trash" style={{ textDecoration: "none" }}>
+                <Link to="/files/trash" style={{ textDecoration: "none" }}>
                   <DeleteIcon className="icon" />
                   <span>Trash</span>
                 </Link>
