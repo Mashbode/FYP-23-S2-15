@@ -411,8 +411,8 @@ def getfoldersThatClientShared(request, client_id):
 ## need to provide client_id # not user_id 
 def uploadingFile(request, client_id):
     if request.method == 'POST':
-        test = testForm(request.POST, request.FILES)
-        if test.is_valid():
+        # test = testForm(request.POST, request.FILES)
+        # if test.is_valid():
             file = request.FILES['file']
             path = os.path.realpath(__file__)
             dir = os.path.dirname(path)
@@ -460,10 +460,10 @@ def uploadingFile(request, client_id):
             for f in os.listdir(dirs):
                 os.remove(os.path.join(dirs, f))
             return HttpResponse('file ok')
-    else:
-        test = testForm()
-        ## the html.html need to replace with the frontend stuff i think
-        return render(request,"html.html", {'form':test})
+    # else:
+    #     test = testForm()
+    #     ## the html.html need to replace with the frontend stuff i think
+    #     return render(request,"html.html", {'form':test})
     
 
 
