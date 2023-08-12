@@ -858,3 +858,45 @@ class fileupdateWhenUpdateView(APIView):
         for f in os.listdir(dirs):
             os.remove(os.path.join(dirs, f))
         return HttpResponse('file ok')
+    
+
+## view to delete from file log or Trash bin in ui
+def deleteHist(request, file_id):
+        # to permamently delete 
+    # delete from file log 
+    print('a')
+    FileLog.objects.filter(file_id= file_id).delete()
+    # delete from file version
+    print('b')
+    FileVersionLog.objects.filter(file_id=file_id).delete()
+    # delete from file partslog 
+    print('c')
+    FilePartsLog.objects.filter(file_id=file_id).delete()
+    # delete from fileserver1
+    print('d')
+    Server1Logs.objects.filter(file_id=file_id).delete()
+    # delete from fileserver2
+    print('e')
+    Server2Logs.objects.filter(file_id=file_id).delete()
+    # delete from fileserver3
+    print('f')
+    Server3Logs.objects.filter(file_id=file_id).delete()
+    # delete from fileserver4
+    print('g')
+    Server4Logs.objects.filter(file_id=file_id).delete()
+    # delete from fileserver5
+    print('huh')
+    Server5Logs.objects.filter(file_id=file_id).delete()
+    # delete from File1
+    print('f')
+    File1_log.objects.filter(file_id=file_id).using('server1').delete()
+    print('ff')
+    File2_log.objects.filter(file_id=file_id).using('server2').delete()
+    print('ff')
+    File3_log.objects.filter(file_id=file_id).using('server3').delete()
+    print('fff')
+    File4_log.objects.filter(file_id=file_id).using('server4').delete()
+    print('ffff')
+    File5_log.objects.filter(file_id=file_id).using('server5').delete()
+    data = {'result':'All gone'}
+    return JsonResponse(data)

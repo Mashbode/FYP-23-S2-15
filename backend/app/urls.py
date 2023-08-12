@@ -32,6 +32,9 @@ urlpatterns = [
         # url for deleting file # requires fileid and client id
     path('api/fileDelete/<uuid:fileId>/<int:clientId>', deletefile),
 
+        # url for deleting file from logs, [for deleting file from trashbin]
+    path('api/filelog/delete/<uuid:file_id', deleteHist),
+
     ############### file restoring ##################
         # url for restoring a deleted file 
     path('api/filerestore/<uuid:file_id>', restorefile),
