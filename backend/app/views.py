@@ -464,7 +464,7 @@ def uploadingFile(request, client_id):
     #     test = testForm()
     #     ## the html.html need to replace with the frontend stuff i think
     #     return render(request,"html.html", {'form':test})
-    
+    return HttpResponse('waiting')
 
 
 ### file update ################## works 
