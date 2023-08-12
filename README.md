@@ -100,8 +100,12 @@ metadatadb - this will be our main db \
 fileserver - this will be where we store the file parts 
 
 ## in django, there is a file named requirements .txt 
-to run it do `pip install -r requirements.txt` this will install all the required libraries
+to run it do `pip install -r requirements.txt` this will install all the required libraries \
+To run the server for django 
+  `py manage.py runserver`
 
+Remember to set the terminal from shell to cmd or py \
+https://www.w3schools.io/editor/vscode-change-default-terminal/
 
 # Python libraries
 ## pycrptodome
