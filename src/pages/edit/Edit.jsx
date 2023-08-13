@@ -1,26 +1,103 @@
 import "./edit.scss";
 import Sidebar from "../../components/sidebar/Sidebar";
 import Navbar from "../../components/navbar/Navbar";
+import FormInput from "../../components/forminput/FormInput";
+import PhoneInput from "react-phone-input-2";
+import CircularProgress from "@mui/material/CircularProgress";
 
-import DriveFolderUploadOutlinedIcon from "@mui/icons-material/DriveFolderUploadOutlined";
+// import DriveFolderUploadOutlinedIcon from "@mui/icons-material/DriveFolderUploadOutlined";
 
 import React, { useState, useEffect } from "react";
 import { doc, updateDoc, getDoc } from "firebase/firestore";
 import { auth, db } from "../../firebase";
+import { updatePassword } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 
 const Edit = () => {
-  const [user, setUser] = useState(null);
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhoneNumber] = useState("");
-  const [password, setPassword] = useState("");
-  const [registeredDate, setRegisteredDate] = useState("");
+  const user = auth.currentUser;
+  const [values, setValues] = useState({
+    username: "",
+    firstName: "",
+    lastName: "",
+    // email: "",
+    phone: "",
+    newPassword: "",
+    confirmNewPassword: "",
+  }); // Handle multiple input at once
+  const [registering, setRegistering] = useState(false); // Spinner icon
+  const [errorMsg, setErrorMsg] = useState(""); // Error msg on register
+
+  const formInputs = [
+    {
+      id: 1,
+      name: "username",
+      type: "text",
+      value: values.username,
+      errorMessage:
+        "Username should be 3-16 characters and shouldn't include any special character!",
+      label: "Username",
+      pattern: "^[A-Za-z0-9]{3,16}$",
+      required: true, // When tried to submit with invalid input, it prevents submission
+    },
+    {
+      id: 2,
+      name: "firstName",
+      type: "text",
+      value: values.firstName,
+      errorMessage:
+        "Last name should be 1-32 characters and shouldn't include any special character or number!",
+      label: "First name",
+      pattern: "^[A-Za-z]{1,32}$",
+      required: true, // When tried to submit with invalid input, it prevents submission
+    },
+    {
+      id: 3,
+      name: "lastName",
+      type: "text",
+      value: values.lastName,
+      errorMessage:
+        "Last name should be 1-32 characters and shouldn't include any special character or number!",
+      label: "Last Name",
+      pattern: "^[A-Za-z]{1,32}$",
+      required: true, // When tried to submit with invalid input, it prevents submission
+    },
+    // {
+    //   id: 4,
+    //   name: "email",
+    //   type: "email",
+    //   value: values.email,
+    //   errorMessage: "It should be a valid email address!",
+    //   label: "Email",
+    //   required: true,
+    // },
+    {
+      id: 4,
+      name: "newPassword",
+      type: "password",
+      placeholder: "New Password",
+      errorMessage:
+        "Password should be 8-20 characters and include at least 1 letter, 1 number and 1 special character!",
+      label: "New Password",
+      pattern: `^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,20}$`,
+      required: true,
+    },
+    {
+      id: 5,
+      name: "confirmNewPassword",
+      type: "password",
+      placeholder: "Confirm New Password",
+      errorMessage: "Passwords don't match!",
+      label: "Confirm New Password",
+      pattern: values.password,
+      required: true,
+    },
+  ];
+
   const navigate = useNavigate();
 
-  const [file, setFile] = useState("");
+  const onChange = (e) => {
+    setValues({ ...values, [e.target.name]: e.target.value });
+  };
 
   // Function to fetch the authenticated user's data from Firestore
   const fetchUserData = async () => {
@@ -30,13 +107,13 @@ const Edit = () => {
         const userRef = doc(db, "users", user.uid);
         const userDoc = await getDoc(userRef);
         if (userDoc.exists()) {
-          setUser(userDoc.data());
-          setFirstName(userDoc.data().firstName);
-          setLastName(userDoc.data().lastName);
-          setUsername(userDoc.data().username);
-          setEmail(userDoc.data().email);
-          setPhoneNumber(userDoc.data().phone);
-          setRegisteredDate(userDoc.data().timeStamp);
+          setValues({
+            username: userDoc.data().username,
+            firstName: userDoc.data().firstName,
+            lastName: userDoc.data().lastName,
+            // email: userDoc.data().email,
+            phone: userDoc.data().phone,
+          });
         }
       }
     } catch (error) {
@@ -48,40 +125,41 @@ const Edit = () => {
     fetchUserData();
   }, []);
 
-  const handleUpdate = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent page refresh on submit
+    setRegistering(true);
+
     try {
+      const { username, firstName, lastName, phone, newPassword } = values;
+
       const user = auth.currentUser;
       if (user) {
         const userRef = doc(db, "users", user.uid);
         await updateDoc(userRef, {
-          firstName,
-          lastName,
-          username,
-          email,
-          phone,
+          username: username,
+          firstName: firstName,
+          lastName: lastName,
+          // email: email,
+          phone: "+" + phone, // "+" is required in order to reflect country code
         });
 
         // Update password if provided
-        if (password) {
-          await user.updatePassword(password);
+        if (newPassword) {
+          updatePassword(user, newPassword)
+            .then(() => {
+              // Update successful.
+              // go back to previous pg after updating
+              navigate(-1);
+            })
+            .catch((error) => {
+              // An error ocurred
+              console.log(error);
+            });
         }
-
-        console.log("User information updated successfully!");
-        // Clear the password field after submitting
-        setPassword("");
       }
-
-      // go back to previous pg after updating
-      //   navigate(-1);
     } catch (error) {
-      console.error("Error updating user information:", error);
+      console.log(error);
     }
-  };
-
-  const handleCancelClick = () => {
-    // Navigate to the previous page using the navigate function with -1 as the argument
-    navigate(-1);
   };
 
   return (
@@ -93,7 +171,7 @@ const Edit = () => {
           <h1>Edit Profile</h1>
         </div>
         <div className="bottom">
-          <div className="left">
+          {/* <div className="left">
             <img
               src={
                 file // Img file existing boolean
@@ -114,8 +192,8 @@ const Edit = () => {
                 style={{ display: "none" }}
               />
             </div>
-          </div>
-          <div className="right">
+          </div> */}
+          {/* <div className="right">
             <form onSubmit={handleUpdate}>
               <div className="rightContainer">
                 <div className="formInput">
@@ -177,6 +255,56 @@ const Edit = () => {
                   <button onClick={handleCancelClick}>Cancel</button>
                 </div>
               </div>
+            </form>
+          </div> */}
+          <div className="right">
+            <form onSubmit={handleSubmit}>
+              {formInputs.map((formInput) => {
+                return (
+                  <FormInput
+                    key={formInput.id} // Required to uniquely distinguish each item
+                    {...formInput}
+                    values={values[formInput.name]}
+                    onChange={onChange}
+                  />
+                );
+              })}
+              <div className="phoneNumber">
+                <label style={{ fontSize: "13px", color: "gray" }}>
+                  Phone Number
+                </label>
+                <PhoneInput
+                  country="sg"
+                  inputProps={{ name: "phone", required: true }}
+                  containerStyle={{ margin: "10px 0px" }}
+                  inputStyle={{
+                    height: "48px",
+                    width: "250px",
+                    borderRadius: "10px",
+                    border: "1px solid gray",
+                    fontSize: "13px",
+                  }}
+                  buttonStyle={{
+                    background: "none",
+                    padding: "5px",
+                    borderTopLeftRadius: "10px",
+                    borderBottomLeftRadius: "10px",
+                    border: "1px solid gray",
+                    borderRight: "none",
+                  }}
+                  dropdownStyle={{ width: "250px", fontSize: "13px" }}
+                  value={values["phone"]}
+                  onChange={(phone) => setValues({ ...values, phone: phone })} // Cannot use onChange alr defined / https://eslint.org/docs/latest/rules/no-useless-computed-key
+                />
+              </div>
+              <button>
+                {registering ? ( // registering (true) = spinner will appear
+                  <CircularProgress color="inherit" size={20} />
+                ) : (
+                  "Submit"
+                )}
+              </button>
+              <span className="registerErr">{errorMsg}</span>
             </form>
           </div>
         </div>

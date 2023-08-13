@@ -24,7 +24,7 @@ import {
   enquiryColumns,
 } from "../../datatablesource";
 import { getStorage, ref, deleteObject } from "firebase/storage";
-import { ThreeDots } from "react-loader-spinner" // npm install react-loader-spinner --save
+import { ThreeDots } from "react-loader-spinner"; // npm install react-loader-spinner --save
 import instance from "../../axios_config";
 
 // Pass type prop if u want to apply it to both users & products
@@ -263,7 +263,7 @@ const Datatable = ({ type }) => {
               className="deleteButton"
               onClick={() => handleFileDeleteForever(params)}
             >
-              Delete forever
+              Delete
             </div>
           </div>
         );
@@ -343,8 +343,6 @@ const Datatable = ({ type }) => {
       .catch((err) => {
         console.log(err);
       });
-
-      setLoading(false); // set loading icon false
     // *************************************************************************
   }, []);
 
@@ -382,49 +380,49 @@ const Datatable = ({ type }) => {
     }
   }, [clientID]);
 
-     if (isLoading) {
-      return (
-        <div  className="loadingContainer">
+  if (isLoading) {
+    return (
+      <div className="loadingContainer">
         <ThreeDots
-        type="ThreeDots"
-        color="#00b22d"
-        height={100}
-        width={100}
-        //3 secs
-      />
+          type="ThreeDots"
+          color="#00b22d"
+          height={100}
+          width={100}
+          //3 secs
+        />
       </div>
-      )
-    } else {
-      return (
-        <div className="datatable">
-          {/* https://react-hot-toast.com/ */}
-          <Toaster toastOptions={{ duration: 3000 }} />
-          <div className="datatableTitle">
-            {/* Title of the datatable = Type with the first letter changed to upper case */}
-            {type.replace(/^./, type[0].toUpperCase())}
-            {/* <Link to={`/${type}/new`} className="link">
-              Add New
-            </Link> */}
-          </div>
-          {/* https://mui.com/x/react-data-grid/ */}
-          <DataGrid
-            className="datagrid"
-            rows={data} // previous was data param
-            columns={columns.concat(actionColumn)}
-            slots={{
-              toolbar: GridToolbar,
-            }} // https://mui.com/x/react-data-grid/filtering/
-            initialState={{
-              pagination: {
-                paginationModel: { page: 0, pageSize: 5 },
-              },
-            }}
-            pageSizeOptions={[5, 10]}
-            checkboxSelection
-          />
+    );
+  } else {
+    return (
+      <div className="datatable">
+        {/* https://react-hot-toast.com/ */}
+        <Toaster toastOptions={{ duration: 3000 }} />
+        <div className="datatableTitle">
+          {/* Title of the datatable = Type with the first letter changed to upper case */}
+          {type.replace(/^./, type[0].toUpperCase())}
+          {/* <Link to={`/${type}/new`} className="link">
+          Add New
+        </Link> */}
         </div>
-      );
-    }
+        {/* https://mui.com/x/react-data-grid/ */}
+        <DataGrid
+          className="datagrid"
+          rows={data}
+          columns={columns.concat(actionColumn)}
+          slots={{
+            toolbar: GridToolbar,
+          }} // https://mui.com/x/react-data-grid/filtering/
+          initialState={{
+            pagination: {
+              paginationModel: { page: 0, pageSize: 5 },
+            },
+          }}
+          pageSizeOptions={[5, 10]}
+          checkboxSelection
+        />
+      </div>
+    );
+  }
 };
 
 export default Datatable;
