@@ -39,20 +39,24 @@ urlpatterns = [
         # url for restoring a deleted file 
     path('api/filerestore/<uuid:file_id>', restorefile),
 
+    ################## Sharing files ##################
+    path('aapi/fileshare/<str:email>/<uuid:fileId>/<int:clientId>', Sharefile),
+
+
     ###########################################################################
 
-    ###### retrieving files in folder
+    ###### retrieving files in folder##################
         # url for retrieving files that are in a folder, require folder_id
     path('api/folderfile/filelist/<int:folderId>', getfileinfolderinfo),
 
-    ###### retrieving list of shared files 
+    ###### retrieving list of shared files ##################
 
         # url for retrieve list of files that are shared to the user
     path('api/sharedfile/toclient/<int:client_id>', getfilesharedtoClient),
         # url to retrieve list of files that user shared to other users 
     path('api/sharedfile/toothers/<int:client_id>', getfilesThatClientShared), 
 
-    ####### retrieving list of shared folders 
+    ####### retrieving list of shared folders ##################
         # url to retrieve list of folder that are shared to the user 
     path('api/sharedfolder/toclient/<int:client_id>', getfolderssharedtoclient),
         # url to retrieve list of folder that user share to other users 
