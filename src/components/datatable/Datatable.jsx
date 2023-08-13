@@ -70,10 +70,13 @@ const Datatable = ({ type }) => {
   const handleFileDownload = async (params) => {
     try {
       console.log(params.row.id);
+      
+      toast.loading(`${params.row.filename} downloading`);
+      
       const response = await instance.get(`retrievefile/${params.row.id}`, {
         responseType: 'blob', // Important for handling binary data
       });
-  
+      
       // Create a URL object from the blob data
       const url = window.URL.createObjectURL(new Blob([response.data]));
   
@@ -88,7 +91,6 @@ const Datatable = ({ type }) => {
       window.URL.revokeObjectURL(url);
       document.body.removeChild(link);
 
-      toast.loading(`${params.row.filename} downloading`);
     } catch (error) {
       toast.error("Failed to download, please contact admin");
       console.error('Error downloading file: ', error);
@@ -141,12 +143,24 @@ const Datatable = ({ type }) => {
     }
   };
 
+  // file deletion
   const handleFileDelete = async (params) => {
     try {
-      // ****************************************************** Connect with Django ******************************************************
-      // *********************************************************************************************************************************
+      // url for deleting file requires field_id and client_id
+      const response = await instance.get(`fileDelete/${params.row.id}/${params.row.username}`);
+      
+      // check response of Delete request from django
+      console.log("Deletion Response: ", response.data);
+      if (response.data.status === 'success') {
+        toast.success(`${params.row.filename} deleted successfully`);
+        // Perform any other necessary actions after successful deletion.
+        load_all_data();
+      } else {
+        toast.error(`${params.row.filename} deletion failed`);
+        // Handle the error case appropriately.
+      }
     } catch (error) {
-      console.log(error);
+      console.log("Error deleting file: ", error);
     }
   };
 
@@ -374,15 +388,16 @@ const Datatable = ({ type }) => {
         console.log(err);
       })
       
-      setLoading(false);
+
     // Return a cleanup function to stop listening
       
     // *************************************************************************
   }, []);
-
-  useEffect(() => {
-    console.log("Client__ID: ", clientID);
+  
+  // function to load/rerender all data in table 
+  const load_all_data = () => {
     if (clientID != "") {
+      setLoading(true);
       // load all the user's files
       // let client_file_id_url = `client/file/${clientID}`
       instance
@@ -403,7 +418,7 @@ const Datatable = ({ type }) => {
           setData(data_list);
 
           // console.log("Data: ", data); it wont load in yet
-
+          setLoading(false);
           console.log(
             "Data table retrieved list of files under client",
             clientID
@@ -413,6 +428,13 @@ const Datatable = ({ type }) => {
           console.log(err);
         });
     }
+  }
+
+  useEffect(() => {
+    console.log("Client__ID: ", clientID);
+
+    load_all_data();
+
   }, [clientID]);
 
   if (isLoading) {
