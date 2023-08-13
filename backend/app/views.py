@@ -367,7 +367,7 @@ class getDeletedFolderlogs(generics.ListAPIView):
        
 ## view to retreive files that are in a folder ## when opening a folder 
 def getfileinfolderinfo(request, folderId):
-    test = Folderfiles.objects.filter(folder_files_id= folderId).values('file','folder','file__filename', 'file_filetype')
+    test = Folderfiles.objects.filter(folder_files_id= folderId).values('file','folder','file__filename', 'file__filetype')
     data = {'results': list(test)}
     return JsonResponse(data)
 
@@ -376,7 +376,7 @@ def getfileinfolderinfo(request, folderId):
 # ## shared_client_id in sharedfileaccess table is the client who receives the shared file
 # ## client in the table is the one who shared the file 
 def getfilesharedtoClient(request, client_id):
-    test = Sharedfileaccess.objects.filter(shared_client_id = client_id).values('file',  'create_time', 'client', 'permission_type', 'file_filename', 'file_filetype')
+    test = Sharedfileaccess.objects.filter(shared_client_id = client_id).values('file',  'create_time', 'client', 'permission_type', 'file__filename', 'file__filetype')
     data ={'results': list(test)}
     return JsonResponse(data)
 
@@ -384,7 +384,7 @@ def getfilesharedtoClient(request, client_id):
 # ## client_id in parameters is client that shared the file
 # ## shared_client_id in sharedfileaccess table is the client who receives the shared file
 def getfilesThatClientShared(request, client_id):
-    test = Sharedfileaccess.objects.filter(client=client_id).values('file',  'create_time','shared_client_id', 'permission_type', 'file_filename', 'file_filetype')
+    test = Sharedfileaccess.objects.filter(client=client_id).values('file',  'create_time','shared_client_id', 'permission_type', 'file__filename', 'file__filetype')
     data = {'results' : list(test)}
     return JsonResponse(data)
 
@@ -392,7 +392,7 @@ def getfilesThatClientShared(request, client_id):
 # ## client_id in parameters is the one that receives the shared folder 
 # ## shared_client_id in the sharedfolderaccess table is the client who receives the shared folder
 def getfolderssharedtoclient(request, client_id):
-    test = Sharedfolderaccess.objects.filter(shared_client_id = client_id).values('folder', 'client', 'create_time', 'permission_type', 'folder_foldername' )
+    test = Sharedfolderaccess.objects.filter(shared_client_id = client_id).values('folder', 'client', 'create_time', 'permission_type', 'folder__foldername' )
     data = {'results' : list(test)}
     return JsonResponse(data)
 
@@ -401,11 +401,29 @@ def getfolderssharedtoclient(request, client_id):
 # ## client_id in parameters is the client that shared the folder 
 # ## shared_client_id in the sharedfolderaccess table is the client who receives the shared folder
 def getfoldersThatClientShared(request, client_id):
-    test = Sharedfolderaccess.objects.filter(client=client_id).values('folder', 'shared_client_id', 'create_time', 'permission_type', 'folder_foldername')
+    test = Sharedfolderaccess.objects.filter(client=client_id).values('folder', 'shared_client_id', 'create_time', 'permission_type', 'folder__foldername')
     data = {'results' : list(test)}
     return JsonResponse(data)
 
+## view to retrieve client_id when email is entered to share file
+# email of receiver 
+# fileId of file being shared
+# clientId of the user sharing
+def Sharefile(request, email, fileId, clientId):
+    if Users.objects.filter(email=email).exists():
+        ## get u_id
+        # getti = Userstab.objects.filter(email=email).values('u_id')
+        getti = Users.objects.filter(email=email).values('u_id')
+        ## get client_id
+        gettor = Client.objects.filter(user=getti[0]['u_id']).values('client_id')
+        ## add into sharedFileAccess 
+        create = Sharedfileaccess(file_id=fileId,client_id= clientId, shared_client_id = gettor[0]['client_id'])
+        create.save()
+        return HttpResponse('yes')
+    else:
+        return HttpResponse('no')
 ##########################################################################
+
 #####################################################################################
 ## this works for some reason #########keeep this ################## works
 ## need to provide client_id # not user_id 
@@ -900,3 +918,5 @@ def deleteHist(request, file_id):
     File5_log.objects.filter(file_id=file_id).using('server5').delete()
     data = {'result':'All gone'}
     return JsonResponse(data)
+
+
