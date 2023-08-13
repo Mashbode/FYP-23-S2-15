@@ -33,14 +33,17 @@ urlpatterns = [
     path('api/fileDelete/<uuid:fileId>/<int:clientId>', deletefile),
 
         # url for deleting file from logs, [for deleting file from trashbin]
-    path('api/filelog/delete/<uuid:file_id', deleteHist),
+    path('api/filelog/delete/<uuid:file_id>', deleteHist),
 
     ############### file restoring ##################
         # url for restoring a deleted file 
     path('api/filerestore/<uuid:file_id>', restorefile),
 
     ################## Sharing files ##################
-    path('aapi/fileshare/<str:email>/<uuid:fileId>/<int:clientId>', Sharefile),
+        # email of receiver 
+        # fileId of file being shared
+        # clientId of the user sharing
+    path('api/fileshare/<str:email>/<uuid:fileId>/<int:clientId>', Sharefile),
 
 
     ###########################################################################
