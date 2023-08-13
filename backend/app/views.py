@@ -415,7 +415,7 @@ def Sharefile(request, email, fileId, clientId):
         # getti = Userstab.objects.filter(email=email).values('u_id')
         getti = Users.objects.filter(email=email).values('u_id')
         ## get client_id
-        gettor = Client.objects.filter(user=getti[0]['u_id']).values('client_id')
+        gettor = Client.objects.filter(u_id=getti[0]['u_id']).values('client_id')
         ## add into sharedFileAccess 
         create = Sharedfileaccess(file_id=fileId,client_id= clientId, shared_client_id = gettor[0]['client_id'])
         create.save()
