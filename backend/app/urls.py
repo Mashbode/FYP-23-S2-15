@@ -10,10 +10,12 @@ urlpatterns = [
     path('api/file/versions/<uuid:file_id>', getFileversions.as_view(), name = 'get-file-versions'),
 
         # url for uploading file, require client_id
-    path('api/fileupload/<int:client_id>', uploadingFile, name='file-upload'),
+    # path('api/fileupload/<int:client_id>', uploadingFile, name='file-upload'),
+
+    path('api/fileupload/<int:client_id>', FileUploadView.as_view()),
 
         # url for updating file, require file_id
-    path('api/fileupdate/<uuid:fileId>', fileupdateWhenUpdate),
+    path('api/fileupdate/<uuid:fileId>', fileupdateWhenUpdateView.as_view()),
 
     #### file retreival functions (i.e. download)##########
         # url for retrieving file, require file_id
@@ -38,7 +40,8 @@ urlpatterns = [
         # email of receiver 
         # fileId of file being shared
         # clientId of the user sharing
-    path('api/fileshare/<str:email>/<uuid:fileId>/<int:clientId>', Sharefile),
+    # path('api/fileshare/<str:email>/<uuid:fileId>/<int:clientId>', Sharefile),
+    path('api/fileshare/<str:email>/<uuid:fileId>/<int:clientId>', sharefileView.as_view()),
 
 
     ###########################################################################
