@@ -66,7 +66,7 @@ const Datatable = ({ type }) => {
 
   // ****************************************************** Connect with Django ******************************************************
 
-  // download file
+  // file download
   const handleFileDownload = async (params) => {
     try {
       console.log(params.row.id);
@@ -95,45 +95,33 @@ const Datatable = ({ type }) => {
       toast.error("Failed to download, please contact admin");
       console.error('Error downloading file: ', error);
     }
-  }
-
-  const getUserIDWithEmail = async (email) => {
-    const q = query(collection(db, "users"), where("email", "==", email));
-    const querySnapshot = await getDocs(q);
-
-    try {
-      querySnapshot.forEach((doc) => {
-        // doc.data() is never undefined for query doc snapshots
-        console.log(doc.id, " => ", doc.data());
-        return doc.id;
-      });
-    } catch (error) {
-      switch (error) {
-        case "case1":
-          toast.error("case1 error");
-          break;
-        case "case2":
-          toast.error("case2 error");
-          break;
-        default:
-          toast.error(`Contact admin: ${error}`);
-          break;
-      }
-    }
   };
   // *********************************************************************************************************************************
-
-  const handleFileShare = (params) => {
+  // file sharing
+  const handleFileShare = async (params) => {
     try {
       // ****************************************************** Connect with Django ******************************************************
       var email = prompt("Please enter a user's email to share");
-      var userToShareID = getUserIDWithEmail(email);
+
+      const response = await instance.post(`fileshare/${email}/${params.row.id}/${params.row.username}`);
+      console.log("File Share response: ", response.data);
+
+      if (response.data === 'yes') {
+        // Email registrant exists
+        toast.success(`${params.row.filename} shared successfully`);
+      } else if (response.data === 'no') {
+        // Email registrant does not exist
+        toast.error(`Registrant wih "${email}" does not exist`)
+      }
+
       console.log(params.row.id); // fileID to share
+
       // *********************************************************************************************************************************
     } catch (error) {
-      console.log(error);
+      console.log("Error sharing file: ", error);
     }
   };
+
   const handleFileUnshare = (params) => {
     try {
       // ****************************************************** Connect with Django ******************************************************
@@ -378,7 +366,7 @@ const Datatable = ({ type }) => {
     console.log("u_id: ", currentUser.uid);
     
     // get client_id from url: api/client/getid/<u_id>
-    instance.get("client/getid/" + currentUser.uid) 
+    instance.get(`client/getid/${currentUser.uid}`)
       .then( (res) => {
           setClientID(res.data.client_id); 
           console.log("ClientID: ", res.data.client_id);
@@ -436,7 +424,9 @@ const Datatable = ({ type }) => {
     load_all_data();
 
   }, [clientID]);
-
+  
+  // renders a three dot loading screen when data table is loading up
+  // else data table is rendered successfully
   if (isLoading) {
     return (
       <div className="loadingContainer">
