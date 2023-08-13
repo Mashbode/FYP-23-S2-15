@@ -15,7 +15,7 @@ import {
   deleteDoc,
   onSnapshot,
 } from "firebase/firestore";
-import { db, auth } from "../../firebase";
+import { db } from "../../firebase";
 import {
   userColumns,
   fileColumns,
@@ -30,10 +30,10 @@ import instance from "../../axios_config";
 // Pass type prop if u want to apply it to both users & products
 const Datatable = ({ type }) => {
   // const [data, setData] = useState(userRows);
-  const [data, setData] = useState([]);
+  const [ data, setData ] = useState([]);
   const { currentUser } = useContext(AuthContext);
   // axios
-  const [isLoading, setLoading] = useState(true); // loading icon shown or not
+  const [ isLoading, setLoading ] = useState(true); // loading icon shown or not
   // const [ userID, setUID ] = useState(""); // get user id
   const [clientID, setClientID] = useState(""); // get client id
   // const [ fileID, setFilesID ] = useState(); // get file's ID
@@ -65,6 +65,35 @@ const Datatable = ({ type }) => {
   };
 
   // ****************************************************** Connect with Django ******************************************************
+
+  // download file
+  const handleFileDownload = async (params) => {
+    try {
+      console.log(params.row.id);
+      const response = await instance.get(`retrievefile/${params.row.id}`, {
+        responseType: 'blob', // Important for handling binary data
+      });
+  
+      // Create a URL object from the blob data
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+  
+      // Create a temporary anchor element to initiate the download
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${params.row.filename}${params.row.filetype}`; // Set the filename and extension for download
+      document.body.appendChild(link);
+      link.click();
+  
+      // Clean up the URL and anchor
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(link);
+
+      toast.loading(`${params.row.filename} downloading`);
+    } catch (error) {
+      toast.error("Failed to download, please contact admin");
+      console.error('Error downloading file: ', error);
+    }
+  }
 
   const getUserIDWithEmail = async (email) => {
     const q = query(collection(db, "users"), where("email", "==", email));
@@ -200,15 +229,15 @@ const Datatable = ({ type }) => {
             {/* <Link to="/files/test" style={{ textDecoration: "none" }}>
               <div className="actionButton">Download</div>
             </Link> */}
-            <a href={params.row.file} className="actionButton" download>
+            {/* <a href={params.row.file} className="actionButton" download>
               Download
-            </a>
-            {/* <div
+            </a> */}
+            <div
               className="actionButton"
               onClick={() => handleFileDownload(params)}
             >
               Download
-            </div> */}
+            </div>
             <div
               className="actionButton"
               onClick={() => handleFileShare(params)}
@@ -331,18 +360,23 @@ const Datatable = ({ type }) => {
   // Run only once when the component is build
   useEffect(() => {
     // ************************** Connect with Django **************************
-    console.log("u_id: ", auth.currentUser.uid);
 
-    instance
-      .get(`client/getid/${auth.currentUser.uid}`)
-      .then((res) => {
-        setClientID(res.data.client_id); // get client_id from url: api/Client
-        console.log("ClientID: ", res.data.client_id);
-        // console.log('current client id: ', clientID );
-      })
+    console.log("u_id: ", currentUser.uid);
+    
+    // get client_id from url: api/client/getid/<u_id>
+    instance.get("client/getid/" + currentUser.uid) 
+      .then( (res) => {
+          setClientID(res.data.client_id); 
+          console.log("ClientID: ", res.data.client_id);
+          // console.log('current client id: ', clientID ); value not print out as its not stored immediately in useState
+        })
       .catch((err) => {
         console.log(err);
-      });
+      })
+      
+      setLoading(false);
+    // Return a cleanup function to stop listening
+      
     // *************************************************************************
   }, []);
 
@@ -363,6 +397,7 @@ const Datatable = ({ type }) => {
             filename: entry.filename,
             username: entry.client,
             timeStamp: entry.last_change,
+            filetype: entry.filetype // for download file insert extension type
           }));
           console.log("Data_list: ", data_list);
           setData(data_list);
