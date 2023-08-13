@@ -5,91 +5,79 @@ urlpatterns = [
    ############################# put a comment on urls that are being used so we can clean up ######################
         #######################################################################
         ########################## important functions ########################
-    
-    
-    ############## file upload functions  ################
-
+    ##### file upload functions  ################
         # this url for getting file versions 
-    path('api/file/versions/<uuid:file_id>', getFileversions.as_view()),
+    path('api/file/versions/<uuid:file_id>', getFileversions.as_view(), name = 'get-file-versions'),
+
         # url for uploading file, require client_id
-    # path('api/fileupload/<int:client_id>', uploadingFile, name='file-upload'),
-        ## use this for file upload##
-    path('api/fileinsert<int:client_id>', FileUploadView.as_view()),
+    path('api/fileupload/<int:client_id>', uploadingFile, name='file-upload'),
+
         # url for updating file, require file_id
-    # path('api/fileupdate/<uuid:fileId>', fileupdateWhenUpdate),
-    path('api/fileupdate/<uuid:fileId>',fileupdateWhenUpdateView.as_view() ),
+    path('api/fileupdate/<uuid:fileId>', fileupdateWhenUpdate),
 
-
-    ############### file retreival functions (i.e. download)##########
-
+    #### file retreival functions (i.e. download)##########
         # url for retrieving file, require file_id
     path('api/retrievefile/<uuid:file_id>', obtainfile),
+
         # url for retrieving file of particular version
     path('api/retreiveFile/version/<uuid:file_id>/<uuid:fileVersion>',obatainfileOfVersion),
     
-    ############## file deletion ################
-
+    ### file deletion ################
         # url for deleting file # requires fileid and client id
     path('api/fileDelete/<uuid:fileId>/<int:clientId>', deletefile),
-
-        # url for deleting file from logs, [for deleting file from trashbin]
-    path('api/filelog/delete/<uuid:file_id', deleteHist),
-
-    ############### file restoring ##################
-        # url for restoring a deleted file 
-    path('api/filerestore/<uuid:file_id>', restorefile),
-
-    ###########################################################################
 
     ###### retrieving files in folder
         # url for retrieving files that are in a folder, require folder_id
     path('api/folderfile/filelist/<int:folderId>', getfileinfolderinfo),
 
     ###### retrieving list of shared files 
-
         # url for retrieve list of files that are shared to the user
     path('api/sharedfile/toclient/<int:client_id>', getfilesharedtoClient),
+
         # url to retrieve list of files that user shared to other users 
     path('api/sharedfile/toothers/<int:client_id>', getfilesThatClientShared), 
 
     ####### retrieving list of shared folders 
         # url to retrieve list of folder that are shared to the user 
     path('api/sharedfolder/toclient/<int:client_id>', getfolderssharedtoclient),
+
         # url to retrieve list of folder that user share to other users 
     path('api/sharedfolder/toothers/<int:client_id>', getfoldersThatClientShared), 
 
     ######### functions to view file and folder info ##########
-
         # url to retrieve list of files under the client
-    path('api/client/file/<int:client_id>', getallClientfiles.as_view()),
+    path('api/client/file/<int:client_id>', getallClientfiles.as_view(), name='client-file'),
+
         # view file info -requires file_id
-    path('api/client/file/info/<uuid:pk>', fileview.as_view()),
+    path('api/client/file/info/<uuid:pk>', fileview.as_view(), name = 'file-view'),
+
         # url to retrieve list of folders under the client
     path('api/client/Folders/<int:client_id>', getallClientfolder.as_view()),
+
         # view folder info - requires folder_id
     path('api/client/folder/info/<int:pk>', folderview.as_view()),
+
         # url to retrieve list of deleted files under the client
     path('api/client/deleted/fileLogs/<int:client_id>', getDeletedFilelogs.as_view()),
+
         # url to retrieve list of deleted folders under the client 
     path('api/client/deleted/folderLogs/<int:client_id>', getDeletedFolderlogs.as_view()),
 
+
         ### add file to folder
-    path('api/client/Folder/addFile',  ListCreateFolderFile.as_view()),
+    path('api/client/Folder/addFile',  ListCreateFolderFile.as_view(), name ='list-create-folder-file'),
 
         ### delete shared folder
     path('api/SharedFolderAccess/<int:pk>', DeleteSharedFolder.as_view()),
         ### delete shared file
     path('api/SharedFileAccess/<int:pk>', DeleteSharedFile.as_view()),
-
-    #### function to view client_id
-    path('api/client/getid/<str:u_id>', queryclientId),
         #######################################################################
         #######################################################################
 
-#    path('test/<uuid:fid', test),
+   
    #Users
     path('api/Users',  ListCreateUsers.as_view(), name = "View-All-Users"),
-    path('api/<int:pk>', RetrieveEditUsers.as_view()),
+    path('api/<str:pk>', RetrieveEditUsers.as_view(), name = "Retrieve-Edit-Users"), 
     
     
     ##Admin
