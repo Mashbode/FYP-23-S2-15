@@ -107,6 +107,12 @@ To run the server for django
 Remember to set the terminal from shell to cmd or py \
 https://www.w3schools.io/editor/vscode-change-default-terminal/
 
+# IMPORTANT 
+## ADD in shard_retrieve and shard_make folder under the app folder. 
+These 2 folders are needed for the file upload and file retrieve functions.  
+Github will remove empty folders when merging so these 2 folders will be missing from the repo. \
+So if these 2 folders are missing, the functions will not be able to run.
+
 # Python libraries
 ## pycrptodome
 ### `pip install pycryptodome` 
