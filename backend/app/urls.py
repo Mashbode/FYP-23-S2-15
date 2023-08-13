@@ -89,6 +89,11 @@ urlpatterns = [
     path('api/SharedFolderAccess/<int:pk>', DeleteSharedFolder.as_view()),
         ### delete shared file
     path('api/SharedFileAccess/<int:pk>', DeleteSharedFile.as_view()),
+
+        ### getting client_id 
+    path('api/client/getid/<str:u_id>', queryclientId),
+
+
         #######################################################################
         #######################################################################
 
