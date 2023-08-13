@@ -19,15 +19,26 @@ import { db } from "../../firebase";
 import {
   userColumns,
   fileColumns,
+  sharedColumns,
+  trashColumns,
   enquiryColumns,
 } from "../../datatablesource";
 import { getStorage, ref, deleteObject } from "firebase/storage";
+import { ThreeDots } from "react-loader-spinner"; // npm install react-loader-spinner --save
+import instance from "../../axios_config";
 
 // Pass type prop if u want to apply it to both users & products
 const Datatable = ({ type }) => {
   // const [data, setData] = useState(userRows);
-  const [data, setData] = useState([]);
+  const [ data, setData ] = useState([]);
   const { currentUser } = useContext(AuthContext);
+  // axios
+  const [ isLoading, setLoading ] = useState(true); // loading icon shown or not
+  // const [ userID, setUID ] = useState(""); // get user id
+  const [clientID, setClientID] = useState(""); // get client id
+  // const [ fileID, setFilesID ] = useState(); // get file's ID
+  // const [ fileName, setFilesName ] = useState(""); // get file's name
+  // const [ fileLastModified, setFileLastModified] = useState(); // get file's last modified timestamp
 
   // 1. Delete the user from the database
   // 2. The user needs to be deleted from the Firebase -> Authentication -> Users manually as re-authentication requires the user's password (https://firebase.google.com/docs/auth/web/manage-users#re-authenticate_a_user)
@@ -54,6 +65,37 @@ const Datatable = ({ type }) => {
   };
 
   // ****************************************************** Connect with Django ******************************************************
+
+  // download file
+  const handleFileDownload = async (params) => {
+    try {
+      console.log(params.row.id);
+      
+      toast.loading(`${params.row.filename} downloading`);
+      
+      const response = await instance.get(`retrievefile/${params.row.id}`, {
+        responseType: 'blob', // Important for handling binary data
+      });
+      
+      // Create a URL object from the blob data
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+  
+      // Create a temporary anchor element to initiate the download
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${params.row.filename}${params.row.filetype}`; // Set the filename and extension for download
+      document.body.appendChild(link);
+      link.click();
+  
+      // Clean up the URL and anchor
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(link);
+
+    } catch (error) {
+      toast.error("Failed to download, please contact admin");
+      console.error('Error downloading file: ', error);
+    }
+  }
 
   const getUserIDWithEmail = async (email) => {
     const q = query(collection(db, "users"), where("email", "==", email));
@@ -92,8 +134,46 @@ const Datatable = ({ type }) => {
       console.log(error);
     }
   };
+  const handleFileUnshare = (params) => {
+    try {
+      // ****************************************************** Connect with Django ******************************************************
+      // *********************************************************************************************************************************
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
+  // file deletion
   const handleFileDelete = async (params) => {
+    try {
+      // url for deleting file requires field_id and client_id
+      const response = await instance.get(`fileDelete/${params.row.id}/${params.row.username}`);
+      
+      // check response of Delete request from django
+      console.log("Deletion Response: ", response.data);
+      if (response.data.status === 'success') {
+        toast.success(`${params.row.filename} deleted successfully`);
+        // Perform any other necessary actions after successful deletion.
+        load_all_data();
+      } else {
+        toast.error(`${params.row.filename} deletion failed`);
+        // Handle the error case appropriately.
+      }
+    } catch (error) {
+      console.log("Error deleting file: ", error);
+    }
+  };
+
+  const handleFileRestore = (params) => {
+    try {
+      // ****************************************************** Connect with Django ******************************************************
+      // *********************************************************************************************************************************
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleFileDeleteForever = async (params) => {
     try {
       if (window.confirm("Are you sure to delete the file?")) {
         // Delete the document
@@ -163,15 +243,15 @@ const Datatable = ({ type }) => {
             {/* <Link to="/files/test" style={{ textDecoration: "none" }}>
               <div className="actionButton">Download</div>
             </Link> */}
-            <a href={params.row.file} className="actionButton" download>
+            {/* <a href={params.row.file} className="actionButton" download>
               Download
-            </a>
-            {/* <div
+            </a> */}
+            <div
               className="actionButton"
               onClick={() => handleFileDownload(params)}
             >
               Download
-            </div> */}
+            </div>
             <div
               className="actionButton"
               onClick={() => handleFileShare(params)}
@@ -181,6 +261,50 @@ const Datatable = ({ type }) => {
             <div
               className="deleteButton"
               onClick={() => handleFileDelete(params)}
+            >
+              Delete
+            </div>
+          </div>
+        );
+      },
+    },
+  ];
+
+  const actionSharedColumns = [
+    {
+      field: "action",
+      headerName: "Action",
+      width: 200,
+      renderCell: (params) => {
+        return (
+          <div className="cellAction">
+            {/* Same with actionFileColumn above */}
+            <a href={params.row.file} className="actionButton" download>
+              Download
+            </a>
+          </div>
+        );
+      },
+    },
+  ];
+
+  const actionTrashColumns = [
+    {
+      field: "action",
+      headerName: "Action",
+      width: 200,
+      renderCell: (params) => {
+        return (
+          <div className="cellAction">
+            <div
+              className="actionButton"
+              onClick={() => handleFileRestore(params)}
+            >
+              Share
+            </div>
+            <div
+              className="deleteButton"
+              onClick={() => handleFileDeleteForever(params)}
             >
               Delete
             </div>
@@ -207,6 +331,12 @@ const Datatable = ({ type }) => {
             >
               Delete
             </div>
+            <div
+              className="actionButton"
+              onClick={() => handleFileUnshare(params)}
+            >
+              Unshare
+            </div>
           </div>
         );
       },
@@ -225,6 +355,14 @@ const Datatable = ({ type }) => {
       columns = fileColumns;
       actionColumn = actionFileColumn;
       break;
+    case "shared":
+      columns = sharedColumns;
+      actionColumn = actionSharedColumns;
+      break;
+    case "trash":
+      columns = trashColumns;
+      actionColumn = actionTrashColumns;
+      break;
     case "enquiries":
       columns = enquiryColumns;
       actionColumn = actionEnquiryColumn;
@@ -235,77 +373,113 @@ const Datatable = ({ type }) => {
 
   // Run only once when the component is build
   useEffect(() => {
-    // const fetchData = async () => {
-    //   var list = [];
-    //   try {
-    //     // DB and collection name
-    //     const querySnapshot = await getDocs(collection(db, type));
-    //     querySnapshot.forEach((doc) => {
-    //       // doc.data() is never undefined for query doc snapshots
-    //       // console.log(doc.id, " => ", doc.data());
-    //       list.push({ id: doc.id, ...doc.data() });
-    //     });
-    //     setData(list);
-    //   } catch (err) {
-    //     console.log(err);
-    //   }
-    // };
-    // fetchData();
-
     // ************************** Connect with Django **************************
-    // https://firebase.google.com/docs/firestore/query-data/listen
-    // Listen to data real-time + doc id is not required + doc chnged to snapShot
-    const unsub = onSnapshot(collection(db, "users"), (snapShot) => {
-      var list = [];
-      // console.log("Current data: ", doc.data());
-      // Refer upper querySnapshot
-      snapShot.docs.forEach(
-        (doc) => {
-          list.push({ id: doc.id, ...doc.data() });
-          setData(list);
-        },
-        (error) => {
-          console.log(error);
-        }
-      );
-    });
+
+    console.log("u_id: ", currentUser.uid);
+    
+    // get client_id from url: api/client/getid/<u_id>
+    instance.get("client/getid/" + currentUser.uid) 
+      .then( (res) => {
+          setClientID(res.data.client_id); 
+          console.log("ClientID: ", res.data.client_id);
+          // console.log('current client id: ', clientID ); value not print out as its not stored immediately in useState
+        })
+      .catch((err) => {
+        console.log(err);
+      })
+      
 
     // Return a cleanup function to stop listening
-    return () => {
-      unsub();
-    };
+      
     // *************************************************************************
   }, []);
+  
+  // function to load/rerender all data in table 
+  const load_all_data = () => {
+    if (clientID != "") {
+      setLoading(true);
+      // load all the user's files
+      // let client_file_id_url = `client/file/${clientID}`
+      instance
+        .get(`client/file/${clientID}`) // retrieve list of files under client_id
+        .then((response) => {
+          console.log(response.data);
 
-  return (
-    <div className="datatable">
-      {/* https://react-hot-toast.com/ */}
-      <Toaster toastOptions={{ duration: 3000 }} />
-      <div className="datatableTitle">
-        {/* Title of the datatable = Type with the first letter changed to upper case */}
-        {type.replace(/^./, type[0].toUpperCase())}
-        {/* <Link to={`/${type}/new`} className="link">
+          const data = response.data; // Assuming the response contains the data you provided
+
+          const data_list = data.map((entry) => ({
+            id: entry.file_id,
+            filename: entry.filename,
+            username: entry.client,
+            timeStamp: entry.last_change,
+            filetype: entry.filetype // for download file insert extension type
+          }));
+          console.log("Data_list: ", data_list);
+          setData(data_list);
+
+          // console.log("Data: ", data); it wont load in yet
+          setLoading(false);
+          console.log(
+            "Data table retrieved list of files under client",
+            clientID
+          );
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  }
+
+  useEffect(() => {
+    console.log("Client__ID: ", clientID);
+
+    load_all_data();
+
+  }, [clientID]);
+
+  if (isLoading) {
+    return (
+      <div className="loadingContainer">
+        <ThreeDots
+          type="ThreeDots"
+          color="#00b22d"
+          height={100}
+          width={100}
+          //3 secs
+        />
+      </div>
+    );
+  } else {
+    return (
+      <div className="datatable">
+        {/* https://react-hot-toast.com/ */}
+        <Toaster toastOptions={{ duration: 3000 }} />
+        <div className="datatableTitle">
+          {/* Title of the datatable = Type with the first letter changed to upper case */}
+          {type.replace(/^./, type[0].toUpperCase())}
+          {/* <Link to={`/${type}/new`} className="link">
           Add New
         </Link> */}
+        </div>
+        {/* https://mui.com/x/react-data-grid/ */}
+        <DataGrid
+          className="datagrid"
+          rows={data}
+          columns={columns.concat(actionColumn)}
+          slots={{
+            toolbar: GridToolbar,
+          }} // https://mui.com/x/react-data-grid/filtering/
+          initialState={{
+            pagination: {
+              paginationModel: { page: 0, pageSize: 5 },
+            },
+          }}
+          pageSizeOptions={[5, 10]}
+          checkboxSelection
+        />
       </div>
-      {/* https://mui.com/x/react-data-grid/ */}
-      <DataGrid
-        className="datagrid"
-        rows={data}
-        columns={columns.concat(actionColumn)}
-        slots={{
-          toolbar: GridToolbar,
-        }} // https://mui.com/x/react-data-grid/filtering/
-        initialState={{
-          pagination: {
-            paginationModel: { page: 0, pageSize: 5 },
-          },
-        }}
-        pageSizeOptions={[5, 10]}
-        checkboxSelection
-      />
-    </div>
-  );
+    );
+  }
 };
 
 export default Datatable;

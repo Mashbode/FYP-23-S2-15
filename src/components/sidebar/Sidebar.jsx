@@ -198,13 +198,13 @@ const Sidebar = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/my-drive/shared" style={{ textDecoration: "none" }}>
+                <Link to="/files/shared" style={{ textDecoration: "none" }}>
                   <PeopleAltOutlinedIcon className="icon" />
                   <span>Shared</span>
                 </Link>
               </li>
               <li>
-                <Link to="/my-drive/trash" style={{ textDecoration: "none" }}>
+                <Link to="/files/trash" style={{ textDecoration: "none" }}>
                   <DeleteIcon className="icon" />
                   <span>Trash</span>
                 </Link>
