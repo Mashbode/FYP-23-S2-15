@@ -116,8 +116,20 @@ const Edit = () => {
           });
         }
       }
+
+      setRegistering(false);
     } catch (error) {
-      console.error("Error fetching user data:", error);
+      setErrorMsg(`Contact admin: ${error.code}`);
+      // switch (error.code) {
+      //   case "auth/email-already-in-use":
+      //     setErrorMsg("Provided email is already in use!");
+      //     break;
+      //   default: // All the other errors
+      //     setErrorMsg(`Contact admin: ${error.code}`);
+      //     break;
+      // }
+
+      setRegistering(false);
     }
   };
 
