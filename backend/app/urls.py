@@ -35,7 +35,10 @@ urlpatterns = [
     path('api/filerestore/<uuid:file_id>', restorefile),
 
     ################## Sharing files ##################
-    path('aapi/fileshare/<str:email>/<uuid:fileId>/<int:clientId>', Sharefile),
+        # email of receiver 
+        # fileId of file being shared
+        # clientId of the user sharing
+    path('api/fileshare/<str:email>/<uuid:fileId>/<int:clientId>', Sharefile),
 
 
     ###########################################################################
