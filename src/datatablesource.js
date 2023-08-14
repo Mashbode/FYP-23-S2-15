@@ -107,16 +107,21 @@ export const fileColumns = [
       const KBValue = bytesValue / 1024;
       const MBValue = KBValue / 1024;
       const GBValue = MBValue / 1024;
-    
-      if (GBValue >= 1) {
-        return <div className="cellWithFileSize">{GBValue.toFixed(2) + ' GB'}</div>;
-      } else if (MBValue >= 1) {
-        return <div className="cellWithFileSize">{MBValue.toFixed(2) + ' MB'}</div>;
-      } else {
-        return <div className="cellWithFileSize">{Math.ceil(KBValue) + ' KB'}</div>;
-      }
 
-    }
+      if (GBValue >= 1) {
+        return (
+          <div className="cellWithFileSize">{GBValue.toFixed(2) + " GB"}</div>
+        );
+      } else if (MBValue >= 1) {
+        return (
+          <div className="cellWithFileSize">{MBValue.toFixed(2) + " MB"}</div>
+        );
+      } else {
+        return (
+          <div className="cellWithFileSize">{Math.ceil(KBValue) + " KB"}</div>
+        );
+      }
+    },
   },
 ];
 // *************************************************************************
@@ -187,16 +192,21 @@ export const trashColumns = [
       const KBValue = bytesValue / 1024;
       const MBValue = KBValue / 1024;
       const GBValue = MBValue / 1024;
-    
-      if (GBValue >= 1) {
-        return <div className="cellWithFileSize">{GBValue.toFixed(2) + ' GB'}</div>;
-      } else if (MBValue >= 1) {
-        return <div className="cellWithFileSize">{MBValue.toFixed(2) + ' MB'}</div>;
-      } else {
-        return <div className="cellWithFileSize">{Math.ceil(KBValue) + ' KB'}</div>;
-      }
 
-    }
+      if (GBValue >= 1) {
+        return (
+          <div className="cellWithFileSize">{GBValue.toFixed(2) + " GB"}</div>
+        );
+      } else if (MBValue >= 1) {
+        return (
+          <div className="cellWithFileSize">{MBValue.toFixed(2) + " MB"}</div>
+        );
+      } else {
+        return (
+          <div className="cellWithFileSize">{Math.ceil(KBValue) + " KB"}</div>
+        );
+      }
+    },
   },
 ];
 // *************************************************************************
