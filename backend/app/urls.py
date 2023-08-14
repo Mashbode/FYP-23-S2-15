@@ -114,6 +114,15 @@ urlpatterns = [
     path('api/admin/enq/view/<uuid:eId>', adViewEnquiry),
         ## admin add reply
     path('api/admin/enq/add/<uuid:eId>/<str:reply>', adEnReply.as_view() ),
+
+        ## count client files 
+    path('api/client/countfiles/<int:client_id>', countClientFile),
+        ## count number of files client shared
+    path('api/client/countsharedto/<int:client_id>', countClientFileShared),
+        ## count number of files shared to client
+    path('api/client/countshared/<int:client_id>', countClientSharedFiles),
+        ## count total number of files 
+    path('api/count/files', countfiles),s
         #######################################################################
         #######################################################################
 
