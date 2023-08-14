@@ -96,7 +96,8 @@ urlpatterns = [
         ### getting client_id 
     path('api/client/getid/<str:u_id>', queryclientId),
 
-
+        ## deleting user
+    path('api/user/client/delete/<str:u_id>', deleteUser),
         #######################################################################
         #######################################################################
 
