@@ -17,7 +17,7 @@ urlpatterns = [
         # url for updating file, require file_id
     path('api/fileupdate/<uuid:fileId>', fileupdateWhenUpdateView.as_view()),
 
-    #### file retreival functions (i.e. download)##########
+    #### file retrieval functions (i.e. download)##########
         # url for retrieving file, require file_id
     path('api/retrievefile/<uuid:file_id>', obtainfile),
 
@@ -30,7 +30,6 @@ urlpatterns = [
 
 
         # url for deleting file from logs, [for deleting file from trashbin]
-    # path('api/filelog/delete/<uuid:file_id>', deleteHist),
     path('api/filelog/delete/<uuid:file_id>', deleteHistView.as_view()),
 
     ############### file restoring ##################
@@ -91,7 +90,7 @@ urlpatterns = [
 
         ### delete shared folder
     path('api/SharedFolderAccess/<int:pk>', DeleteSharedFolder.as_view()),
-        ### delete shared file
+        ### delete shared file ## - require share_id
     path('api/SharedFileAccess/<int:pk>', DeleteSharedFile.as_view()),
 
         ### getting client_id 
@@ -116,7 +115,6 @@ urlpatterns = [
     path('api/admin/enq/add/<uuid:eId>/<str:reply>', adEnReply.as_view() ),
         #######################################################################
         #######################################################################
-
    
    #Users
     path('api/Users',  ListCreateUsers.as_view(), name = "View-All-Users"),

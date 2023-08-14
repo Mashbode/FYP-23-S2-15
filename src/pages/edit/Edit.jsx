@@ -12,11 +12,12 @@ import { doc, updateDoc, getDoc } from "firebase/firestore";
 import { auth, db } from "../../firebase";
 import { updatePassword } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
+import instance from "../../axios_config";
 
 const Edit = () => {
   const user = auth.currentUser;
   const [values, setValues] = useState({
-    username: "",
+    userName: "",
     firstName: "",
     lastName: "",
     // email: "",
@@ -32,7 +33,7 @@ const Edit = () => {
       id: 1,
       name: "username",
       type: "text",
-      value: values.username,
+      value: values.userName,
       errorMessage:
         "Username should be 3-16 characters and shouldn't include any special character!",
       label: "Username",
@@ -102,18 +103,31 @@ const Edit = () => {
   // Function to fetch the authenticated user's data from Firestore
   const fetchUserData = async () => {
     try {
-      const user = auth.currentUser;
+      // const user = auth.currentUser;
       if (user) {
         const userRef = doc(db, "users", user.uid);
         const userDoc = await getDoc(userRef);
         if (userDoc.exists()) {
+          // setValues({
+          //   username: userDoc.data().username,
+          //   firstName: userDoc.data().firstName,
+          //   lastName: userDoc.data().lastName,
+          //   // email: userDoc.data().email,
+          //   phone: userDoc.data().phone,
+          // });
+          const response = await instance.get(`/${user.uid}`);
+          console.log("User info: ", response.data);
+          const data = response.data;
           setValues({
-            username: userDoc.data().username,
-            firstName: userDoc.data().firstName,
-            lastName: userDoc.data().lastName,
-            // email: userDoc.data().email,
-            phone: userDoc.data().phone,
+            // u_id: data.u_id,
+            userName: data.username,
+            firstName : data.f_name,
+            lastName : data.l_name,
+            // email: data.email,
+            phone: data.phone_number,
+            // usertype: data.usertype
           });
+          console.log("User info list: ", values);
         }
       }
 
@@ -139,7 +153,7 @@ const Edit = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent page refresh on submit
-    setRegistering(true);
+    setRegistering(true); // loading icon
 
     try {
       const { username, firstName, lastName, phone, newPassword } = values;
@@ -148,7 +162,7 @@ const Edit = () => {
       if (user) {
         const userRef = doc(db, "users", user.uid);
         await updateDoc(userRef, {
-          username: username,
+          userName: username,
           firstName: firstName,
           lastName: lastName,
           // email: email,
