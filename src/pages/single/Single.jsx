@@ -27,6 +27,7 @@ import {
   reauthenticateWithCredential,
   deleteUser,
 } from "firebase/auth";
+import instance from "../../axios_config";
 
 const Single = () => {
   const [dialogTitle, setDialogTitle] = useState("");
@@ -44,38 +45,42 @@ const Single = () => {
   const [phone, setPhoneNumber] = useState("");
   const [registeredDate, setRegisteredDate] = useState();
 
-  // Convert firebase timestamp to date format. (Ex. 8/26/2023)
-  let date = new Date(registeredDate);
-  let myDate = date.toLocaleDateString();
-  let myTime = date.toLocaleTimeString();
-  myDate = myDate.replaceAll("/", "-");
-  const mmddyyyy = myDate + " " + myTime;
+  // // Convert firebase timestamp to date format. (Ex. 8/26/2023)
+  // let date = new Date(registeredDate);
+  // let myDate = date.toLocaleDateString();
+  // let myTime = date.toLocaleTimeString();
+  // myDate = myDate.replaceAll("/", "-");
+  // const mmddyyyy = myDate + " " + myTime;
 
-  // Function to fetch the authenticated user's data from Firestore
-  const fetchUserData = async () => {
-    try {
-      const user = auth.currentUser;
-      if (user) {
-        const userRef = doc(db, "users", user.uid);
-        const userDoc = await getDoc(userRef);
-        if (userDoc.exists()) {
-          setFirstName(userDoc.data().firstName);
-          setLastName(userDoc.data().lastName);
-          setUsername(userDoc.data().username);
-          setEmail(userDoc.data().email);
-          setPhoneNumber(userDoc.data().phone);
-          setRegisteredDate(userDoc.data().timeStamp.toDate());
-        }
+   // Function to get the user's account details from postgresql
+ useEffect( ()=> {
+  // Set up the authentication state observer
+  const unsubscribe = auth.onAuthStateChanged(async (user) => {
+    if (user) {
+      try {
+        const response = await instance.get(`/${user.uid}`);
+        const data = response.data;
+        console.log("User info: ", data);
+        
+        setFirstName(data.f_name);
+        setLastName(data.l_name);
+        setUsername(data.username);
+        setEmail(data.email);
+        setPhoneNumber(data.phone_number);
+        setRegisteredDate(user.metadata.creationTime);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
       }
-      console.log("REGISTERED DATE: " + registeredDate);
-    } catch (error) {
-      console.error("Error fetching user data:", error);
+    } else {
+      console.log("User is not logged in.");
     }
-  };
+  });
 
-  useEffect(() => {
-    fetchUserData();
-  }, []);
+  // Clean up the observer when the component unmounts
+  return () => {
+    unsubscribe();
+  };
+})
 
   const handleDeleteUser = () => {
     // https://firebase.google.com/docs/auth/web/manage-users#delete_a_user
@@ -266,7 +271,7 @@ const Single = () => {
                 </div>
                 <div className="detailItem">
                   <span className="itemKey">Registered Date:</span>
-                  <span className="itemValue">{mmddyyyy}</span>
+                  <span className="itemValue">{registeredDate}</span>
                 </div>
                 <div className="detailItem">
                   <span className="itemKey">Phone:</span>
