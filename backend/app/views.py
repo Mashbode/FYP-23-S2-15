@@ -864,7 +864,7 @@ class fileupdateWhenUpdateView(APIView):
             ### get current time
         newtime = timezzzz()
             ### update new file insert 
-        files = Filetable.objects.filter(file_id = fileId).update(last_change = newtime, filesize=file.size, filename=filename, filetype=fileext)
+        Filetable.objects.filter(file_id = fileId).update(last_change = newtime, filesize=file.size, filename=filename, filetype=fileext)
             ## dun have to use serializer to save data
             ### first compress the file 
         compres_file_name = compression(file.name)
@@ -1011,3 +1011,58 @@ def deleteUser(request, u_id):
     ##delete user 
     Users.objects.filter(u_id=u_id).delete()
     return HttpResponse('Deleted')
+
+########   enquiries 
+
+## client list all enquiries
+def listEnquiries(request, client_id):
+    retrieve = Enquiries.objects.filter(client_id=client_id).values('enquiries_id', 'topic')
+    data = {'results': list(retrieve)}
+    return JsonResponse(data)    
+
+## client view enquiry 
+def viewEnquiryResult(request, client_id, eId):
+    ## text is what the client wrote, ## name is what the client wants to be called, ## reply is what the admin replied with
+    retrieve = Enquiries.objects.filter(client_id=client_id, enquiries_id=eId).values('enquiries_id', 'topic', 'text','time', 'name','reply', 'reply_time')
+    data = {'results': list(retrieve)}
+    return JsonResponse(data)  
+
+
+## client write enquiry 
+class writeEnquiryView(APIView):
+     ## text is what the client wrote, ## name is what the client wants to be called, ## topic is what the client labels this enquiry
+    def post(self,request, client_id, text, name, topic):
+        newtime = timezzzz()
+        insert = Enquiries.objects.create(client_id=client_id, text=text, name=name, topic=topic, time = newtime)
+        # serializers = EnquiriesSerializer(data = insert)
+        # if serializers.is_valid():
+        #     serializers.save()
+        data = {'result': 'success'}
+        # else:
+        #     data = {'result' : 'failed'}
+        insert.save()
+        return JsonResponse(data)
+
+# admin list all enquiries 
+class adlistEnquiries(generics.ListAPIView):
+    queryset = Enquiries.objects.all()
+    serializer_class= EnquiriesSerializer
+# def adlistEnquiries(request):
+#     retrieve = Enquiries.objects.all()
+#     sss = EnquiriesSerializer(data= retrieve)
+#     data = {'results': list(sss)}
+#     return JsonResponse(data)
+
+## admin view enquiry
+def adViewEnquiry(request, eId):
+    retrieve = Enquiries.objects.filter(enquiries_id=eId).values('enquiries_id', 'topic', 'text','time', 'name')
+    data = {'results': list(retrieve)}
+    return JsonResponse(data)  
+
+## admin reply 
+class adEnReply(APIView):
+    def post(self, request, eId, reply):
+        now = timezzzz()
+        Enquiries.objects.filter(enquiries_id=eId).update(reply=reply, reply_time= now)
+        data = {'result':'success'}
+        return JsonResponse(data)

@@ -10,7 +10,7 @@ urlpatterns = [
     path('api/file/versions/<uuid:file_id>', getFileversions.as_view(), name = 'get-file-versions'),
 
         # url for uploading file, require client_id
-    path('api/fileupload/<int:client_id>', uploadingFile, name='file-upload'),
+    # path('api/fileupload/<int:client_id>', uploadingFile, name='file-upload'),
 
     path('api/fileupload/<int:client_id>', FileUploadView.as_view()),
 
@@ -99,6 +99,21 @@ urlpatterns = [
 
         ## deleting user
     path('api/user/client/delete/<str:u_id>', deleteUser),
+
+    ### enquiries 
+        ## client write enquiry ## name is how the user want to present himself as?
+    path('api/e/add/<int:client_id>/<str:text>/<str:name>/<str:topic>', writeEnquiryView.as_view()), 
+        ## view the contents of the enquiry
+    path('api/enq/view/<int:client_id>/<uuid:eId>', viewEnquiryResult),
+        ## display list of enquiry of the client
+    path('api/enq/list/<int:client_id>', listEnquiries),
+
+        ## admin view list of enquiries
+    path('api/admin/enq/list', adlistEnquiries.as_view()),
+        ## admin view the contents of the enquiry
+    path('api/admin/enq/view/<uuid:eId>', adViewEnquiry),
+        ## admin add reply
+    path('api/admin/enq/add/<uuid:eId>/<str:reply>', adEnReply.as_view() ),
         #######################################################################
         #######################################################################
 

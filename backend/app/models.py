@@ -532,3 +532,17 @@ class File5_log(models.Model):
     class Meta:
         managed=False
         db_table = 'file5_log'
+
+class Enquiries(models.Model):
+    enquiries_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
+    client_id = models.IntegerField()
+    text = models.TextField()
+    name = models.CharField(max_length=50, null=True)
+    time = models.DateTimeField(null=True)
+    reply_time = models.DateTimeField(null=True)
+    reply = models.TextField(null=True)
+    topic= models.CharField(max_length=50)
+
+    class Meta:
+        managed=False
+        db_table = 'enquiries'
