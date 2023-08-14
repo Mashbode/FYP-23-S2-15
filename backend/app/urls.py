@@ -121,7 +121,7 @@ urlpatterns = [
         ## count number of files shared to client
     path('api/client/countshared/<int:client_id>', countClientSharedFiles),
         ## count total number of files 
-    path('api/count/files', countfiles),s
+    path('api/count/files', countfiles),
         #######################################################################
         #######################################################################
    
