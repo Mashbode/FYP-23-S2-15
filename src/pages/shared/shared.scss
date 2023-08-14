@@ -1,0 +1,7 @@
+.shared {
+    display: flex;
+
+    .sharedContainer {
+        flex: 6; // https://css-tricks.com/almanac/properties/f/flex/
+    }
+}

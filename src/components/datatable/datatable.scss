@@ -1,0 +1,126 @@
+.datatable {
+    height: 600px;
+    padding: 20px;
+
+    // button {
+    //     padding: 5px;
+    //     border-radius: 5px;
+
+    //     &.confirm {
+    //         background-color: rgba(128, 0, 128, 0.726);
+    //         color: white;
+    //         border: solid 1px purple;
+    //     }
+    //     &.cancel {
+    //         background-color: white;
+    //         color: rgba(128, 0, 128, 0.726);
+    //         border: solid 1px gray;
+    //     }
+    // }
+
+    .datatableTitle {
+        width: 100%;
+        font-size: 24px;
+        color: gray;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        .link {
+            text-decoration: none;
+            color: green;
+            font-size: 16px;
+            font-weight: 400;
+            border: 1px solid green;
+            padding: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    }
+
+    // https://mui.com/x/api/data-grid/data-grid/#css
+    .MuiDataGrid-toolbarContainer {
+        padding: 8px;
+        button {
+            font-family: "Nunito", sans-serif;
+            color: gray;
+        }
+    }
+
+    // .cellWithImg {
+    //     display: flex;
+    //     align-items: center;
+
+    //     .cellImg {
+    //         width: 32px;
+    //         height: 32px;
+    //         border-radius: 50%;
+    //         object-fit: cover;
+    //         margin-right: 20px;
+    //     }
+    // }
+
+    // .cellWithStatus {
+    //     padding: 5px;
+    //     border-radius: 5px;
+
+    //     &.active {
+    //         background-color: rgba(0, 128, 0, 0.05);
+    //         color: green;
+    //     }
+    //     &.pending {
+    //         background-color: rgba(255, 217, 0, 0.05);
+    //         color: goldenrod;
+    //     }
+    //     &.passive {
+    //         background-color: rgba(255, 0, 0, 0.05);
+    //         color: crimson;
+    //     }
+    // }
+
+    .cellWithType {
+        padding: 5px;
+        border-radius: 5px;
+
+        &.user {
+            background-color: rgba(0, 128, 0, 0.05);
+            color: solid 1px green;
+        }
+        &.admin {
+            background-color: rgba(255, 217, 0, 0.05);
+            color: goldenrod;
+            border: solid 1px goldenrod;
+        }
+    }
+
+    .cellAction {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+
+        .actionButton {
+            padding: 2px 5px;
+            border-radius: 5px;
+            color: darkblue;
+            border: 1px dotted rgba(0, 0, 139, 0.596);
+            cursor: pointer;
+            text-decoration: none; // Remove underline
+        }
+
+        .deleteButton {
+            padding: 2px 5px; // top-bottom / left-right
+            border-radius: 5px;
+            color: crimson;
+            border: 1px dotted rgba(220, 20, 60, 0.6);
+            cursor: pointer;
+        }
+    }
+}
+
+.loadingContainer {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, 50%);
+}
