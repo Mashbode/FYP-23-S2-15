@@ -1023,3 +1023,28 @@ class adEnReply(APIView):
         Enquiries.objects.filter(enquiries_id=eId).update(reply=reply, reply_time= now)
         data = {'result':'success'}
         return JsonResponse(data)
+
+    
+
+## count number of files a client has
+def countClientFile(request, client_id):
+    retrieve = Filetable.objects.filter(client_id=client_id)
+    data = {'result': retrieve.count()}
+    return JsonResponse(data)
+##count number of files client shared
+def countClientFileShared(request, client_id):
+    count = Sharedfileaccess.objects.filter(client_id=client_id)
+    data = {'result': count.count()}
+    return JsonResponse(data)
+ 
+## count number of files shared to client
+def countClientSharedFiles(request,client_id):
+    count = Sharedfileaccess.objects.filter(shared_client_id=client_id)
+    data = {'result': count.count()}
+    return JsonResponse(data)
+
+## count total number of files 
+def countfiles(request):
+    count = Filetable.objects.all()
+    data = {'result':count.count()}
+    return JsonResponse(data)
