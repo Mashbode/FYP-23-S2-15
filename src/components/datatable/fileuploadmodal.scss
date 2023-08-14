@@ -1,0 +1,105 @@
+/* fileuploadmodal.scss */
+
+.Modal {
+    &-overlay {
+      background-color: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 1000; // Adjust as needed
+    }
+  
+    &-content {
+      background-color: #f5f5f5;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.3);
+      max-width: 90%;
+      width: 500px;
+      text-align: center;
+      position: relative;
+  
+      h2 {
+        font-size: 1.8rem;
+        margin-bottom: 20px;
+        color: #333;
+      }
+  
+      .dropzone {
+        border: 2px dashed #ddd;
+        padding: 30px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+  
+        &:hover {
+          background-color: #f0f0f0;
+        }
+  
+        p {
+          font-size: 1.2rem;
+          color: #666;
+          margin: 0;
+        }
+  
+        &.active {
+          border-color: #007bff;
+        }
+      }
+  
+      .selected-file {
+        margin-top: 20px;
+        font-size: 1.1rem;
+        color: #444;
+      }
+  
+      .action-buttons {
+        margin-top: 30px;
+  
+        button {
+          padding: 12px 25px;
+          margin: 0 10px;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+          transition: background-color 0.3s ease;
+  
+          &.confirm-button {
+            background-color: #007bff;
+            color: white;
+  
+            &:hover {
+              background-color: #0056b3;
+            }
+          }
+  
+          &.cancel-button {
+            background-color: #ccc;
+            color: #333;
+  
+            &:hover {
+              background-color: #999;
+            }
+          }
+        }
+      }
+  
+      &-close-button {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        cursor: pointer;
+        font-size: 1.5rem;
+        color: #aaa;
+  
+        &:hover {
+          color: #777;
+        }
+      }
+    }
+  }
+  
