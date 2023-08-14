@@ -17,7 +17,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 
 import { AuthContext } from "../../context/AuthContext";
 import { useContext, useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { toast, Toaster } from "react-hot-toast";
 
 import { doc, deleteDoc, getDoc } from "firebase/firestore";
@@ -29,8 +29,11 @@ import {
 } from "firebase/auth";
 
 const Single = () => {
+  const [dialogTitle, setDialogTitle] = useState("");
+  const [dialogDescription, setDialogDescription] = useState("");
   const [open, setOpen] = useState(false);
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   const { dispatch, currentUser } = useContext(AuthContext);
 
@@ -125,6 +128,35 @@ const Single = () => {
       });
   };
 
+  // https://firebase.google.com/docs/reference/node/firebase.auth.EmailAuthProvider#static-credential
+  // https://stackoverflow.com/questions/39872885/using-firebase-reauthenticate
+  const handleEditProfile = () => {
+    const credential = EmailAuthProvider.credential(
+      currentUser.email,
+      password
+    );
+    reauthenticateWithCredential(auth.currentUser, credential)
+      .then(() => {
+        // User re-authenticated.
+        navigate("/users/edit");
+      })
+      .catch((error) => {
+        // An error ocurred
+        switch (error.code) {
+          case "auth/wrong-password":
+            toast.error("Provided password is wrong!");
+            break;
+          default: // All the other errors
+            toast.error(`Contact admin: ${error.code}`);
+            setTimeout(() => {
+              // Refresh after the toast message
+              window.location.reload();
+            }, 2000);
+            break;
+        }
+      });
+  };
+
   const handleStorageIncrease = () => {};
   const handleStorageDecrease = () => {};
 
@@ -134,11 +166,9 @@ const Single = () => {
       <Toaster toastOptions={{ duration: 2000 }} />
       {/* https://mui.com/material-ui/react-dialog/#form-dialogs */}
       <Dialog open={open}>
-        <DialogTitle>Delete Account</DialogTitle>
+        <DialogTitle>{dialogTitle}</DialogTitle>
         <DialogContent>
-          <DialogContentText>
-            To delete account, please enter your password here.
-          </DialogContentText>
+          <DialogContentText>{dialogDescription}</DialogContentText>
           <TextField
             autoFocus
             margin="dense"
@@ -161,7 +191,22 @@ const Single = () => {
           >
             CANCEL
           </Button>
-          <Button onClick={handleDeleteAccount}>OK</Button>
+          <Button
+            onClick={() => {
+              switch (dialogTitle) {
+                case "Edit Profile":
+                  handleEditProfile();
+                  break;
+                case "Delete Account":
+                  handleDeleteAccount();
+                  break;
+                default:
+                  break;
+              }
+            }}
+          >
+            OK
+          </Button>
         </DialogActions>
       </Dialog>
       <Sidebar />
@@ -200,18 +245,33 @@ const Single = () => {
           </div>
           <div className="top-right">
             <div className="button-group">
-              <Link to="/users/edit" style={{ textDecoration: "none" }}>
-                <div className="button">Edit Account</div>
-              </Link>
-              <Link
+              {/* <Link to="/users/edit" style={{ textDecoration: "none" }}> */}
+              <div
+                className="button"
+                onClick={() => {
+                  setDialogTitle("Edit Profile");
+                  setDialogDescription(
+                    "To edit profile, please enter your password here."
+                  );
+                  setOpen(true);
+                }}
+              >
+                Edit Profile
+              </div>
+              {/* </Link> */}
+              {/* <Link
                 to="/users/change-password"
                 style={{ textDecoration: "none" }}
               >
                 <div className="button">Change Password</div>
-              </Link>
+              </Link> */}
               <div
                 className="button"
                 onClick={() => {
+                  setDialogTitle("Delete Account");
+                  setDialogDescription(
+                    "To delete account, please enter your password here."
+                  );
                   setOpen(true);
                 }}
               >

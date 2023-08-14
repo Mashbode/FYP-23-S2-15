@@ -25,7 +25,7 @@ const Edit = () => {
     newPassword: "",
     confirmNewPassword: "",
   }); // Handle multiple input at once
-  const [registering, setRegistering] = useState(false); // Spinner icon
+  const [editing, setEditing] = useState(false); // Spinner icon
   const [errorMsg, setErrorMsg] = useState(""); // Error msg on register
 
   const formInputs = [
@@ -121,8 +121,8 @@ const Edit = () => {
           setValues({
             // u_id: data.u_id,
             userName: data.username,
-            firstName : data.f_name,
-            lastName : data.l_name,
+            firstName: data.f_name,
+            lastName: data.l_name,
             // email: data.email,
             phone: data.phone_number,
             // usertype: data.usertype
@@ -131,7 +131,7 @@ const Edit = () => {
         }
       }
 
-      setRegistering(false);
+      setEditing(false);
     } catch (error) {
       setErrorMsg(`Contact admin: ${error.code}`);
       // switch (error.code) {
@@ -143,7 +143,7 @@ const Edit = () => {
       //     break;
       // }
 
-      setRegistering(false);
+      setEditing(false);
     }
   };
 
@@ -153,7 +153,7 @@ const Edit = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent page refresh on submit
-    setRegistering(true); // loading icon
+    setEditing(true); // loading icon
 
     try {
       const { username, firstName, lastName, phone, newPassword } = values;
@@ -324,13 +324,13 @@ const Edit = () => {
                 />
               </div>
               <button>
-                {registering ? ( // registering (true) = spinner will appear
+                {editing ? ( // editing (true) = spinner will appear
                   <CircularProgress color="inherit" size={20} />
                 ) : (
                   "Submit"
                 )}
               </button>
-              <span className="registerErr">{errorMsg}</span>
+              <span className="editingErr">{errorMsg}</span>
             </form>
           </div>
         </div>
