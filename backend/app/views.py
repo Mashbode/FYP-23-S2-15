@@ -444,8 +444,8 @@ class sharefileView(APIView):
 ## need to provide client_id # not user_id 
 def uploadingFile(request, client_id):
     if request.method == 'POST':
-        # test = testForm(request.POST, request.FILES)
-        # if test.is_valid():
+        test = testForm(request.POST, request.FILES)
+        if test.is_valid():
             file = request.FILES['file']
             path = os.path.realpath(__file__)
             dir = os.path.dirname(path)
@@ -493,11 +493,11 @@ def uploadingFile(request, client_id):
             for f in os.listdir(dirs):
                 os.remove(os.path.join(dirs, f))
             return HttpResponse('file ok')
-    # else:
-    #     test = testForm()
-    #     ## the html.html need to replace with the frontend stuff i think
-    #     return render(request,"html.html", {'form':test})
-    return HttpResponse('waiting')
+    else:
+        test = testForm()
+        ## the html.html need to replace with the frontend stuff i think
+        return render(request,"html.html", {'form':test})
+    # return HttpResponse('waiting')
 
 
 ### file update ################## works 
@@ -933,6 +933,47 @@ def deleteHist(request, file_id):
     File5_log.objects.filter(file_id=file_id).using('server5').delete()
     data = {'result':'All gone'}
     return JsonResponse(data)
+
+class deleteHistView(APIView):
+    def post(self,request, file_id):
+                # to permamently delete 
+        # delete from file log 
+        print('a')
+        FileLog.objects.filter(file_id= file_id).delete()
+        # delete from file version
+        print('b')
+        FileVersionLog.objects.filter(file_id=file_id).delete()
+        # delete from file partslog 
+        print('c')
+        FilePartsLog.objects.filter(file_id=file_id).delete()
+        # delete from fileserver1
+        print('d')
+        Server1Logs.objects.filter(file_id=file_id).delete()
+        # delete from fileserver2
+        print('e')
+        Server2Logs.objects.filter(file_id=file_id).delete()
+        # delete from fileserver3
+        print('f')
+        Server3Logs.objects.filter(file_id=file_id).delete()
+        # delete from fileserver4
+        print('g')
+        Server4Logs.objects.filter(file_id=file_id).delete()
+        # delete from fileserver5
+        print('huh')
+        Server5Logs.objects.filter(file_id=file_id).delete()
+        # delete from File1
+        print('f')
+        File1_log.objects.filter(file_id=file_id).using('server1').delete()
+        print('ff')
+        File2_log.objects.filter(file_id=file_id).using('server2').delete()
+        print('ff')
+        File3_log.objects.filter(file_id=file_id).using('server3').delete()
+        print('fff')
+        File4_log.objects.filter(file_id=file_id).using('server4').delete()
+        print('ffff')
+        File5_log.objects.filter(file_id=file_id).using('server5').delete()
+        data = {'result':'All gone'}
+        return JsonResponse(data)
 
 ## delete user 
 def deleteUser(request, u_id):

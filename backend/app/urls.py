@@ -10,7 +10,7 @@ urlpatterns = [
     path('api/file/versions/<uuid:file_id>', getFileversions.as_view(), name = 'get-file-versions'),
 
         # url for uploading file, require client_id
-    # path('api/fileupload/<int:client_id>', uploadingFile, name='file-upload'),
+    path('api/fileupload/<int:client_id>', uploadingFile, name='file-upload'),
 
     path('api/fileupload/<int:client_id>', FileUploadView.as_view()),
 
@@ -30,7 +30,8 @@ urlpatterns = [
 
 
         # url for deleting file from logs, [for deleting file from trashbin]
-    path('api/filelog/delete/<uuid:file_id>', deleteHist),
+    # path('api/filelog/delete/<uuid:file_id>', deleteHist),
+    path('api/filelog/delete/<uuid:file_id>', deleteHistView.as_view()),
 
     ############### file restoring ##################
         # url for restoring a deleted file 
