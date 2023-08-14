@@ -157,6 +157,35 @@ const Single = () => {
       });
   };
 
+  // https://firebase.google.com/docs/reference/node/firebase.auth.EmailAuthProvider#static-credential
+  // https://stackoverflow.com/questions/39872885/using-firebase-reauthenticate
+  const handleChangePassword = () => {
+    const credential = EmailAuthProvider.credential(
+      currentUser.email,
+      password
+    );
+    reauthenticateWithCredential(auth.currentUser, credential)
+      .then(() => {
+        // User re-authenticated.
+        navigate("/users/change-password");
+      })
+      .catch((error) => {
+        // An error ocurred
+        switch (error.code) {
+          case "auth/wrong-password":
+            toast.error("Provided password is wrong!");
+            break;
+          default: // All the other errors
+            toast.error(`Contact admin: ${error.code}`);
+            setTimeout(() => {
+              // Refresh after the toast message
+              window.location.reload();
+            }, 2000);
+            break;
+        }
+      });
+  };
+
   const handleStorageIncrease = () => {};
   const handleStorageDecrease = () => {};
 
@@ -199,6 +228,9 @@ const Single = () => {
                   break;
                 case "Delete Account":
                   handleDeleteAccount();
+                  break;
+                case "Change Password":
+                  handleChangePassword();
                   break;
                 default:
                   break;
@@ -245,7 +277,6 @@ const Single = () => {
           </div>
           <div className="top-right">
             <div className="button-group">
-              {/* <Link to="/users/edit" style={{ textDecoration: "none" }}> */}
               <div
                 className="button"
                 onClick={() => {
@@ -258,13 +289,23 @@ const Single = () => {
               >
                 Edit Profile
               </div>
-              {/* </Link> */}
               {/* <Link
                 to="/users/change-password"
                 style={{ textDecoration: "none" }}
+              > */}
+              <div
+                className="button"
+                onClick={() => {
+                  setDialogTitle("Change Password");
+                  setDialogDescription(
+                    "To change password, please enter your password here."
+                  );
+                  setOpen(true);
+                }}
               >
-                <div className="button">Change Password</div>
-              </Link> */}
+                Change Password
+              </div>
+              {/* </Link> */}
               <div
                 className="button"
                 onClick={() => {
