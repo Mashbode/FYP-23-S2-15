@@ -157,3 +157,7 @@ class UsersSerializer(serializers.ModelSerializer):
         model = Users
         fields = ('__all__')
 
+class EnquiriesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Enquiries
+        fields = ('__all__')
