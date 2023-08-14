@@ -372,11 +372,16 @@ def getfileinfolderinfo(request, folderId):
     return JsonResponse(data)
 
 ## view to retrieve list of files that are shared to the user ## when only files are shared
-# ## client_id in the parameters is the one who recieves the shared file
+# ## client_id in the parameters is the one who receives the shared file
 # ## shared_client_id in sharedfileaccess table is the client who receives the shared file
 # ## client in the table is the one who shared the file 
 def getfilesharedtoClient(request, client_id):
-    test = Sharedfileaccess.objects.filter(shared_client_id = client_id).values('file',  'create_time', 'client', 'permission_type', 'file__filename', 'file__filetype')
+    # The above code is performing a database query using the Django ORM. It is retrieving a list of
+    # objects from the "Sharedfileaccess" model that match the condition "shared_client_id =
+    # client_id". The values() method is used to specify the fields that should be included in the
+    # result set. The fields being selected are 'file', 'create_time', 'client', 'permission_type',
+    # 'file__filename', and 'file__filetype'.
+    test = Sharedfileaccess.objects.filter(shared_client_id = client_id).values('file',  'create_time', 'client', 'permission_type', 'file__filename', 'file__filetype', 'client__u_id__f_name', 'client__u_id__l_name', 'share_id')
     data ={'results': list(test)}
     return JsonResponse(data)
 
@@ -415,7 +420,7 @@ def Sharefile(request, email, fileId, clientId):
         # getti = Userstab.objects.filter(email=email).values('u_id')
         getti = Users.objects.filter(email=email).values('u_id')
         ## get client_id
-        gettor = Client.objects.filter(user=getti[0]['u_id']).values('client_id')
+        gettor = Client.objects.filter(u_id=getti[0]['u_id']).values('client_id')
         ## add into sharedFileAccess 
         create = Sharedfileaccess(file_id=fileId,client_id= clientId, shared_client_id = gettor[0]['client_id'])
         create.save()
@@ -431,6 +436,8 @@ class sharefileView(APIView):
             getti = Users.objects.filter(email=email).values('u_id')
             ## get client_id
             gettor = Client.objects.filter(u_id=getti[0]['u_id']).values('client_id')
+            ## get filename
+            files = Filetable.objects.filter(file_id=fileId).values("filename")
             ## add into sharedFileAccess 
             create = Sharedfileaccess(file_id=fileId,client_id= clientId, shared_client_id = gettor[0]['client_id'])
             create.save()
@@ -444,8 +451,8 @@ class sharefileView(APIView):
 ## need to provide client_id # not user_id 
 def uploadingFile(request, client_id):
     if request.method == 'POST':
-        test = testForm(request.POST, request.FILES)
-        if test.is_valid():
+        # test = testForm(request.POST, request.FILES)
+        # if test.is_valid():
             file = request.FILES['file']
             path = os.path.realpath(__file__)
             dir = os.path.dirname(path)
@@ -493,11 +500,11 @@ def uploadingFile(request, client_id):
             for f in os.listdir(dirs):
                 os.remove(os.path.join(dirs, f))
             return HttpResponse('file ok')
-    else:
-        test = testForm()
-        ## the html.html need to replace with the frontend stuff i think
-        return render(request,"html.html", {'form':test})
-    # return HttpResponse('waiting')
+    # else:
+    #     test = testForm()
+    #     ## the html.html need to replace with the frontend stuff i think
+    #     return render(request,"html.html", {'form':test})
+    return HttpResponse('waiting')
 
 
 ### file update ################## works 
@@ -894,46 +901,6 @@ class fileupdateWhenUpdateView(APIView):
     
 
 ## view to delete from file log or Trash bin in ui
-def deleteHist(request, file_id):
-        # to permamently delete 
-    # delete from file log 
-    print('a')
-    FileLog.objects.filter(file_id= file_id).delete()
-    # delete from file version
-    print('b')
-    FileVersionLog.objects.filter(file_id=file_id).delete()
-    # delete from file partslog 
-    print('c')
-    FilePartsLog.objects.filter(file_id=file_id).delete()
-    # delete from fileserver1
-    print('d')
-    Server1Logs.objects.filter(file_id=file_id).delete()
-    # delete from fileserver2
-    print('e')
-    Server2Logs.objects.filter(file_id=file_id).delete()
-    # delete from fileserver3
-    print('f')
-    Server3Logs.objects.filter(file_id=file_id).delete()
-    # delete from fileserver4
-    print('g')
-    Server4Logs.objects.filter(file_id=file_id).delete()
-    # delete from fileserver5
-    print('huh')
-    Server5Logs.objects.filter(file_id=file_id).delete()
-    # delete from File1
-    print('f')
-    File1_log.objects.filter(file_id=file_id).using('server1').delete()
-    print('ff')
-    File2_log.objects.filter(file_id=file_id).using('server2').delete()
-    print('ff')
-    File3_log.objects.filter(file_id=file_id).using('server3').delete()
-    print('fff')
-    File4_log.objects.filter(file_id=file_id).using('server4').delete()
-    print('ffff')
-    File5_log.objects.filter(file_id=file_id).using('server5').delete()
-    data = {'result':'All gone'}
-    return JsonResponse(data)
-
 class deleteHistView(APIView):
     def post(self,request, file_id):
                 # to permamently delete 
@@ -1034,12 +1001,7 @@ class writeEnquiryView(APIView):
     def post(self,request, client_id, text, name, topic):
         newtime = timezzzz()
         insert = Enquiries.objects.create(client_id=client_id, text=text, name=name, topic=topic, time = newtime)
-        # serializers = EnquiriesSerializer(data = insert)
-        # if serializers.is_valid():
-        #     serializers.save()
         data = {'result': 'success'}
-        # else:
-        #     data = {'result' : 'failed'}
         insert.save()
         return JsonResponse(data)
 
@@ -1047,11 +1009,6 @@ class writeEnquiryView(APIView):
 class adlistEnquiries(generics.ListAPIView):
     queryset = Enquiries.objects.all()
     serializer_class= EnquiriesSerializer
-# def adlistEnquiries(request):
-#     retrieve = Enquiries.objects.all()
-#     sss = EnquiriesSerializer(data= retrieve)
-#     data = {'results': list(sss)}
-#     return JsonResponse(data)
 
 ## admin view enquiry
 def adViewEnquiry(request, eId):
@@ -1066,6 +1023,7 @@ class adEnReply(APIView):
         Enquiries.objects.filter(enquiries_id=eId).update(reply=reply, reply_time= now)
         data = {'result':'success'}
         return JsonResponse(data)
+
     
 
 ## count number of files a client has

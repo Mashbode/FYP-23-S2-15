@@ -29,7 +29,7 @@ const UploadFile = () => {
     const formData = new FormData(event.target); // Get form data
     try {
       // upload file to django backend and file split
-      const response = instance.post(`fileinsert/${client_id}`, formData);
+      const response = instance.post(`fileupload/${client_id}`, formData);
       // Handle response if needed
       console.log("Response:", response.data);
     } catch (error) {

@@ -9,6 +9,8 @@ import { auth, db } from "../../firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 
+import instance from "../../axios_config";
+
 const Register = () => {
   const [values, setValues] = useState({
     username: "",
@@ -124,18 +126,18 @@ const Register = () => {
       /* `instance` is an instance of the Axios library that is configured with a base URL and
       other settings. It is used to make HTTP requests to the backend server. In this code, it
       is used to send a POST request to the backend server with the user registration data. */
-      // await instance
-      //   .post("Users", {
-      //     u_id: result.user.uid, // u_id >> client_id >> file_id
-      //     username: username,
-      //     f_name: firstName,
-      //     l_name: lastName,
-      //     email: email,
-      //     phone_number: "+" + phone,
-      //     usertype: "Client",
-      //   })
-      //   .then((res) => console.log(res.data))
-      //   .catch((err) => console.error(err));
+      await instance
+        .post("Users", {
+          u_id: result.user.uid, // u_id >> client_id >> file_id
+          username: username,
+          f_name: firstName,
+          l_name: lastName,
+          email: email,
+          phone_number: "+" + phone,
+          usertype: "Client",
+        })
+        .then((res) => console.log(res.data))
+        .catch((err) => console.error(err));
 
       // Things to send to file system
       // 1. userID = console.log(result.user.uid)
