@@ -134,15 +134,15 @@ function App() {
                   </RequireAuth>
                 }
               />
+              <Route
+                path="change-password"
+                element={
+                  <RequireAuth>
+                    <ChangePassword />
+                  </RequireAuth>
+                }
+              />
             </Route>
-            <Route
-              path="change-password"
-              element={
-                <RequireAuth>
-                  <ChangePassword />
-                </RequireAuth>
-              }
-            />
             <Route path="files">
               <Route
                 index
