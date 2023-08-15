@@ -943,41 +943,43 @@ class deleteHistView(APIView):
         return JsonResponse(data)
 
 ## delete user 
-def deleteUser(request, u_id):
+class deleteUserView(APIView):
+    def delete(self,request, u_id):
     ## get client_id 
-    cid = Client.objects.filter(u_id=u_id).values('client_id')
-    # cid = Client.objects.filter(user_id=u_id).values('client_id')
-    print(cid)
-    ## get list of files from user
-    fileList = Filetable.objects.filter(client_id=cid[0]['client_id']).values('file_id')
-    print(fileList[0]['file_id'])
-    # print(fileList)
-    for i in range(len(fileList)):
-        #delete from file1
-        File1.objects.filter(file_id=fileList[i]['file_id']).using('server1').delete()
-        #delete from file1 logs
-        File1_log.objects.filter(file_id=fileList[i]['file_id']).using('server1').delete()
-        #delete from file2
-        File2.objects.filter(file_id=fileList[i]['file_id']).using('server2').delete()
-        #delete from file2 logs
-        File2_log.objects.filter(file_id=fileList[i]['file_id']).using('server2').delete()
-        #delete from file3
-        File3.objects.filter(file_id=fileList[i]['file_id']).using('server3').delete()
-        #delete from file3 logs
-        File3_log.objects.filter(file_id=fileList[i]['file_id']).using('server3').delete()
-        #delete from file4 
-        File4.objects.filter(file_id=fileList[i]['file_id']).using('server4').delete()
-        #delete from file4 logs
-        File4_log.objects.filter(file_id=fileList[i]['file_id']).using('server4').delete()
-        #delete from file5 
-        File5.objects.filter(file_id=fileList[i]['file_id']).using('server5').delete()
-        #delete from file5 logs
-        File5_log.objects.filter(file_id=fileList[i]['file_id']).using('server5').delete()
-    ## delete client 
-    Client.objects.filter(u_id=u_id).delete() 
-    ##delete user 
-    Users.objects.filter(u_id=u_id).delete()
-    return HttpResponse('Deleted')
+        cid = Client.objects.filter(u_id=u_id).values('client_id')
+        # cid = Client.objects.filter(user_id=u_id).values('client_id')
+        print(cid)
+        ## get list of files from user
+        fileList = Filetable.objects.filter(client_id=cid[0]['client_id']).values('file_id')
+        print(fileList[0]['file_id'])
+        # check if user has files
+        if fileList.count() >0 :
+            for i in range(len(fileList)):
+                #delete from file1
+                File1.objects.filter(file_id=fileList[i]['file_id']).using('server1').delete()
+                #delete from file1 logs
+                File1_log.objects.filter(file_id=fileList[i]['file_id']).using('server1').delete()
+                #delete from file2
+                File2.objects.filter(file_id=fileList[i]['file_id']).using('server2').delete()
+                #delete from file2 logs
+                File2_log.objects.filter(file_id=fileList[i]['file_id']).using('server2').delete()
+                #delete from file3
+                File3.objects.filter(file_id=fileList[i]['file_id']).using('server3').delete()
+                #delete from file3 logs
+                File3_log.objects.filter(file_id=fileList[i]['file_id']).using('server3').delete()
+                #delete from file4 
+                File4.objects.filter(file_id=fileList[i]['file_id']).using('server4').delete()
+                #delete from file4 logs
+                File4_log.objects.filter(file_id=fileList[i]['file_id']).using('server4').delete()
+                #delete from file5 
+                File5.objects.filter(file_id=fileList[i]['file_id']).using('server5').delete()
+                #delete from file5 logs
+                File5_log.objects.filter(file_id=fileList[i]['file_id']).using('server5').delete()
+        ## delete client 
+        Client.objects.filter(u_id=u_id).delete() 
+        ##delete user 
+        Users.objects.filter(u_id=u_id).delete()
+        return HttpResponse('Deleted')
 
 ########   enquiries 
 
