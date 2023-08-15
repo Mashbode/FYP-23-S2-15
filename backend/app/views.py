@@ -951,7 +951,7 @@ class deleteUserView(APIView):
         print(cid)
         ## get list of files from user
         fileList = Filetable.objects.filter(client_id=cid[0]['client_id']).values('file_id')
-        print(fileList[0]['file_id'])
+        # print(fileList[0]['file_id'])
         # check if user has files
         if fileList.count() >0 :
             for i in range(len(fileList)):
