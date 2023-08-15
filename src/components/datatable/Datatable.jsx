@@ -36,6 +36,14 @@ import { ThreeDots } from "react-loader-spinner"; // npm install react-loader-sp
 import FileUploadModal from "./FileUploadModal"; // fix this
 import instance from "../../axios_config";
 
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import { useDropzone } from 'react-dropzone'; // npm install --save react-dropzone
+
 // Pass type prop if u want to apply it to both users & products
 const Datatable = ({ type }) => {
   // const [data, setData] = useState(userRows);
@@ -46,6 +54,10 @@ const Datatable = ({ type }) => {
   const [isModalOpen, setIsModalOpen] = useState(false); // fix this modal shown or not
   // const [ userID, setUID ] = useState(""); // get user id
   const [clientID, setClientID] = useState(""); // get client id
+
+  const [open, setOpen] = useState(false);
+  const [selectedFile, setSelectedFile] = useState([]);
+  const [currentParams, setCurrentParams] = useState(null);
 
   // 1. Delete the user from the database
   // 2. The user needs to be deleted from the Firebase -> Authentication -> Users manually as re-authentication requires the user's password (https://firebase.google.com/docs/auth/web/manage-users#re-authenticate_a_user)
@@ -61,7 +73,7 @@ const Datatable = ({ type }) => {
         // ***********************************************************************************
 
         toast("The user also needs to be deleted inside Firebase!", {
-          icon: "⚠️",
+          icon: "âš ï¸",
         });
       } else {
         return;
@@ -152,27 +164,55 @@ const Datatable = ({ type }) => {
   const closeModal = () => {
     setIsModalOpen(false);
   };
+  
+  ////////////////////////////////////////////////////////////////
+
+  const handleClickOpen = (params) => {
+    setOpen(true);
+    setCurrentParams(params);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const onDrop = (acceptedFiles, params) => {
+    setSelectedFile(acceptedFiles[0]); // Store the selected file object, not the array
+    setCurrentParams(params); // Store the current params
+    handleClickOpen();
+    handleClose();
+  };
+
+  const { getRootProps, getInputProps } = useDropzone({ onDrop });
+
   //********************************************************** */
 
   // file update
   // fix this
   // - it wont work as you need a modal/form to upload the newest file to update
   const handleFileUpdate = async (params) => {
-    // console.log("file_id: ", params.row.id);
-    // try {
-    //   // update file_id's content with the newest file
-    //   const response = instance.post(`/fileupdate/${params.row.fileID}`);
-    //   // Handle response if needed
-    //   console.log("Response:", response.data);
-    //   if (response.data === "file ok") {
-    //     toast.info(`${params.row.fileName} successfully updated`);
-    //   } else {
-    //    toast.error(`${params.row.fileName} failed to update`);
-    //   }
-    // } catch (error) {
-    //   // Handle error if needed
-    //   console.error("Error updating file: ", error.response);
-    // }
+    console.log("file_id: ", params.row.id);
+    if (!selectedFile) {
+      return;
+    }
+    const formData = new FormData();
+    formData.append('file', selectedFile);
+
+    try {
+      // update file_id's content with the newest file
+      const response = instance.put(`fileupdate/${params.row.id}`, formData);
+      // Handle response if needed
+      console.log("Response:", response.data);
+      if (response.data === "file ok") {
+        toast.info(`${params.row.fileName} successfully updated`);
+        load_shared_files();
+      } else {
+       toast.error(`${params.row.fileName} failed to update`);
+      }
+    } catch (error) {
+      // Handle error if needed
+      console.error("Error updating file: ", error.response);
+    }
   };
 
   // file deletion
@@ -209,9 +249,11 @@ const Datatable = ({ type }) => {
         load_trashed_files();
       } else {
         toast.error(`${params.row.fileName} failed restoring`);
+        setSelectedFile([]);
       }
     } catch (error) {
       console.log("Error restoring file: ", error);
+      setSelectedFile([]);
     }
   };
 
@@ -287,24 +329,57 @@ const Datatable = ({ type }) => {
             >
               Share
             </div>
-            <div
-              className="updateButton"
-              onClick={() => handleFileUpdate(params)}
-            >
-              Update
-            </div>
             <div>
-              {/* fix this, the modal somehow will be at the button */}
-              {/* <div className="actionButton" onClick={openModal}>
+              <div
+                className="actionButton"
+                onClick={() => handleClickOpen(params)}
+              >
                 Update
-              </div> */}
-              {/* <FileUploadModal   // component of modal
+            </div>
+              {open && <div className="overlay" />}
+              <Dialog open={open} onClose={handleClose}>
+                <DialogTitle>Update File</DialogTitle>
+                <DialogContent>
+                  {/* <DialogContentText>
+                    Drop the file here or click to select a file.
+                  </DialogContentText> */}
+                  <div {...getRootProps()}>
+                    <div className="drop-box">
+                      <input {...getInputProps()} />
+                      <p>Drag & drop a file here, or click to select a file</p>
+                    </div>
+                    {selectedFile ? (
+                      <p>Selected file: {selectedFile.name}</p>
+                    ) : (
+                      <p>Selected file: {}</p>
+                    )}
+                  </div>
+                  {/* {selectedFile.length > 0 && (
+                    <p>Selected file: {selectedFile[0].name}</p>
+                  )} */}
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={() => {handleFileUpdate(params);}}>
+                    Update
+                  </Button>
+                  <Button onClick={handleClose}>
+                    Cancel
+                  </Button>
+                </DialogActions>
+              </Dialog>
+            </div>
+            {/* fix this, the modal somehow will be at the button */}
+            {/* <div>
+              <div className="actionButton" onClick={openModal}>
+                Update
+              </div>
+              <FileUploadModal   // component of modal
                 isOpen={isModalOpen} // open model
                 closeModal={closeModal} // close modal
                 fileID={params.row.id} // set file_id
                 onFileUpdated={load_all_data} // load file data after update
-              /> */}
-            </div>
+              />
+            </div> */}
             <div
               className="deleteButton"
               onClick={() => handleFileDelete(params)}
