@@ -27,8 +27,7 @@ import {
   reauthenticateWithCredential,
   deleteUser,
 } from "firebase/auth";
-import instance from "../../axios_config"; // axios instance
-import { setCulture } from "@syncfusion/ej2-base";
+import instance from "../../axios_config";
 
 const Single = () => {
   const [dialogTitle, setDialogTitle] = useState("");
@@ -45,78 +44,63 @@ const Single = () => {
   const [email, setEmail] = useState("");
   const [phone, setPhoneNumber] = useState("");
   const [registeredDate, setRegisteredDate] = useState();
-  const [ uid, setUid ] = useState();
 
-  // ******************save auth currentUser data*********************
-  // solves page refresh data not loaded issue
-  const [ userLogin, setCurrentUser] = useState(null); 
+  // // Convert firebase timestamp to date format. (Ex. 8/26/2023)
+  // let date = new Date(registeredDate);
+  // let myDate = date.toLocaleDateString();
+  // let myTime = date.toLocaleTimeString();
+  // myDate = myDate.replaceAll("/", "-");
+  // const mmddyyyy = myDate + " " + myTime;
 
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(user => {
-      setCurrentUser(user);
-    });
-
-    return () => unsubscribe(); // Unsubscribe when component unmounts
-  }, []);
-  // *****************************************************************
-
-  // Function to get the user's account details from postgresql
-  const fetchUserData = async () => {
-    if (userLogin) {
+   // Function to get the user's account details from postgresql
+ useEffect( ()=> {
+  // Set up the authentication state observer
+  const unsubscribe = auth.onAuthStateChanged(async (user) => {
+    if (user) {
       try {
-        const response = await instance.get(`/${userLogin.uid}`);
+        const response = await instance.get(`/${user.uid}`);
         const data = response.data;
-        console.log("get request: ", data);
-        console.log("currentUser: ", currentUser.data);
-        setUid(userLogin.uid); // save uid in usestate
+        console.log("User info: ", data);
+        
         setFirstName(data.f_name);
         setLastName(data.l_name);
         setUsername(data.username);
         setEmail(data.email);
         setPhoneNumber(data.phone_number);
-        setRegisteredDate(userLogin.metadata.creationTime); // creation time from firebase auth
+        setRegisteredDate(user.metadata.creationTime);
       } catch (error) {
         console.error("Error fetching user data:", error);
       }
     } else {
-        console.log("User is not logged in.");
+      console.log("User is not logged in.");
     }
-  };
-  useEffect( ()=> {
-      fetchUserData();
-  }, [userLogin]) // dependency from save auth currentUser data
+  });
 
-  
+  // Clean up the observer when the component unmounts
+  return () => {
+    unsubscribe();
+  };
+})
+
   const handleDeleteUser = () => {
     // https://firebase.google.com/docs/auth/web/manage-users#delete_a_user
-    // this deletes user account from firebase auth
     deleteUser(auth.currentUser)
-      .then( async () => {
+      .then(() => {
         // ************************************************************ Connect with Django ************************************************************
         // User deleted.
         // https://firebase.google.com/docs/firestore/manage-data/delete-data#delete_documents
-        console.log("Check user: ", uid);
-        // request delete user account entirely from postgresql
-        const res = await instance.delete(`user/client/delete/${uid}`);
-        console.log("Response from delete: ", res);
-        if(res.data === "Deleted") {
-          console.log("User account is: ", res.data);
-          // remove user account profile from firebase db
-          deleteDoc(doc(db, "users", uid));
-          toast.success("Your account deleted successfully!");
-          setTimeout(() => {
-            dispatch({ type: "LOGOUT" });
-          }, 2000);         
-        } else {
-          alert('Account deleted but not entirely!');
-        }
+        deleteDoc(doc(db, "users", currentUser.uid));
+        toast.success("Your account deleted successfully!");
+        setTimeout(() => {
+          dispatch({ type: "LOGOUT" });
+        }, 2000);
+
         // Write codes to delete the user from the backend
         // *********************************************************************************************************************************************
       })
       .catch((error) => {
         // An error ocurred
         toast.error(`Contact admin: ${error.code}`);
-        console.log("Error deleting user account: ", error);
       });
   };
 
