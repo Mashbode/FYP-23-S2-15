@@ -74,16 +74,16 @@ export const userColumns = [
 // ************************** Connect with Django **************************
 // Change the field according to the data fetched from Datatabls.jsx -> useEffect()
 export const fileColumns = [
-  { field: "id", headerName: "File ID", width: 200 },
+  { field: "id", headerName: "File ID", width: 250 },
   {
     field: "fileName",
     headerName: "File Name",
-    width: 250,
+    width: 300,
   },
   {
     field: "userName",
     headerName: "Uploader",
-    width: 200,
+    width: 230,
   },
   {
     field: "timeStamp",

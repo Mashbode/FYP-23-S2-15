@@ -89,7 +89,7 @@ function App() {
             <Route path="otp" element={<OTP />} />
             {/* 
             1. Determines if the route is an index route. Index routes render into their parent's Outlet at their parent's URL (like a default child route). 
-            2. Whenever we go to homepage and if thereâ€™s no current user, website directs to login page
+            2. Whenever we go to homepage and if there’s no current user, website directs to login page
             */}
             <Route index element={<Landing />} />
             <Route
@@ -134,15 +134,15 @@ function App() {
                   </RequireAuth>
                 }
               />
-              <Route
-                path="change-password"
-                element={
-                  <RequireAuth>
-                    <ChangePassword />
-                  </RequireAuth>
-                }
-              />
             </Route>
+            <Route
+              path="change-password"
+              element={
+                <RequireAuth>
+                  <ChangePassword />
+                </RequireAuth>
+              }
+            />
             <Route path="files">
               <Route
                 index
