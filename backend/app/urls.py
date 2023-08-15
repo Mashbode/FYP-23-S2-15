@@ -97,7 +97,7 @@ urlpatterns = [
     path('api/client/getid/<str:u_id>', queryclientId),
 
         ## deleting user
-    path('api/user/client/delete/<str:u_id>', deleteUserView.as_view()),
+    path('api/user/client/delete/<str:u_id>', deleteUser),
 
     ### enquiries 
         ## client write enquiry ## name is how the user want to present himself as?
