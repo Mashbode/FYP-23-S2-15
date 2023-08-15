@@ -1050,17 +1050,3 @@ def countfiles(request):
     count = Filetable.objects.all()
     data = {'result':count.count()}
     return JsonResponse(data)
-
-## count total number of clients 
-def countclient(request):
-    count = Client.objects.all()
-    data ={'result' : count.count()}
-    return JsonResponse(data)
-
-## vrify email 
-def verifyEmail(request, email):
-    if Users.objects.filter(email=email).exists():
-        data = {'result': 'email exists'}
-    else:
-        data = {'result': 'email does not exist'}
-    return JsonResponse(data)
