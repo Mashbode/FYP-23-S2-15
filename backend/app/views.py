@@ -1070,3 +1070,4 @@ def getsharedForAd(request):
     count = Sharedfileaccess.objects.all()
     data = {'result':count.count()}
     return  JsonResponse(data)
+##testing
