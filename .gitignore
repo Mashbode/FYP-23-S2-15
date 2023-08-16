@@ -1,3 +1,4 @@
 ## ignore pychache
 /backend/app/__pycache__
 /backend/backend/__pycache__
+*.pyc
