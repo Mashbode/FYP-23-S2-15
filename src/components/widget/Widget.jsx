@@ -5,22 +5,50 @@ import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import AccountBalanceWalletOutlinedIcon from "@mui/icons-material/AccountBalanceWalletOutlined";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import MonetizationOnOutlinedIcon from "@mui/icons-material/MonetizationOnOutlined";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { db } from "../../firebase";
 import { query, collection, where, getDocs } from "firebase/firestore";
+import { AuthContext } from "../../context/AuthContext";
+import instance from "../../axios_config";
 
 const Widget = ({ type }) => {
   // // temporary fake data
   // const amount = 100;
   // const diff = 20; // percentage
-
+  const [ usertype, setUsertype ] = useState(""); // get usertype (implement for client and admin)
   const [amount, setAmount] = useState(null);
+  const [ totalUser , setTotalUser ] = useState();
   const [diff, setDiff] = useState(null);
+  const { currentUser } = useContext(AuthContext);
 
   let data;
 
+    // // check usertype when page loads
+    useEffect (()=>{
+      // get user type
+  
+      const fetchUserType = async () => {
+        let user_type = "";
+        await instance.get(`/${currentUser.uid}`)
+          .then((res)=> {
+            if(res.data.usertype !== null) {
+              setUsertype(res.data.usertype); // setState will not save data immediately
+              user_type = res.data.usertype; // to store within useEffect
+            }
+            console.log("Usertype: ",res.data.usertype);
+          })
+          .catch((err)=> {
+            console.log("Error getting usertype: ", err);
+          });
+          console.log("user_type: ", user_type);
+      }
+  
+      fetchUserType();
+    }, []);
+
   useEffect(() => {
-    const fetchData = async () => {
+
+    const totality = async () => {
       const today = new Date();
       const lastMonth = new Date(new Date().setMonth(today.getMonth() - 1));
       const prevMonth = new Date(new Date().setMonth(today.getMonth() - 2)); // Two months ago
@@ -30,6 +58,7 @@ const Widget = ({ type }) => {
         where("timeStamp", "<=", today),
         where("timeStamp", ">", lastMonth)
       );
+
       const prevMonthQuery = query(
         collection(db, data.query),
         where("timeStamp", "<=", lastMonth),
@@ -37,26 +66,52 @@ const Widget = ({ type }) => {
       );
 
       const lastMonthData = await getDocs(lastMonthQuery);
+      console.log("Lastmon: ",lastMonthData.docs.length);
       const prevMonthData = await getDocs(prevMonthQuery);
+      // if last last month <= 0, set increase to last month users
+      if (prevMonthData.docs.length <= 0 ) {
+        setDiff(lastMonthData.docs.length);
+      } else {
+        console.log("Prevmon:", prevMonthData.docs.length);     
+        setDiff(
+          ((lastMonthData.docs.length - prevMonthData.docs.length) / prevMonthData.docs.length) * 100
+        );
+        console.log("Difference: ", (((lastMonthData.docs.length - prevMonthData.docs.length) / prevMonthData.docs.length) * 100).toFixed(2) )
+      }
 
-      setAmount(lastMonthData.docs.length);
-      setDiff(
-        ((lastMonthData.docs.length - prevMonthData.docs.length) /
-          prevMonthData.docs.length) *
-          100
-      );
-    };
+      // firebase db is called users so need to put condition query client table in postgresql
+      if (data.query === "users") {
+        const response = await instance.get(`count/client`);
+        const total_result = response.data.result;
+        setAmount(total_result);
+      } 
+      // total shared files throughout server
+      else if ( data.query === "share") {
+        const response = await instance.get(`admin/total/${data.query}`);
+        const total_result = response.data.result;
+        console.log("Total files shared: ", total_result);
+        setAmount(total_result);
+      }
+      // total files in server
+      else {
+        const response = await instance.get(`count/${data.query}`);
+        const total_result = response.data.result;
+        console.log("Total files in server: ", total_result);
+        setAmount(total_result);
+      }
+      
+    }
 
-    fetchData();
+    totality();
   }, []);
 
   // Its also ok to do it by making source like datatablesource.js
   switch (type) {
-    case "user":
+    case "users":
       data = {
-        title: "USERS",
+        title: "TOTAL USERS",
         isMoney: false,
-        link: "See all users",
+        link: "Existing Accounts",
         query: "users",
         icon: (
           <PersonOutlinedIcon
@@ -69,43 +124,14 @@ const Widget = ({ type }) => {
         ),
       };
       break;
-    case "order":
+    case "files":
       data = {
-        title: "ORDERS",
+        title: "TOTAL FILES SERVERS HOLDING",
         isMoney: false,
-        link: "View all orders",
+        link: "Distributed File System",
+        query: "files",
         icon: (
           <ShoppingCartOutlinedIcon
-            className="icon"
-            style={{
-              backgroundColor: "rgba(218, 165, 32, 0.2)",
-              color: "goldenrod",
-            }}
-          />
-        ),
-      };
-      break;
-    case "earning":
-      data = {
-        title: "EARNINGS",
-        isMoney: true,
-        link: "View net earnings",
-        icon: (
-          <MonetizationOnOutlinedIcon
-            className="icon"
-            style={{ backgroundColor: "rgba(0, 128, 0, 0.2)", color: "green" }}
-          />
-        ),
-      };
-      break;
-    case "product":
-      data = {
-        title: "PRODUCTS",
-        // isMoney: true,
-        link: "See details",
-        query: "products",
-        icon: (
-          <AccountBalanceWalletOutlinedIcon
             className="icon"
             style={{
               backgroundColor: "rgba(128, 0, 128, 0.2)",
@@ -115,6 +141,36 @@ const Widget = ({ type }) => {
         ),
       };
       break;
+    case "share":
+      data = {
+        title: "TOTAL FILES SHARED",
+        isMoney: false,
+        link: "Secure File Sharing",
+        query: "share",
+        icon: (
+          <AccountBalanceWalletOutlinedIcon
+            className="icon"
+            style={{
+              backgroundColor: "rgba(218, 165, 32, 0.2)",
+              color: "goldenrod",
+            }}
+          />
+        ),
+      };
+      break;
+    // case "earning":
+    //   data = {
+    //     title: "EARNINGS",
+    //     isMoney: true,
+    //     link: "View net earnings",
+    //     icon: (
+    //       <MonetizationOnOutlinedIcon
+    //         className="icon"
+    //         style={{ backgroundColor: "rgba(0, 128, 0, 0.2)", color: "green" }}
+    //       />
+    //     ),
+    //   };
+      // break;
     // case "balance":
     //   data = {
     //     title: "BALANCE",
@@ -139,17 +195,26 @@ const Widget = ({ type }) => {
       <div className="left">
         <div className="title">{data.title}</div>
         <div className="counter">
-          {data.isMoney && "$"} {amount}
+          {data.isMoney && "$"} { amount }
         </div>
         <div className="link">{data.link}</div>
       </div>
-      <div className="right">
+      {data.query === "users" ? (
+        <div className="right">
         <div className={`percentage ${diff > 0 ? "positive" : "negative"}`}>
           {diff > 0 ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-          {diff} %
+          {diff}% (compared to previous month)
         </div>
         {data.icon}
       </div>
+      ) : (
+        <div className="right">
+        <div className={`percentage ${amount > 0 ? "positive" : "negative"}`}>
+          ._.
+        </div>
+        {data.icon}
+        </div>
+      )}  
     </div>
   );
 };

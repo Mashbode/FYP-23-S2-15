@@ -23,7 +23,7 @@ import {
   deleteDoc,
   onSnapshot,
 } from "firebase/firestore";
-import { db } from "../../firebase";
+import { db, auth } from "../../firebase";
 import {
   userColumns,
   fileColumns,
@@ -55,6 +55,13 @@ const Datatable = ({ type }) => {
   // const [ userID, setUID ] = useState(""); // get user id
   const [clientID, setClientID] = useState(""); // get client id
 
+  //**************************************SUPERADMIN STUFF************************************** */
+  const [adminID, setAdminID] = useState(""); // get admin id
+  const [ usertype, setUsertype ] = useState(""); // get usertype
+  const [ totalUsers, getTotalUsers ] = useState();
+
+  //******************************************************************************************** */
+
   const [open, setOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState([]);
   const [currentParams, setCurrentParams] = useState(null);
@@ -71,15 +78,33 @@ const Datatable = ({ type }) => {
 
         // Write codes to delete the user from the backend
         // ***********************************************************************************
+        await instance.delete(`user/client/delete/${id}`)
+        .then((res) => {
+          console.log("Response from delete: ", res);
+          if(res.data === "Deleted") {
+            console.log(`${id}'s account is: `, res.data);
+            toast.success(`User account deleted successfully!`);
+          } else {
+            alert('Account deleted but not entirely!');
+          }
+        })
+        .catch((err) => {
+          console.log("Error deleting user: ", err);
+        })
 
         toast("The user also needs to be deleted inside Firebase!", {
-          icon: "âš ï¸",
+          icon: "⚠️",
         });
+        // reload table after delete success
+        setTimeout(() => {
+          load_all_users();
+        }, 2000);
       } else {
         return;
       }
     } catch (error) {
-      console.log(error);
+      toast.error("Failed to delete user, try again later");
+      console.log("Error deleting user: ", error);
     }
   };
 
@@ -149,7 +174,10 @@ const Datatable = ({ type }) => {
       );
       console.log("Response from delete shared file: ", response);
       // reload shared file table
-      load_shared_files();
+      toast.info(`${params.row.fileName} no longer shared`)
+      setTimeout(() => {
+         load_shared_files(); 
+      }, 2000);
     } catch (error) {
       console.log("Error deleting shared file: ", error);
     }
@@ -205,15 +233,50 @@ const Datatable = ({ type }) => {
       console.log("Response:", response.data);
       if (response.data === "file ok") {
         toast.info(`${params.row.fileName} successfully updated`);
-        load_shared_files();
+        setTimeout(() => {
+          load_shared_files();
+        }, 2000);
       } else {
        toast.error(`${params.row.fileName} failed to update`);
+       console.log("Failed to update: ", params.row.fileName);
       }
     } catch (error) {
       // Handle error if needed
       console.error("Error updating file: ", error.response);
     }
   };
+
+  // const handleFileUpdate = async () => { // Remove the parameter
+  //   if (!selectedFile || !currentParams) {
+  //     setSelectedFile([]);
+  //     return;
+  //   }
+
+  //   try {
+  //     const formData = new FormData();
+  //     formData.append("file", selectedFile);
+
+  //     const response = await instance.post(
+  //       `fileupdate/${currentParams.row.id}`,
+  //       formData
+  //     );
+  //     console.log("File Update: ", response.data);
+
+  //     if (response.data === "file ok") {
+  //       toast.info(`${selectedFile.name} successfully updated`);
+  //       load_shared_files();
+  //     } else {
+  //       toast.error(`${selectedFile.name} failed to update`);
+  //     }
+  //     setSelectedFile([]);
+  //     // Close the dialog and perform any other necessary actions
+  //     handleClose();
+  //   } catch (error) {
+  //     console.error("Error updating file: ", error);
+  //     toast.error("An error occurred while updating the file");
+  //     setSelectedFile([]);
+  //   }
+  // };
 
   // file deletion
   const handleFileDelete = async (params) => {
@@ -228,7 +291,9 @@ const Datatable = ({ type }) => {
       if (response.data.status === "success") {
         toast.success(`${params.row.fileName} deleted successfully`);
         // Perform any other necessary actions after successful deletion.
-        load_all_data();
+        setTimeout(() => {
+          load_all_data();
+        }, 2000);
       } else {
         toast.error(`${params.row.fileName} deletion failed`);
         // Handle the error case appropriately.
@@ -266,8 +331,10 @@ const Datatable = ({ type }) => {
         console.log("File Log Deletion: ", response.data);
         if (response.data.result === "All gone") {
           console.log("File Log Delete: ", response.data.result);
-          load_trashed_files();
           toast.success(`${params.row.fileName} deleted successfully`);
+          setTimeout(() => {
+            load_trashed_files();
+          }, 2000);
         } else {
           toast.error("Delete unsuccessful");
         }
@@ -291,12 +358,6 @@ const Datatable = ({ type }) => {
       renderCell: (params) => {
         return (
           <div className="cellAction">
-            <Link
-              to={`/users/${params.row.id}`}
-              style={{ textDecoration: "none" }}
-            >
-              <div className="actionButton">View</div>
-            </Link>
             <div
               className="deleteButton"
               onClick={() => handleUserDelete(params.row.id)}
@@ -343,11 +404,9 @@ const Datatable = ({ type }) => {
                   {/* <DialogContentText>
                     Drop the file here or click to select a file.
                   </DialogContentText> */}
-                  <div {...getRootProps()}>
-                    <div className="drop-box">
-                      <input {...getInputProps()} />
-                      <p>Drag & drop a file here, or click to select a file</p>
-                    </div>
+                  <div {...getRootProps()} className="drop-box">
+                    <input {...getInputProps()} />
+                    <p>Drag & drop a file here, or click to select a file</p>
                     {selectedFile ? (
                       <p>Selected file: {selectedFile.name}</p>
                     ) : (
@@ -501,32 +560,55 @@ const Datatable = ({ type }) => {
       break;
   }
 
+  // // check usertype when page loads
+  useEffect (()=>{
+    // get user type
+    let user_type = "";
+    instance.get(`/${currentUser.uid}`)
+      .then((res)=> {
+        if(res.data.usertype !== null) {
+          setUsertype(res.data.usertype); // setState will not save data immediately
+          user_type = res.data.usertype; // to store within useEffect
+        }
+        console.log("Usertype: ",res.data.usertype);
+      })
+      .catch((err)=> {
+        console.log("Error getting usertype: ", err);
+      });
+      console.log("user_type: ", user_type);
+  }, [currentUser.uid, type]) // added dependencies
+
   // Run only once when the component is build
   useEffect(() => {
     // ************************** Connect with Django **************************
-
-    console.log("u_id: ", currentUser.uid);
-
-    // get client_id from url: api/client/getid/<u_id>
-    instance
-      .get(`client/getid/${currentUser.uid}`)
-      .then((res) => {
-        setClientID(res.data.client_id);
-        console.log("ClientID: ", res.data.client_id);
-        // console.log('current client id: ', clientID ); value not print out as its not stored immediately in useState
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-
+    
+    // get client_id
+      if (usertype === "Admin") {
+        console.log("return");
+        return; // do nothing
+      } 
+      else if (usertype === "Client") {
+        console.log("u_id: ", currentUser.uid);
+        // get client_id from url: api/client/getid/<u_id>
+        instance
+          .get(`client/getid/${currentUser.uid}`)
+          .then((res) => {
+            setClientID(res.data.client_id);
+            console.log("ClientID: ", res.data.client_id);
+            // console.log('current client id: ', clientID ); value not print out as its not stored immediately in useState
+          })
+          .catch((err) => {
+            console.log("Error getting client_id", err);
+          });
+      }
     // Return a cleanup function to stop listening
 
     // *************************************************************************
-  }, []);
+  }, [currentUser.uid, usertype, type]); // added dependencies
 
-  // function to load/rerender all data in table
+  // function to load/rerender all files in table
   const load_all_data = () => {
-    if (clientID != "") {
+    if (clientID !== "") {
       setLoading(true);
       console.log("Page type: ", type);
       // load all the user's files
@@ -584,7 +666,7 @@ const Datatable = ({ type }) => {
         }));
         console.log("Shared_list: ", shared_list);
         setData(shared_list);
-        // console.log("Data: ", data); it wont load in immediately
+        // console.log("Dadelete`ta: ", data); it wont load in immediately
         setLoading(false);
         console.log(
           "Shared table retrieved list of files under client",
@@ -596,6 +678,7 @@ const Datatable = ({ type }) => {
       });
   };
 
+  // load trashed files
   const load_trashed_files = () => {
     setLoading(true);
     console.log("Page type: ", type);
@@ -625,28 +708,74 @@ const Datatable = ({ type }) => {
       });
   };
 
-  useEffect(() => {
-    console.log("Client__ID: ", clientID);
-    // switch between type of table to query
-    switch (type) {
-      case "users":
-        break;
-      case "files":
-        load_all_data();
-        break;
-      case "shared":
-        load_shared_files();
-        break;
-      case "trash":
-        load_trashed_files();
-        break;
-      case "enquiries":
-        break;
-      default:
-        break;
-    }
-  }, [clientID, type]);
+  const load_all_users = () => {
+    setLoading(true);
+    console.log("Page type: ", type);
+    // get all users from postgresql
+    instance
+      .get(`Users`)
+      .then((res) => {
+        console.log("Query all users:", res.data);
+        console.log("Total users: ", res.data.length);
+        let activeUsersList = res?.data || [];
 
+        const activeUsers_list = activeUsersList.map((entry) => ({
+          id: entry.u_id,
+          type: entry.usertype,
+          username: entry.username,
+          fullname: `${entry.f_name} ${entry.l_name}`,
+          email: entry.email,
+          phone: entry.phone_number
+        }));
+        setData(activeUsers_list)
+        getTotalUsers(res.data.length);
+        setLoading(false);
+      })
+      .catch((err)=>{
+        console.log("Error getting all users: ", err);
+      })
+  }
+
+  useEffect(() => {
+    if (usertype === "Admin") {
+      console.log("Admin__ID: ", currentUser);
+      switch (type) {
+        case "users":
+          load_all_users();
+          break;
+        case "files":
+          load_all_data();
+          break;
+        case "enquiries":
+          break;
+        default:
+          break;
+      }
+    } else if (usertype ==="Client") {
+      console.log("Client__ID: ", clientID);
+      // switch between type of table to query
+      switch (type) {
+        case "users":
+          break;
+        case "files":
+          load_all_data();
+          break;
+        case "shared":
+          load_shared_files();
+          break;
+        case "trash":
+          load_trashed_files();
+          break;
+        case "enquiries":
+          break;
+        default:
+          break;
+      }
+    }
+    
+  }, [clientID, usertype, type]);
+
+  // upload file
   const handleUploadFiles = () => {};
 
   const customToolBar = () => {
