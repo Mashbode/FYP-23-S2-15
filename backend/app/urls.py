@@ -123,10 +123,12 @@ urlpatterns = [
     path('api/count/client', countclient),
         ## verify email for password reset for forget password?
     path('api/client/emailcheck/<str:email>', verifyEmail),
-
+        ## get storage used by client
     path('api/client/filestorage/used/<int:client_id>', getSize),
-
+        ## get storage used in server
     path('api/admin/total/storage', gettotal),
+        ## get total number of shares for admin
+    path('api/admin/total/share', getsharedForAd),
         #######################################################################
         #######################################################################
    

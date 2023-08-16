@@ -1064,3 +1064,9 @@ def gettotal(request):
     data = {'result' : count}
     return JsonResponse(data)
     # return HttpResponse('oh')
+
+## count admin shared files
+def getsharedForAd(request):
+    count = Sharedfileaccess.objects.all()
+    data = {'result':count.count()}
+    return  JsonResponse(data)
