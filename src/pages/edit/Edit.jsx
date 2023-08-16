@@ -8,6 +8,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 // import DriveFolderUploadOutlinedIcon from "@mui/icons-material/DriveFolderUploadOutlined";
 
 import React, { useState, useEffect } from "react";
+import { toast } from "react-hot-toast";
 import { doc, updateDoc, getDoc } from "firebase/firestore";
 import { auth, db } from "../../firebase";
 import { updatePassword } from "firebase/auth";
@@ -20,10 +21,11 @@ const Edit = () => {
     userName: "",
     firstName: "",
     lastName: "",
-    // email: "",
+    email: "",
     phone: "",
     newPassword: "",
     confirmNewPassword: "",
+    userType: "",
   }); // Handle multiple input at once
   const [editing, setEditing] = useState(false); // Spinner icon
   const [errorMsg, setErrorMsg] = useState(""); // Error msg on register
@@ -31,7 +33,7 @@ const Edit = () => {
   const formInputs = [
     {
       id: 1,
-      name: "username",
+      name: "userName",
       type: "text",
       value: values.userName,
       errorMessage:
@@ -71,27 +73,27 @@ const Edit = () => {
     //   label: "Email",
     //   required: true,
     // },
-    {
-      id: 4,
-      name: "newPassword",
-      type: "password",
-      placeholder: "New Password",
-      errorMessage:
-        "Password should be 8-20 characters and include at least 1 letter, 1 number and 1 special character!",
-      label: "New Password",
-      pattern: `^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,20}$`,
-      required: true,
-    },
-    {
-      id: 5,
-      name: "confirmNewPassword",
-      type: "password",
-      placeholder: "Confirm New Password",
-      errorMessage: "Passwords don't match!",
-      label: "Confirm New Password",
-      pattern: values.password,
-      required: true,
-    },
+    // {
+    //   id: 4,
+    //   name: "newPassword",
+    //   type: "password",
+    //   placeholder: "New Password",
+    //   errorMessage:
+    //     "Password should be 8-20 characters and include at least 1 letter, 1 number and 1 special character!",
+    //   label: "New Password",
+    //   pattern: `^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,20}$`,
+    //   required: true,
+    // },
+    // {
+    //   id: 5,
+    //   name: "confirmNewPassword",
+    //   type: "password",
+    //   placeholder: "Confirm New Password",
+    //   errorMessage: "Passwords don't match!",
+    //   label: "Confirm New Password",
+    //   pattern: values.password,
+    //   required: true,
+    // },
   ];
 
   const navigate = useNavigate();
@@ -100,35 +102,23 @@ const Edit = () => {
     setValues({ ...values, [e.target.name]: e.target.value });
   };
 
-  // Function to fetch the authenticated user's data from Firestore
+  // Function to fetch the authenticated user's data from postgresql
   const fetchUserData = async () => {
     try {
       // const user = auth.currentUser;
       if (user) {
-        const userRef = doc(db, "users", user.uid);
-        const userDoc = await getDoc(userRef);
-        if (userDoc.exists()) {
-          // setValues({
-          //   username: userDoc.data().username,
-          //   firstName: userDoc.data().firstName,
-          //   lastName: userDoc.data().lastName,
-          //   // email: userDoc.data().email,
-          //   phone: userDoc.data().phone,
-          // });
-          const response = await instance.get(`/${user.uid}`);
-          console.log("User info: ", response.data);
-          const data = response.data;
-          setValues({
-            // u_id: data.u_id,
-            userName: data.username,
-            firstName: data.f_name,
-            lastName: data.l_name,
-            // email: data.email,
-            phone: data.phone_number,
-            // usertype: data.usertype
-          });
-          console.log("User info list: ", values);
-        }
+        // get user details from postgresql
+        const response = await instance.get(`/${user.uid}`);
+        // console.log("User info: ", response.data);
+        const data = response.data;
+        setValues({
+          userName: data.username,
+          firstName: data.f_name,
+          lastName: data.l_name,
+          email: data.email,
+          phone: data.phone_number,
+          userType: data.usertype,
+        });
       }
 
       setEditing(false);
@@ -148,7 +138,7 @@ const Edit = () => {
   };
 
   useEffect(() => {
-    fetchUserData();
+      fetchUserData();
   }, []);
 
   const handleSubmit = async (e) => {
@@ -156,35 +146,55 @@ const Edit = () => {
     setEditing(true); // loading icon
 
     try {
-      const { username, firstName, lastName, phone, newPassword } = values;
+      const { userName, firstName, lastName, email, phone, userType } = values;
 
-      const user = auth.currentUser;
+      //const user = auth.currentUser;
       if (user) {
-        const userRef = doc(db, "users", user.uid);
-        await updateDoc(userRef, {
-          userName: username,
-          firstName: firstName,
-          lastName: lastName,
-          // email: email,
-          phone: "+" + phone, // "+" is required in order to reflect country code
-        });
+        console.log("User Info: ", user.data);
+        // const userRef = doc(db, "users", user.uid);
+        // 
+        // await updateDoc(userRef, {
+        //   userName: username,
+        //   firstName: firstName,
+        //   lastName: lastName,
+        //   phone: "+" + phone // "+" is required in order to reflect country code
+        // });
+        // update user details
+        await instance.put(`/${auth.currentUser.uid}`, { 
+          username: userName,
+          f_name: firstName,
+          l_name: lastName,
+          email: email,
+          phone_number: phone, // "+" is required in order to reflect country code
+          usertype: userType,
+          u_id: auth.currentUser.uid
+        }).then( (response)=> {
+          console.log("PUT REQUEST RESPONSE: ", response.data); 
+          // no message needed as changes reflects on view profile page
+          setTimeout(() => {
+            navigate(-1);
+          }, 3000);
+        }).catch((err)=>{
+          console.log("Error updating postgresql: ", err.data);
+        })
 
         // Update password if provided
-        if (newPassword) {
-          updatePassword(user, newPassword)
-            .then(() => {
-              // Update successful.
-              // go back to previous pg after updating
-              navigate(-1);
-            })
-            .catch((error) => {
-              // An error ocurred
-              console.log(error);
-            });
-        }
+        // if (newPassword) {
+        //   updatePassword(user, newPassword)
+        //     .then(() => {
+        //       // Update successful.
+        //       // go back to previous pg after updating
+        //       navigate(-1);
+        //     })
+        //     .catch((error) => {
+        //       // An error ocurred
+        //       console.log("Error updating password: ", error);
+        //     });
+        // }
       }
     } catch (error) {
-      console.log(error);
+      console.log("Error editing user:", error);
+      setEditing(false);
     }
   };
 
