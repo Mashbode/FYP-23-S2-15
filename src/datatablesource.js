@@ -1,15 +1,15 @@
 export const userColumns = [
-  { field: "id", headerName: "ID", width: 280 },
+  { field: "id", headerName: "UID", width: 280 },
   {
     field: "type",
     headerName: "Type",
-    width: 110,
+    width: 70 ,
     // https://mui.com/x/react-data-grid/
     // params are from rows={data} as a prop of <DataGrid></DataGrid>
     // valueGetter
     renderCell: (params) => {
       return (
-        // className written on purpose to differentiat the style of admin (yellow) and user (green)
+        // className written on purpose to differentiate the style of admin (yellow) and user (green)
         <div className={`cellWithType ${params.row.type}`}>
           {/* First letter of the user type will be changed to upper case */}
           {params.row.type.replace(/^./, params.row.type[0].toUpperCase())}
@@ -20,7 +20,7 @@ export const userColumns = [
   {
     field: "username",
     headerName: "Username",
-    width: 130,
+    width: 150,
     // https://mui.com/x/react-data-grid/
     // params are from rows={data} as a prop of <DataGrid></DataGrid>
     // valueGetter
@@ -34,29 +34,27 @@ export const userColumns = [
     // },
   },
   {
+    field: "fullname",
+    headerName: "Full Name",
+    width: 150,
+  },
+  {
     field: "email",
     headerName: "Email",
-    width: 200,
+    width: 250,
   },
   {
     field: "phone",
     headerName: "Phone",
-    width: 130,
+    width: 120,
   },
-  {
-    field: "timeStamp",
-    headerName: "Registered",
-    width: 140,
-    // https://mui.com/x/react-data-grid/
-    // params are from rows={data} as a prop of <DataGrid></DataGrid>
-    // valueGetter
-    renderCell: (params) => {
-      let lastModifiedDate = new Date(
-        params.row.timeStamp.toDate() // Returns Date object (Firebase)
-      ).toDateString(); // Into readable string (React JS)
-      return <div className="cellWithLastModified">{lastModifiedDate}</div>;
-    },
-  },
+  // {
+  //   field: "timeStamp",
+  //   headerName: "Registered",
+  //   width: 140,
+  //   // https://mui.com/x/react-data-grid/
+  //   // params are from rows={data} as a prop of <DataGrid></DataGrid>
+  // },
   // {
   //   field: "status",
   //   headerName: "Status",
@@ -74,16 +72,16 @@ export const userColumns = [
 // ************************** Connect with Django **************************
 // Change the field according to the data fetched from Datatabls.jsx -> useEffect()
 export const fileColumns = [
-  { field: "id", headerName: "File ID", width: 200 },
+  { field: "id", headerName: "File ID", width: 250 },
   {
     field: "fileName",
     headerName: "File Name",
-    width: 250,
+    width: 300,
   },
   {
     field: "userName",
     headerName: "Uploader",
-    width: 200,
+    width: 230,
   },
   {
     field: "timeStamp",
