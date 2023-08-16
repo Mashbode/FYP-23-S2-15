@@ -182,7 +182,7 @@ class ListCreateFolderFileTestCase(TestCase):
         encryption = Encryption.objects.create(encryption_type='AES')
 
         # Create a Filetable instance
-        filetable = Filetable.objects.create(filename='test_file', filetype='txt', numberofparts=5, encryptiontype = encryption, client_id=client.client_id)
+        filetable = Filetable.objects.create(filename='test_file', filetype='txt', numberofparts=5, encryptiontype = encryption, client_id=client.client_id, filesize = 1230)
 
         # Create a Foldertable instance
         foldertable = Foldertable.objects.create(client_id=client.client_id, foldername='test_folder')
