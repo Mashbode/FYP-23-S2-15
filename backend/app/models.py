@@ -125,8 +125,7 @@ class Filetable(models.Model):
     client = models.ForeignKey(Client, models.DO_NOTHING,  db_column='client_id')
     last_change = models.DateTimeField(auto_now=True)
     uploadtime = models.DateTimeField(auto_now_add=True)
-    filesize = models.CharField(max_length=250)
-
+    filesize = models.BigIntegerField()
     class Meta:
         managed = False
         db_table = 'filetable'
@@ -532,3 +531,16 @@ class File5_log(models.Model):
     class Meta:
         managed=False
         db_table = 'file5_log'
+
+class Enquiries(models.Model):
+    enquiries_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
+    text = models.TextField()
+    email = models.CharField(max_length=50, null=True)
+    time = models.DateTimeField(null=True)
+    reply_time = models.DateTimeField(null=True)
+    reply = models.TextField(null=True)
+    topic= models.CharField(max_length=50)
+
+    class Meta:
+        managed=False
+        db_table = 'enquiries'

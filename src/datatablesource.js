@@ -74,18 +74,17 @@ export const userColumns = [
 // ************************** Connect with Django **************************
 // Change the field according to the data fetched from Datatabls.jsx -> useEffect()
 export const fileColumns = [
-  { field: "id", headerName: "ID", width: 250 },
+  { field: "id", headerName: "File ID", width: 200 },
   {
-    field: "filename",
+    field: "fileName",
     headerName: "File Name",
-    width: 300,
+    width: 250,
   },
   {
-    field: "username",
+    field: "userName",
     headerName: "Uploader",
-    width: 230,
+    width: 200,
   },
-
   {
     field: "timeStamp",
     headerName: "Last Modified",
@@ -99,27 +98,51 @@ export const fileColumns = [
       return <div className="cellWithLastModified">{lastModifiedDate}</div>;
     },
   },
+  {
+    field: "fileSize",
+    headerName: "File size",
+    width: 100,
+    renderCell: (params) => {
+      const bytesValue = parseInt(params.row.fileSize, 10);
+      const KBValue = bytesValue / 1024;
+      const MBValue = KBValue / 1024;
+      const GBValue = MBValue / 1024;
+
+      if (GBValue >= 1) {
+        return (
+          <div className="cellWithFileSize">{GBValue.toFixed(2) + " GB"}</div>
+        );
+      } else if (MBValue >= 1) {
+        return (
+          <div className="cellWithFileSize">{MBValue.toFixed(2) + " MB"}</div>
+        );
+      } else {
+        return (
+          <div className="cellWithFileSize">{Math.ceil(KBValue) + " KB"}</div>
+        );
+      }
+    },
+  },
 ];
 // *************************************************************************
 
 // ************************** Connect with Django **************************
 // Change the field according to the data fetched from Datatabls.jsx -> useEffect()
 export const sharedColumns = [
-  { field: "id", headerName: "ID", width: 250 },
+  { field: "id", headerName: "File ID", width: 250 },
   {
-    field: "filename",
+    field: "fileName",
     headerName: "File Name",
     width: 300,
   },
   {
-    field: "username",
-    headerName: "Uploader",
+    field: "userName",
+    headerName: "Shared by",
     width: 230,
   },
-
   {
     field: "timeStamp",
-    headerName: "Last Modified",
+    headerName: "Shared date",
     width: 150,
     renderCell: (params) => {
       let lastModifiedDate = new Date(
@@ -136,21 +159,20 @@ export const sharedColumns = [
 // ************************** Connect with Django **************************
 // Change the field according to the data fetched from Datatabls.jsx -> useEffect()
 export const trashColumns = [
-  { field: "id", headerName: "ID", width: 250 },
+  { field: "id", headerName: "File ID", width: 250 },
   {
-    field: "filename",
+    field: "fileName",
     headerName: "File Name",
     width: 300,
   },
   {
-    field: "username",
+    field: "userName",
     headerName: "Uploader",
     width: 230,
   },
-
   {
     field: "timeStamp",
-    headerName: "Last Modified",
+    headerName: "Trashed Date",
     width: 150,
     renderCell: (params) => {
       let lastModifiedDate = new Date(
@@ -159,6 +181,31 @@ export const trashColumns = [
         params.row.timeStamp
       ).toDateString(); // turns Data object into readable string (React)
       return <div className="cellWithLastModified">{lastModifiedDate}</div>;
+    },
+  },
+  {
+    field: "fileSize",
+    headerName: "File size",
+    width: 100,
+    renderCell: (params) => {
+      const bytesValue = parseInt(params.row.fileSize, 10);
+      const KBValue = bytesValue / 1024;
+      const MBValue = KBValue / 1024;
+      const GBValue = MBValue / 1024;
+
+      if (GBValue >= 1) {
+        return (
+          <div className="cellWithFileSize">{GBValue.toFixed(2) + " GB"}</div>
+        );
+      } else if (MBValue >= 1) {
+        return (
+          <div className="cellWithFileSize">{MBValue.toFixed(2) + " MB"}</div>
+        );
+      } else {
+        return (
+          <div className="cellWithFileSize">{Math.ceil(KBValue) + " KB"}</div>
+        );
+      }
     },
   },
 ];
