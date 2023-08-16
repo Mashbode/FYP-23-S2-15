@@ -1054,7 +1054,7 @@ def verifyEmail(request, email):
 
 ## total storage used by client
 def getSize(request, client_id):
-    count = Filetable.objects.filter(client_id=client_id).aggregate(total=Sum('filesize'))
+    count = Filetable.objects.filter(client_id=client_id).aggregate(Sum('filesize'))
     data = {'result' : count}
     return JsonResponse(data)
 
