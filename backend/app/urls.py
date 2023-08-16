@@ -100,12 +100,9 @@ urlpatterns = [
     path('api/user/client/delete/<str:u_id>', deleteUserView.as_view()),
 
     ### enquiries 
-        ## client write enquiry ## name is how the user want to present himself as?
-    path('api/e/add/<int:client_id>/<str:text>/<str:name>/<str:topic>', writeEnquiryView.as_view()), 
+        ## potential users write enquiry ## email
+    path('api/e/add/<str:text>/<str:email>/<str:topic>', writeEnquiryView.as_view()), 
         ## view the contents of the enquiry
-    path('api/enq/view/<int:client_id>/<uuid:eId>', viewEnquiryResult),
-        ## display list of enquiry of the client
-    path('api/enq/list/<int:client_id>', listEnquiries),
 
         ## admin view list of enquiries
     path('api/admin/enq/list', adlistEnquiries.as_view()),
@@ -126,6 +123,10 @@ urlpatterns = [
     path('api/count/client', countclient),
         ## verify email for password reset for forget password?
     path('api/client/emailcheck/<str:email>', verifyEmail),
+
+    path('api/client/filestorage/used/<int:client_id>', getSize),
+
+    path('api/admin/total/storage', gettotal),
         #######################################################################
         #######################################################################
    
