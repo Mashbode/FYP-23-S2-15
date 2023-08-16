@@ -8,7 +8,7 @@ import MonetizationOnOutlinedIcon from "@mui/icons-material/MonetizationOnOutlin
 import { useEffect, useState, useContext } from "react";
 import { db } from "../../firebase";
 import { query, collection, where, getDocs } from "firebase/firestore";
-import { AuthContext } from "../../../context/AuthContext";
+import { AuthContext } from "../../context/AuthContext";
 import instance from "../../axios_config";
 
 const Widget = ({ type }) => {
