@@ -2,6 +2,7 @@ from django.shortcuts import render
 from rest_framework import generics, viewsets
 from .serializers import *
 from .models import *
+from django.db.models import Sum
 #####################
 from rest_framework.decorators import api_view, APIView
 from rest_framework.response import Response
@@ -983,26 +984,13 @@ class deleteUserView(APIView):
 
 ########   enquiries 
 
-## client list all enquiries
-def listEnquiries(request, client_id):
-    retrieve = Enquiries.objects.filter(client_id=client_id).values('enquiries_id', 'topic')
-    data = {'results': list(retrieve)}
-    return JsonResponse(data)    
 
-## client view enquiry 
-def viewEnquiryResult(request, client_id, eId):
-    ## text is what the client wrote, ## name is what the client wants to be called, ## reply is what the admin replied with
-    retrieve = Enquiries.objects.filter(client_id=client_id, enquiries_id=eId).values('enquiries_id', 'topic', 'text','time', 'name','reply', 'reply_time')
-    data = {'results': list(retrieve)}
-    return JsonResponse(data)  
-
-
-## client write enquiry 
+##  write enquiry 
 class writeEnquiryView(APIView):
-     ## text is what the client wrote, ## name is what the client wants to be called, ## topic is what the client labels this enquiry
-    def post(self,request, client_id, text, name, topic):
+     ## text is what they  wrote, ## name is what the client wants to be called, ## topic is what the client labels this enquiry
+    def post(self,request,text, email, topic):
         newtime = timezzzz()
-        insert = Enquiries.objects.create(client_id=client_id, text=text, name=name, topic=topic, time = newtime)
+        insert = Enquiries.objects.create(text=text, email=email, topic=topic, time = newtime)
         data = {'result': 'success'}
         insert.save()
         return JsonResponse(data)
@@ -1050,3 +1038,29 @@ def countfiles(request):
     count = Filetable.objects.all()
     data = {'result':count.count()}
     return JsonResponse(data)
+
+## count total number of clients 
+def countclient(request):
+    count = Client.objects.all()
+    data ={'result' : count.count()}
+    return JsonResponse(data)
+
+## vrify email 
+def verifyEmail(request, email):
+    if Users.objects.filter(email=email).exists():
+        data = {'result': 'email exists'}
+    else:
+        data = {'result': 'email does not exist'}
+
+## total storage used by client
+def getSize(request, client_id):
+    count = Filetable.objects.filter(client_id=client_id).aggregate(total=Sum('filesize'))
+    data = {'result' : count}
+    return JsonResponse(data)
+
+## total storage used in server
+def gettotal(request):
+    count = Filetable.objects.aggregate(Sum('filesize')) 
+    data = {'result' : count}
+    return JsonResponse(data)
+    # return HttpResponse('oh')
