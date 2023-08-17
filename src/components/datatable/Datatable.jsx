@@ -33,7 +33,6 @@ import {
 } from "../../datatablesource";
 import { getStorage, ref, deleteObject } from "firebase/storage";
 import { ThreeDots } from "react-loader-spinner"; // npm install react-loader-spinner --save
-import FileUploadModal from "./FileUploadModal"; // fix this
 import instance from "../../axios_config";
 
 import Button from '@mui/material/Button';
@@ -55,7 +54,6 @@ const Datatable = ({ type }) => {
   const { currentUser } = useContext(AuthContext);
   // axios
   const [isLoading, setLoading] = useState(false); // loading icon shown or not
-  const [isModalOpen, setIsModalOpen] = useState(false); // fix this modal shown or not
   // const [ userID, setUID ] = useState(""); // get user id
   const [clientID, setClientID] = useState(""); // get client id
 
@@ -98,7 +96,7 @@ const Datatable = ({ type }) => {
           console.log("Error deleting user: ", err);
         })
 
-        toast("The user also needs to be deleted inside Firebase!", {
+        toast("The user also needs to be deleted inside Firebase authentication!", {
           icon: "⚠️",
         });
         // reload table after delete success
