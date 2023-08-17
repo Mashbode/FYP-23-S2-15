@@ -86,7 +86,7 @@ def ecc_file (file):
     split = os.path.splitext(file)
     prefix = split[0]
     # the function returns a list of files made
-    parts = file_ecc.EncodeFile(file, prefix,5,3)
+    parts = file_ecc.EncodeFile(file, prefix,5,2)
     # remove encrypted file 
     os.remove(file)
     end1 = time.time()
@@ -238,19 +238,19 @@ def filegetting():
 ## function to get the fileversionID for the newly inserted file
 def fileversionOnInsert(file_id):
     # Connect to the PostgreSQL database
-    conn = psycopg2.connect(database="metadatadb", user="postgres",
-						password="passcanliao", host="testdb.c9ybbr2jzshu.ap-southeast-1.rds.amazonaws.com", port="5432")
-    # query = Fileversion.objects.get(file_id= file_id)
-    # serialize = fileversiontest(query)
-    # print(serialize)
-    cur = conn.cursor()
-    smt = "SELECT file_version_id FROM fileversion WHERE file_id = '"+ str(file_id) +"'"
-    cur.execute(smt)
-    data = cur.fetchone()
-    print(data[0])
-    cur.close()
-    conn.close()
-    return data[0]
+    # conn = psycopg2.connect(database="metadatadb", user="postgres",
+	# 					password="passcanliao", host="testdb.c9ybbr2jzshu.ap-southeast-1.rds.amazonaws.com", port="5432")
+    # cur = conn.cursor()
+    # smt = "SELECT file_version_id FROM fileversion WHERE file_id = '"+ str(file_id) +"'"
+    # cur.execute(smt)
+    # data = cur.fetchone()
+    # print(data[0])
+    # cur.close()
+    # conn.close()
+    # return data[0]
+    version = Fileversion.objects.filter(file_id=file_id).values('file_version_id')
+    data = version[0]['file_version_id']
+    return data
 
 ## function to get fileversionID for newly updated file 
 def fileversionOnUpdate(file_id):
@@ -258,8 +258,8 @@ def fileversionOnUpdate(file_id):
     conn = psycopg2.connect(database="metadatadb", user="postgres",
 						password="passcanliao", host="testdb.c9ybbr2jzshu.ap-southeast-1.rds.amazonaws.com", port="5432")
     cur = conn.cursor()
-    smt = "SELECT file_version_id FROM fileversion WHERE file_id='" + str(file_id) + "' and file_version = (SELECT MAX(file_version) FROM fileversion WHERE file_id='" +str(file_id) +"' )"
-    cur.execute(smt)
+    # smt = "SELECT file_version_id FROM fileversion WHERE file_id='" + str(file_id) + "' and file_version = (SELECT MAX(file_version) FROM fileversion WHERE file_id='" +str(file_id) +"' )"
+    cur.execute("SELECT file_version_id FROM fileversion WHERE file_id= '%s' and file_version=(SELECT MAX(file_version) FROM fileversion WHERE file_id='%s')", (file_id,file_id))
     data = cur.fetchone()
     print(data[0])
     cur.close()
@@ -293,8 +293,8 @@ def filepartsupload(filelist, keylist, fileid, fileversion):
     ## insert 5th file shard 
     file5 = open(file_list[4],'rb').read()
     key5= open(key_list[4],'rb').read()
-    fileshard4= File5(file_id = fileid, data= file5, file_version_id = fileversion, secret=key5)
-    fileshard4.save(using='server5')
+    fileshard5= File5(file_id = fileid, data= file5, file_version_id = fileversion, secret=key5)
+    fileshard5.save(using='server5')
     return True
 ################################################################################################################################################
 
@@ -302,30 +302,37 @@ def filepartsupload(filelist, keylist, fileid, fileversion):
 ## to get current file version
 def getCurrentFileversion(file_id):
      # connect to db 
-    conn = psycopg2.connect(database="metadatadb", user="postgres",
-						password="passcanliao", host="testdb.c9ybbr2jzshu.ap-southeast-1.rds.amazonaws.com", port="5432")
-    cur = conn.cursor()
-    smt = "SELECT file_version_id FROM fileversion WHERE file_id='" + str(file_id) + "' and file_version = (SELECT MAX(file_version) FROM fileversion WHERE file_id='" +str(file_id) +"' )"
-    cur.execute(smt)
-    data = cur.fetchone()
-    print(data[0])
-    cur.close()
-    conn.close()
-    return data[0]
+    # conn = psycopg2.connect(database="metadatadb", user="postgres",
+	# 					password="passcanliao", host="testdb.c9ybbr2jzshu.ap-southeast-1.rds.amazonaws.com", port="5432")
+    # cur = conn.cursor()
+    # smt = "SELECT file_version_id FROM fileversion WHERE file_id='" + str(file_id) + "' and file_version = (SELECT MAX(file_version) FROM fileversion WHERE file_id='" +str(file_id) +"' )"
+    # cur.execute(smt)
+    # data = cur.fetchone()
+    # print(data[0])
+    # cur.close()
+    # conn.close()
+    # return data[0]
+    file = Fileversion.objects.filter(file_id=file_id).values('file_version_id')
+    data = file[0]['file_version_id']
+    return data
 
 ## get file info 
 def getfileinfo(file_id):
      # connect to db 
-    conn = psycopg2.connect(database="metadatadb", user="postgres",
-						password="passcanliao", host="testdb.c9ybbr2jzshu.ap-southeast-1.rds.amazonaws.com", port="5432")
-    cur = conn.cursor()
-    smt = "SELECT filename, filetype FROM filetable WHERE file_id='" + str(file_id) + "'"
-    cur.execute(smt)
-    data = cur.fetchone()
-    # print(data[0])
-    cur.close()
-    conn.close()
-    return data[0], data[1]
+    # conn = psycopg2.connect(database="metadatadb", user="postgres",
+	# 					password="passcanliao", host="testdb.c9ybbr2jzshu.ap-southeast-1.rds.amazonaws.com", port="5432")
+    # cur = conn.cursor()
+    # smt = "SELECT filename, filetype FROM filetable WHERE file_id='" + str(file_id) + "'"
+    # cur.execute(smt)
+    # data = cur.fetchone()
+    # # print(data[0])
+    # cur.close()
+    # conn.close()
+    # return data[0], data[1]
+    file = Filetable.objects.filter(file_id=file_id).values('filename', 'filetype')
+    name = file[0]['filename']
+    type = file[0]['filetype']
+    return name, type
 
 def getAllfileAndSecretparts(fileID, fileVersion):
     file_list = []
@@ -333,70 +340,85 @@ def getAllfileAndSecretparts(fileID, fileVersion):
     ## take from fileserver1
     count = 0
     try:
-        conn = psycopg2.connect(database="FileServer1", user="postgres",
-						password="passcanliao", host="testdb.c9ybbr2jzshu.ap-southeast-1.rds.amazonaws.com", port="5432")
-        cur = conn.cursor()
-        smt = "SELECT data, secret FROM file1 WHERE file_id='" + str(fileID) + "' and file_version_id='" + str(fileVersion) +"'"
-        cur.execute(smt)
-        data = cur.fetchone()
-        key_list.append(data[1])
-        file_list.append(data[0])
+        # conn = psycopg2.connect(database="FileServer1", user="postgres",
+		# 				password="passcanliao", host="testdb.c9ybbr2jzshu.ap-southeast-1.rds.amazonaws.com", port="5432")
+        # cur = conn.cursor()
+        # smt = "SELECT data, secret FROM file1 WHERE file_id='" + str(fileID) + "' and file_version_id='" + str(fileVersion) +"'"
+        # cur.execute(smt)
+        # data = cur.fetchone()
+        # key_list.append(data[1])
+        # file_list.append(data[0])
+        take = File1.objects.filter(file_id=fileID, file_version_id=fileVersion).values('data','secret').using('server1')
+        key_list.append(take[0]['secret'])
+        file_list.append(take[0]['data'])
     except:
         print('fileserver1 down')
         count+=1
     
     ## take from fileserver2
     try:
-        conn = psycopg2.connect(database="FileServer2", user="postgres",
-						password="passcanliao", host="testdb.c9ybbr2jzshu.ap-southeast-1.rds.amazonaws.com", port="5432")
-        cur = conn.cursor()
-        smt = "SELECT data, secret FROM file2 WHERE file_id='" + str(fileID) + "' and file_version_id='" + str(fileVersion) +"'"
-        cur.execute(smt)
-        data = cur.fetchone()
-        key_list.append(data[1])
-        file_list.append(data[0])
+        # conn = psycopg2.connect(database="FileServer2", user="postgres",
+		# 				password="passcanliao", host="testdb.c9ybbr2jzshu.ap-southeast-1.rds.amazonaws.com", port="5432")
+        # cur = conn.cursor()
+        # smt = "SELECT data, secret FROM file2 WHERE file_id='" + str(fileID) + "' and file_version_id='" + str(fileVersion) +"'"
+        # cur.execute(smt)
+        # data = cur.fetchone()
+        # key_list.append(data[1])
+        # file_list.append(data[0])
+        take = File2.objects.filter(file_id=fileID, file_version_id=fileVersion).values('data','secret').using('server2')
+        key_list.append(take[0]['secret'])
+        file_list.append(take[0]['data'])
     except:
         print('fileserver2 down')
         count+=1
 
     ## take from fileserver3
     try:
-        conn = psycopg2.connect(database="FileServer3", user="postgres",
-						password="passcanliao", host="testdb.c9ybbr2jzshu.ap-southeast-1.rds.amazonaws.com", port="5432")
-        cur = conn.cursor()
-        smt = "SELECT data, secret FROM file3 WHERE file_id='" + str(fileID) + "' and file_version_id='" + str(fileVersion) +"'"
-        cur.execute(smt)
-        data = cur.fetchone()
-        key_list.append(data[1])
-        file_list.append(data[0])
+        # conn = psycopg2.connect(database="FileServer3", user="postgres",
+		# 				password="passcanliao", host="testdb.c9ybbr2jzshu.ap-southeast-1.rds.amazonaws.com", port="5432")
+        # cur = conn.cursor()
+        # smt = "SELECT data, secret FROM file3 WHERE file_id='" + str(fileID) + "' and file_version_id='" + str(fileVersion) +"'"
+        # cur.execute(smt)
+        # data = cur.fetchone()
+        # key_list.append(data[1])
+        # file_list.append(data[0])
+        take = File3.objects.filter(file_id=fileID, file_version_id=fileVersion).values('data','secret').using('server3')
+        key_list.append(take[0]['secret'])
+        file_list.append(take[0]['data'])
     except:
         print('fileserver3 down')
         count+=1
 
     ## take from fileserver4
     try:
-        conn = psycopg2.connect(database="FileServer4", user="postgres",
-						password="passcanliao", host="testdb.c9ybbr2jzshu.ap-southeast-1.rds.amazonaws.com", port="5432")
-        cur = conn.cursor()
-        smt = "SELECT data, secret FROM file4 WHERE file_id='" + str(fileID) + "' and file_version_id='" + str(fileVersion) +"'"
-        cur.execute(smt)
-        data = cur.fetchone()
-        key_list.append(data[1])
-        file_list.append(data[0])
+        # conn = psycopg2.connect(database="FileServer4", user="postgres",
+		# 				password="passcanliao", host="testdb.c9ybbr2jzshu.ap-southeast-1.rds.amazonaws.com", port="5432")
+        # cur = conn.cursor()
+        # smt = "SELECT data, secret FROM file4 WHERE file_id='" + str(fileID) + "' and file_version_id='" + str(fileVersion) +"'"
+        # cur.execute(smt)
+        # data = cur.fetchone()
+        # key_list.append(data[1])
+        # file_list.append(data[0])
+        take = File4.objects.filter(file_id=fileID, file_version_id=fileVersion).values('data','secret').using('server4')
+        key_list.append(take[0]['secret'])
+        file_list.append(take[0]['data'])
     except:
         print('fileserver4  down')
         count+=1
        
     ## take from fileserver5
     try:
-        conn = psycopg2.connect(database="FileServer5", user="postgres",
-						password="passcanliao", host="testdb.c9ybbr2jzshu.ap-southeast-1.rds.amazonaws.com", port="5432")
-        cur = conn.cursor()
-        smt = "SELECT data, secret FROM file5 WHERE file_id='" + str(fileID) + "' and file_version_id='" + str(fileVersion) +"'"
-        cur.execute(smt)
-        data = cur.fetchone()
-        key_list.append(data[1])
-        file_list.append(data[0])
+        # conn = psycopg2.connect(database="FileServer5", user="postgres",
+		# 				password="passcanliao", host="testdb.c9ybbr2jzshu.ap-southeast-1.rds.amazonaws.com", port="5432")
+        # cur = conn.cursor()
+        # smt = "SELECT data, secret FROM file5 WHERE file_id='" + str(fileID) + "' and file_version_id='" + str(fileVersion) +"'"
+        # cur.execute(smt)
+        # data = cur.fetchone()
+        # key_list.append(data[1])
+        # file_list.append(data[0])
+        take = File5.objects.filter(file_id=fileID, file_version_id=fileVersion).values('data','secret').using('server5')
+        key_list.append(take[0]['secret'])
+        file_list.append(take[0]['data'])
     except:
         print('fileserver5  down')
         count+=1

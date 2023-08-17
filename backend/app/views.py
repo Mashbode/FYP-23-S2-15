@@ -501,11 +501,11 @@ def uploadingFile(request, client_id):
             for f in os.listdir(dirs):
                 os.remove(os.path.join(dirs, f))
             return HttpResponse('file ok')
-    # else:
-    #     test = testForm()
-    #     ## the html.html need to replace with the frontend stuff i think
-    #     return render(request,"html.html", {'form':test})
-    return HttpResponse('waiting')
+    else:
+        test = testForm()
+        ## the html.html need to replace with the frontend stuff i think
+        return render(request,"html.html", {'form':test})
+    # return HttpResponse('waiting')
 
 
 ### file update ################## works 
@@ -582,6 +582,18 @@ def obtainfile(request, file_id):
     decom = decompress(filename_d, fileExt, filename)
     c_name = filename+fileExt
     print(c_name)
+    # this to catch file size error
+    b = os.path.getsize(decom)
+    ss = Filetable.objects.filter(file_id=file_id).values('filesize')
+    if b != ss[0]['filesize'] :
+            ## remove all files in folder 
+        path = os.path.realpath(__file__)
+        dir = os.path.dirname(path)
+        dirs = dir + ('/shard_retrieve')
+        for f in os.listdir(dirs):
+            os.remove(os.path.join(dirs, f))
+        data = {'result', 'filedownload error'}
+        return JsonResponse(data)
     ## uploading file to the frontend
     with open(decom, 'rb') as f:
         response = HttpResponse(f.read(), content_type='application/octet-stream')
@@ -614,6 +626,18 @@ def obatainfileOfVersion(request, file_id, fileVersion):
     decom = decompress(filename_d, fileExt, filename)
     c_name = filename+fileExt
     print(c_name)
+    # this to catch file size error
+    # b = os.path.getsize(decom)
+    # ss = Filetable.objects.filter(file_id=file_id).values('filesize')
+    # if b != ss[0]['filesize'] :
+    #         ## remove all files in folder 
+    #     path = os.path.realpath(__file__)
+    #     dir = os.path.dirname(path)
+    #     dirs = dir + ('/shard_retrieve')
+    #     for f in os.listdir(dirs):
+    #         os.remove(os.path.join(dirs, f))
+    #     data = {'result', 'filedownload error'}
+    #     return JsonResponse(data)
     ## uploading file to the frontend
     with open(decom, 'rb') as f:
         response = HttpResponse(f.read(), content_type='application/octet-stream')
