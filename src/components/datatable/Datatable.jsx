@@ -12,7 +12,7 @@ import FileUploadIcon from "@mui/icons-material/FileUpload";
 import { toast, Toaster } from "react-hot-toast";
 
 import { Link } from "react-router-dom";
-import { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import {
   collection,
@@ -44,6 +44,10 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { useDropzone } from 'react-dropzone'; // npm install --save react-dropzone
 
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
+
 // Pass type prop if u want to apply it to both users & products
 const Datatable = ({ type }) => {
   // const [data, setData] = useState(userRows);
@@ -65,6 +69,9 @@ const Datatable = ({ type }) => {
   const [open, setOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState([]);
   const [currentParams, setCurrentParams] = useState(null);
+
+  //********************************************************************************************
+  
 
   // 1. Delete the user from the database
   // 2. The user needs to be deleted from the Firebase -> Authentication -> Users manually as re-authentication requires the user's password (https://firebase.google.com/docs/auth/web/manage-users#re-authenticate_a_user)
@@ -228,7 +235,7 @@ const Datatable = ({ type }) => {
 
     try {
       // update file_id's content with the newest file
-      const response = instance.put(`fileupdate/${params.row.id}`, formData);
+      const response = instance.post(`fileupdate/${params.row.id}`, formData);
       // Handle response if needed
       console.log("Response:", response.data);
       if (response.data === "file ok") {
@@ -278,6 +285,8 @@ const Datatable = ({ type }) => {
   //   }
   // };
 
+  // file version control
+  
   // file deletion
   const handleFileDelete = async (params) => {
     try {
@@ -374,8 +383,10 @@ const Datatable = ({ type }) => {
     {
       field: "action",
       headerName: "Action",
-      width: 300,
+      width: 400,
       renderCell: (params) => {
+        const fileVersions = ['file-v1.txt', 'file-v2.txt', 'file-v3.txt']; // Replace with your file versions
+
         return (
           <div className="cellAction">
             <div
@@ -404,9 +415,11 @@ const Datatable = ({ type }) => {
                   {/* <DialogContentText>
                     Drop the file here or click to select a file.
                   </DialogContentText> */}
-                  <div {...getRootProps()} className="drop-box">
-                    <input {...getInputProps()} />
-                    <p>Drag & drop a file here, or click to select a file</p>
+                  <div {...getRootProps()}>
+                    <div className="drop-box">
+                      <input {...getInputProps()} />
+                      <p>Drag & drop a file here, or click to select a file</p>
+                    </div>
                     {selectedFile ? (
                       <p>Selected file: {selectedFile.name}</p>
                     ) : (
@@ -439,6 +452,20 @@ const Datatable = ({ type }) => {
                 onFileUpdated={load_all_data} // load file data after update
               />
             </div> */}
+            <PopupState variant="popover" popupId="demo-popup-menu">
+            {(popupState) => (
+              <React.Fragment>
+                <div className="actionButton" {...bindTrigger(popupState)}>
+                  Versions
+                </div>
+                <Menu {...bindMenu(popupState)}>
+                  {/* <MenuItem onClick={() => {handleFileDownload(params); popupState.close;}}>Ver1</MenuItem> */}
+                  <MenuItem onClick={popupState.close}>Ver2</MenuItem>
+                  <MenuItem onClick={popupState.close}>Ver3</MenuItem>
+                </Menu>
+              </React.Fragment>
+            )}
+          </PopupState>
             <div
               className="deleteButton"
               onClick={() => handleFileDelete(params)}

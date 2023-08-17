@@ -19,12 +19,18 @@
                     flex-wrap: wrap; // https://css-tricks.com/snippets/css/a-guide-to-flexbox/#aa-flex-wrap
                     gap: 40px;
 
-                    .itemImg {
+                    .avatar {
                         width: 100px;
                         height: 100px;
-                        border-radius: 50%;
-                        object-fit: cover;
+                        font-size: 50px;
                     }
+
+                    // .itemImg {
+                    //     width: 100px;
+                    //     height: 100px;
+                    //     border-radius: 50%;
+                    //     object-fit: cover;
+                    // }
 
                     .details {
                         .itemTitle {
