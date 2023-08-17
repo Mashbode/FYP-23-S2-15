@@ -16,6 +16,7 @@ from datetime import datetime
 import time
 from zoneinfo import ZoneInfo
 import psycopg2
+from django.http import HttpResponse, JsonResponse
 ################################################     splitting       ############################################################
 
 ## compressing the file first #1
@@ -399,6 +400,11 @@ def getAllfileAndSecretparts(fileID, fileVersion):
     except:
         print('fileserver5  down')
         count+=1
+    
+    if count == 5 :
+        data = 'file data not in file server'
+        return  0, 0, data
+    
     # changing the directory
     path = os.path.realpath(__file__)
     print(path)
@@ -427,5 +433,5 @@ def getAllfileAndSecretparts(fileID, fileVersion):
             shards.write(i)
             dsh +=1
 
-    return namelist, filename
+    return namelist, filename, 'ok'
 #######################################################################################################################################################
