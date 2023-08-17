@@ -1,5 +1,6 @@
 import styled from "styled-components";
-import Woman from "../../img/woman.png";
+import Files from "../../img/files.png";
+import Dashboard from "../../img/dashboard.png";
 import AnimatedShapes from "./AnimatedShapes";
 
 const Container = styled.div`
@@ -88,10 +89,17 @@ const Right = styled.div`
   @media only screen and (max-width: 480px) {
     display: none;
   }
+  position: relative;
 `;
 
 const Image = styled.img`
   width: 100%;
+  position: absolute;
+  top: 40%;
+  right: 10%;
+  font-size: 18px;
+  border-radius: 10px;  
+  box-shadow: 10px 5px 10px 10px rgba(0, 0, 0, 0.3);
 `;
 
 const Intro = () => {
@@ -113,7 +121,7 @@ const Intro = () => {
         </Info>
       </Left>
       <Right>
-        <Image src={Woman} />
+        <Image src={Files} />
       </Right>
       {/* Location of below does not matter */}
       <AnimatedShapes />

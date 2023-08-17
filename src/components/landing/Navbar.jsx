@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import logo from "../../img/logo2.png";
+import logo from "../../img/logo2_capture-removebg.png";
 import { Link as LinkScroll } from "react-scroll";
 import { useState } from "react";
 import { Link } from "react-router-dom";
@@ -10,7 +10,7 @@ const Container = styled.div.attrs((props) => ({ className: props.className }))`
   }
 
   position: fixed;
-  height: 60px;
+  height: 70px;
   width: 100%;
   top: 0;
   left: 0;
@@ -20,14 +20,14 @@ const Container = styled.div.attrs((props) => ({ className: props.className }))`
 `;
 
 const Wrapper = styled.div`
-  padding: 10px 20px;
+  padding: 5px 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
 `;
 
 const Left = styled.div`
-  width: 60%;
+  width: 50%;
   display: flex; // Logo & Menu horizontally
   align-items: center;
   justify-content: space-between;

@@ -8,9 +8,10 @@
 
     .wrapper {
         width: 100%;
-        padding: 20px;
+        padding: 10px;
         display: flex;
         justify-content: space-between; // This does not work when width is not 100%
+
         .search {
             display: flex;
             align-items: center;
@@ -42,12 +43,6 @@
                     font-size: 20px;
                 }
 
-                .avatar {
-                    width: 30px;
-                    height: 30px;
-                    border-radius: 500%;
-                }
-
                 .counter {
                     width: 15px;
                     height: 15px;
@@ -74,3 +69,19 @@
         }
     }
 }
+
+.avatar {
+    width: 32;
+    height: 32;
+    font-size: 7px;
+    margin-left: 0;
+    margin-right: 10px;
+}
+
+.settings-link {
+    color: black;
+}
+
+.MenuItem.Mui-selected {
+    color: #5e35b1;
+  }

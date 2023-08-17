@@ -30,6 +30,8 @@ import {
 import instance from "../../axios_config"; // axios instance
 import { setCulture } from "@syncfusion/ej2-base";
 
+import { Avatar } from '@mui/material';
+
 const Single = () => {
   const [dialogTitle, setDialogTitle] = useState("");
   const [dialogDescription, setDialogDescription] = useState("");
@@ -46,6 +48,8 @@ const Single = () => {
   const [phone, setPhoneNumber] = useState("");
   const [registeredDate, setRegisteredDate] = useState();
   const [ uid, setUid ] = useState();
+
+  const initials = (firstName[0] || '') + (lastName[0] || '');
 
   // ******************save auth currentUser data*********************
   // solves page refresh data not loaded issue
@@ -270,11 +274,12 @@ const Single = () => {
             <h3 className="title">Information</h3>
             {/* Not gg to use users as a class name -> item would be more general */}
             <div className="item">
-              <img
+              {/* <img
                 src="https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg?auto=compress&cs=tinysrgb&dpr=3&h=750&w=1260"
                 alt=""
                 className="itemImg"
-              />
+              /> */}
+              <Avatar className="avatar">{initials}</Avatar>
               <div className="details">
                 <h1 className="itemTitle">{firstName + " " + lastName}</h1>
                 <div className="detailItem">
