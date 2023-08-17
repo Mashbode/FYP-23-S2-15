@@ -10,7 +10,10 @@ import {auth} from "../../../firebase";
 import { AuthContext } from "../../../context/AuthContext";
 
 const Featured = () => {
-  const maxFileStorageSize = 19327352832 // 18000000000; // (in bytes) // = 18GB // 19327352832 = 18GiB 
+  const maxFileStorageSize = 19327352832; // 18000000000 = 18GB // (both in bytes) // 19327352832 = 18GiB
+  const [ fileStorage_Limit, setFileStorageLimit] = useState(1000000000); // FREETIER 1000000000 1073741824
+  const [ convert_storage_limit, convert_StorageLimit] = useState();
+  const [converted_maxStorage_Admin, convert_StorageLimit_Admin] = useState();
   const { currentUser } = useContext(AuthContext);
   const [ usertype, setUsertype ] = useState(""); // get usertype (implement for client and admin)
   const [ amount, setAmount ] = useState(``);
@@ -59,10 +62,11 @@ const Featured = () => {
           const total_files_stored = res.data.result.filesize__sum;
           console.log("Total Files stored by client: ", total_files_stored);
           
-          const percentile = (total_files_stored / 1073741824 ) * 100; // Set 1GB Max Storage
+          const percentile = (total_files_stored / fileStorage_Limit ) * 100; // By Default 1GB per user
           setPercentile_used(percentile.toFixed(2));
-          const storageLeft = maxFileStorageSize - total_files_stored;
-          return { total_files_stored, storageLeft };
+          const storage_Left = fileStorage_Limit - total_files_stored;
+          console.log("Storage left in client: ", storage_Left);
+          return { total_files_stored, storage_Left, fileStorage_Limit };
         };
 
         // Function to convert bytes to human-readable sizes
@@ -77,11 +81,12 @@ const Featured = () => {
         };
     
         // Fetch storage-related data
-        const { total_files_stored, storageLeft } = await getClientStorageData();
+        const { total_files_stored, storage_Left } = await getClientStorageData();
     
         // Set converted storage amount and storage left
         setAmount(convertSize(total_files_stored));
-        setStorageLeft(convertSize(storageLeft));
+        setStorageLeft(convertSize(storage_Left));
+        convert_StorageLimit(convertSize(fileStorage_Limit));
     
         // Fetch total number of files uploaded by client
         const rs = await instance.get(`client/countfiles/${client_id}`);
@@ -96,8 +101,8 @@ const Featured = () => {
           const percentage = (total_files_stored / maxFileStorageSize) * 100;
           setPercentile_used(percentage.toFixed(2));
     
-          const storageLeft = maxFileStorageSize - total_files_stored;
-          return { total_files_stored, storageLeft };
+          const storage_Left = maxFileStorageSize - total_files_stored;
+          return { total_files_stored, storage_Left, maxFileStorageSize };
         };
     
         // Function to convert bytes to human-readable sizes
@@ -112,11 +117,12 @@ const Featured = () => {
         };
     
         // Fetch storage-related data
-        const { total_files_stored, storageLeft } = await getStorageData();
+        const { total_files_stored, storage_Left } = await getStorageData();
     
         // Set converted storage amount and storage left
         setAmount(convertSize(total_files_stored));
-        setStorageLeft(convertSize(storageLeft));
+        setStorageLeft(convertSize(storage_Left));
+        convert_StorageLimit_Admin(convertSize(maxFileStorageSize));
     
         // Fetch total number of files uploaded by all users
         const rs = await instance.get(`count/client`);
@@ -127,7 +133,7 @@ const Featured = () => {
   
     // Initial data retrieval
     getTotalData();
-  }, [usertype, currentUser.uid]);
+  }, [usertype, currentUser.uid, fileStorage_Limit]);
   
   
 
@@ -152,7 +158,7 @@ const Featured = () => {
           <div className="item">
             <div className="itemTitle">Max Capacity</div>
             <div className="itemResult negative">             
-              <div className="resultAmount">18GB</div>
+              <div className="resultAmount">{usertype === "Client" ? (convert_storage_limit) : (converted_maxStorage_Admin)}</div>
             </div>
           </div>
           <div className="item">
