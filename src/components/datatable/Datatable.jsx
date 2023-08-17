@@ -44,9 +44,9 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { useDropzone } from 'react-dropzone'; // npm install --save react-dropzone
 
-import Menu from '@mui/material/Menu';
+import Menu from '@mui/material/Menu'; // npm install @mui/material
 import MenuItem from '@mui/material/MenuItem';
-import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
+import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';  // npm install material-ui-popup-state
 
 // Pass type prop if u want to apply it to both users & products
 const Datatable = ({ type }) => {
@@ -71,7 +71,6 @@ const Datatable = ({ type }) => {
   const [currentParams, setCurrentParams] = useState(null);
 
   //********************************************************************************************
-  
 
   // 1. Delete the user from the database
   // 2. The user needs to be deleted from the Firebase -> Authentication -> Users manually as re-authentication requires the user's password (https://firebase.google.com/docs/auth/web/manage-users#re-authenticate_a_user)
@@ -117,7 +116,7 @@ const Datatable = ({ type }) => {
 
   // ****************************************************** Connect with Django ******************************************************
 
-  // file download
+  // *****************************file download********************************
   const handleFileDownload = async (params) => {
     try {
       console.log(params.row.id);
@@ -168,12 +167,12 @@ const Datatable = ({ type }) => {
 
       console.log(params.row.id); // fileID to share
 
-      // *********************************************************************************************************************************
+    
     } catch (error) {
       console.log("Error sharing file: ", error);
     }
   };
-  // File unshare (remove file shared to you)
+  // **********************File unshare (remove file shared to you)*********************
   const handleFileUnshare = async (params) => {
     try {
       const response = await instance.delete(
@@ -191,103 +190,60 @@ const Datatable = ({ type }) => {
   };
 
   //**************for update/upload open file pop-up modal********** */
-  // fix this
-  const openModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
-  
   ////////////////////////////////////////////////////////////////
 
   const handleClickOpen = (params) => {
-    setOpen(true);
+    // if file exist upon open modal, reset it
+    if (selectedFile) {
+      setSelectedFile([]);
+    }
     setCurrentParams(params);
+    setOpen(true);
   };
 
   const handleClose = () => {
     setOpen(false);
   };
 
-  const onDrop = (acceptedFiles, params) => {
-    setSelectedFile(acceptedFiles[0]); // Store the selected file object, not the array
-    setCurrentParams(params); // Store the current params
-    handleClickOpen();
-    handleClose();
+  const onDrop = (acceptedFiles) => {
+    if (acceptedFiles && acceptedFiles.length > 0) {
+      setSelectedFile(acceptedFiles[0]);
+    }
   };
 
   const { getRootProps, getInputProps } = useDropzone({ onDrop });
 
-  //********************************************************** */
+  //*************************************************************** */
 
-  // file update
-  // fix this
-  // - it wont work as you need a modal/form to upload the newest file to update
+  //********************************* file update **********************************
   const handleFileUpdate = async (params) => {
+    setOpen(false); // close dialog after pressing update
     console.log("file_id: ", params.row.id);
-    if (!selectedFile) {
-      return;
-    }
+
     const formData = new FormData();
     formData.append('file', selectedFile);
 
     try {
       // update file_id's content with the newest file
-      const response = instance.post(`fileupdate/${params.row.id}`, formData);
-      // Handle response if needed
+      const response = await instance.post(`fileupdate/${params.row.id}`, formData);
+      // Handle response
       console.log("Response:", response.data);
       if (response.data === "file ok") {
-        toast.info(`${params.row.fileName} successfully updated`);
+        toast.success(`${params.row.fileName} successfully updated`);
         setTimeout(() => {
-          load_shared_files();
+          load_all_data();
         }, 2000);
       } else {
        toast.error(`${params.row.fileName} failed to update`);
        console.log("Failed to update: ", params.row.fileName);
       }
     } catch (error) {
-      // Handle error if needed
-      console.error("Error updating file: ", error.response);
+      // Handle error
+      console.error("Error updating file: ", error);
     }
   };
 
-  // const handleFileUpdate = async () => { // Remove the parameter
-  //   if (!selectedFile || !currentParams) {
-  //     setSelectedFile([]);
-  //     return;
-  //   }
-
-  //   try {
-  //     const formData = new FormData();
-  //     formData.append("file", selectedFile);
-
-  //     const response = await instance.post(
-  //       `fileupdate/${currentParams.row.id}`,
-  //       formData
-  //     );
-  //     console.log("File Update: ", response.data);
-
-  //     if (response.data === "file ok") {
-  //       toast.info(`${selectedFile.name} successfully updated`);
-  //       load_shared_files();
-  //     } else {
-  //       toast.error(`${selectedFile.name} failed to update`);
-  //     }
-  //     setSelectedFile([]);
-  //     // Close the dialog and perform any other necessary actions
-  //     handleClose();
-  //   } catch (error) {
-  //     console.error("Error updating file: ", error);
-  //     toast.error("An error occurred while updating the file");
-  //     setSelectedFile([]);
-  //   }
-  // };
-
-  // file version control
-  
-  // file deletion
+  // **************************file deletion****************************
   const handleFileDelete = async (params) => {
     try {
       // url for deleting file requires field_id and client_id
@@ -312,7 +268,7 @@ const Datatable = ({ type }) => {
     }
   };
 
-  // file restore
+  // ******************************file restore*******************************
   const handleFileRestore = async (params) => {
     try {
       // url for restoring a deleted file
@@ -331,7 +287,7 @@ const Datatable = ({ type }) => {
     }
   };
 
-  // file delete permanently
+  // ************************file delete permanently******************************
   const handleFileDeleteForever = async (params) => {
     try {
       if (window.confirm("Are you sure to delete the file?")) {
@@ -354,6 +310,78 @@ const Datatable = ({ type }) => {
       console.log(error);
     }
   };
+
+  //*********************************************************************** */
+
+      // *************************FILE VERSION RESTORE*************************
+
+    // // get file versions
+    // `file/versions/${file_id}`
+
+    // // download partcular file version
+    // `retreiveFile/version/${file_id}/${file_ver}`
+
+// Replace with your file versions
+const [versionList, setVersionList] = useState([]);
+
+const getFileVersion = async (params) => {
+  console.log("Get FileVersion Function called:", params);
+  setCurrentParams(params);
+
+  try {
+    const response = await instance.get(`file/versions/${params.row.id}`);
+    console.log(`FILE VERSIONS LIST of ${params.row.id}`, response?.data[1]);
+
+    const data = response.data; // Assuming the response contains the data you provided
+    const data_list = data.map((entry) => ({
+      file_version_id: entry.file_version_id,
+      file_id: entry.file,
+      file_version: entry.file_version,
+      last_change: entry.last_change,
+    }));
+
+    setVersionList(data_list);
+    console.log("version list: ", data_list); // Print the updated version list
+  } catch (error) {
+    console.error('Error fetching versions:', error);
+  }
+};
+
+
+  // fileversion from versionList.map(), params from setCurrentParams
+  const handleFileVerDownload = async (file_version, params) => {
+    // Implement your file download logic here
+    try {
+      console.log(params.row.id);
+
+      toast.loading(`${params.row.id} version ${file_version} downloading`);
+      // download chosen file version 
+      const response = await instance.get(`retrieveFile/version/${params.row.id}/${file_version}`, {
+        responseType: "blob", // Important for handling binary data
+      });
+
+      // Create a URL object from the blob data
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+
+      // Create a temporary anchor element to initiate the download
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${params.row.fileName}${params.row.fileType}`; // Set the filename and extension for download
+      document.body.appendChild(link);
+      link.click();
+
+      // Clean up the URL and anchor
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(link);
+    } catch (error) {
+      toast.error("Failed to download, please contact admin");
+      console.error("Error downloading file: ", error);
+    }
+    console.log(`Downloading version ${file_version} of ${params.row.id} check`);
+    // Add your file download logic here
+  };
+
+  //*********************************************************************** */
 
   // These actionColumns will be concat to columns below
   const actionUserColumn = [
@@ -385,7 +413,6 @@ const Datatable = ({ type }) => {
       headerName: "Action",
       width: 400,
       renderCell: (params) => {
-        const fileVersions = ['file-v1.txt', 'file-v2.txt', 'file-v3.txt']; // Replace with your file versions
 
         return (
           <div className="cellAction">
@@ -396,76 +423,110 @@ const Datatable = ({ type }) => {
               Download
             </div>
             <div
-              className="actionButton"
+              className="shareButton"
               onClick={() => handleFileShare(params)}
             >
               Share
             </div>
             <div>
-              <div
-                className="actionButton"
-                onClick={() => handleClickOpen(params)}
-              >
+              <div className="updateButton" onClick={() => handleClickOpen(params)}>
                 Update
-            </div>
+              </div>
               {open && <div className="overlay" />}
               <Dialog open={open} onClose={handleClose}>
                 <DialogTitle>Update File</DialogTitle>
                 <DialogContent>
-                  {/* <DialogContentText>
-                    Drop the file here or click to select a file.
-                  </DialogContentText> */}
-                  <div {...getRootProps()}>
-                    <div className="drop-box">
-                      <input {...getInputProps()} />
-                      <p>Drag & drop a file here, or click to select a file</p>
-                    </div>
+                  <div {...getRootProps()} className="drop-box">
+                    <input {...getInputProps()} />
+                    <p>Drag & drop a file here, or click to select a file</p>
                     {selectedFile ? (
                       <p>Selected file: {selectedFile.name}</p>
                     ) : (
-                      <p>Selected file: {}</p>
+                      <p>No file selected</p>
                     )}
                   </div>
-                  {/* {selectedFile.length > 0 && (
-                    <p>Selected file: {selectedFile[0].name}</p>
-                  )} */}
                 </DialogContent>
                 <DialogActions>
-                  <Button onClick={() => {handleFileUpdate(params);}}>
-                    Update
-                  </Button>
-                  <Button onClick={handleClose}>
-                    Cancel
-                  </Button>
+                  <Button onClick={() => handleFileUpdate(currentParams)}>Update</Button>
+                  <Button onClick={handleClose}>Cancel</Button>
                 </DialogActions>
               </Dialog>
             </div>
-            {/* fix this, the modal somehow will be at the button */}
-            {/* <div>
-              <div className="actionButton" onClick={openModal}>
-                Update
-              </div>
-              <FileUploadModal   // component of modal
-                isOpen={isModalOpen} // open model
-                closeModal={closeModal} // close modal
-                fileID={params.row.id} // set file_id
-                onFileUpdated={load_all_data} // load file data after update
-              />
-            </div> */}
-            <PopupState variant="popover" popupId="demo-popup-menu">
-            {(popupState) => (
-              <React.Fragment>
-                <div className="actionButton" {...bindTrigger(popupState)}>
-                  Versions
-                </div>
-                <Menu {...bindMenu(popupState)}>
-                  {/* <MenuItem onClick={() => {handleFileDownload(params); popupState.close;}}>Ver1</MenuItem> */}
-                  <MenuItem onClick={popupState.close}>Ver2</MenuItem>
-                  <MenuItem onClick={popupState.close}>Ver3</MenuItem>
-                </Menu>
-              </React.Fragment>
-            )}
-          </PopupState>
+
+            {/* FILE VERSION BUTTON  */}
+            <PopupState variant="popover" popupId={`demo-popup-menu`}>
+              {(popupState) => (
+                <React.Fragment>
+                  <div className="versionButton" {...bindTrigger(popupState)}
+                                                onClick={async () => {
+                                                  console.log("Versions button clicked");
+                                                  setVersionList([]); // Reset the versionList to an empty array
+                                                  await getFileVersion(params);
+                                                  popupState.open(); // this is causing the menu to appear bottom left
+                                                }}
+                  >
+                    Versions
+                  </div>
+                  <Menu {...bindMenu(popupState)}>
+                    <MenuItem
+                      onClick={async () => {
+                        console.log("Default option clicked");
+                        await getFileVersion(params);
+                        // popupState.open();
+                      }}
+                    >
+                      Load File Versions
+                    </MenuItem>
+                    {versionList.length === 0 ? (
+                      <MenuItem disabled>no available files...</MenuItem>
+                    ) : (
+                      versionList.map((item, index) => (
+                        <MenuItem
+                          key={item.file_version_id}
+                          onClick={() => {
+                            // Trigger handleFileVerDownload for non-default options
+                            if (index !== -1) {
+                              handleFileVerDownload(item.file_version_id, currentParams);
+                            }
+                            popupState.close();
+                          }}
+                        >
+                          {/* Display each version item's properties */}
+                          ver{item.file_version} - {new Date(item.last_change)
+                                                      .toLocaleString('en-US', { 
+                                                          year: 'numeric', 
+                                                          month: 'long', 
+                                                          day: 'numeric', 
+                                                          hour: '2-digit', 
+                                                          minute: '2-digit', 
+                                                          second: '2-digit', 
+                                                          hour12: false 
+                                                      })}
+                        </MenuItem>
+                      ))
+                    )}
+                  </Menu>
+                </React.Fragment>
+              )}
+            </PopupState>
+
+
+
+            {/* <PopupState variant="popover" popupId="demo-popup-menu">
+              {(popupState) => (
+                <React.Fragment>
+                  <div className="actionButton" {...bindTrigger({popupState, onClick: ()=>{getFileVersion(params);}})}>
+                    Versions
+                  </div>
+                  <Menu {...bindMenu(popupState)}>
+                    <MenuItem onClick={() => {handleFileDownload(params); popupState.close();}}>Ver1</MenuItem>
+                    <MenuItem onClick={popupState.close}>Ver2</MenuItem>
+                    <MenuItem onClick={popupState.close}>Ver3</MenuItem>
+                  </Menu>
+                </React.Fragment>
+              )}
+            </PopupState> */}
+
             <div
               className="deleteButton"
               onClick={() => handleFileDelete(params)}
@@ -493,7 +554,7 @@ const Datatable = ({ type }) => {
               Download
             </div>
             <div
-              className="actionButton"
+              className="deleteButton"
               onClick={() => handleFileUnshare(params)}
             >
               Unshare
@@ -513,7 +574,7 @@ const Datatable = ({ type }) => {
         return (
           <div className="cellAction">
             <div
-              className="actionButton"
+              className="shareButton"
               onClick={() => handleFileRestore(params)}
             >
               Restore
@@ -628,8 +689,6 @@ const Datatable = ({ type }) => {
             console.log("Error getting client_id", err);
           });
       }
-    // Return a cleanup function to stop listening
-
     // *************************************************************************
   }, [currentUser.uid, usertype, type]); // added dependencies
 
@@ -802,8 +861,40 @@ const Datatable = ({ type }) => {
     
   }, [clientID, usertype, type]);
 
+
+
+  // uploading file
+  const handleFileUpload = async (file) => {
+    if (!clientID) {
+      console.log("Client ID not available: ", clientID);
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const response = await instance.post(`fileupload/${clientID}`, formData);
+      console.log("Response: ", response.data);
+
+      load_all_data();
+    } catch (error) {
+      console.error("Error uploading file: ", error.response);
+    }
+  };
+
   // upload file
-  const handleUploadFiles = () => {};
+  const handleUploadFiles = async () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.onchange = (event) => {
+      const selectedFile = event.target.files[0];
+      if (selectedFile) {
+        handleFileUpload(selectedFile);
+      }
+    };
+    input.click();    
+  };
 
   const customToolBar = () => {
     return (
@@ -812,15 +903,20 @@ const Datatable = ({ type }) => {
         <GridToolbarFilterButton />
         <GridToolbarDensitySelector />
         <GridToolbarExport />
+        {/* Upload button */}
+        <div>
         <button
           class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeSmall MuiButton-textSizeSmall MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeSmall MuiButton-textSizeSmall css-1knaqv7-MuiButtonBase-root-MuiButton-root"
           onClick={handleUploadFiles}
+          disabled={isLoading}
         >
           <span class="MuiButton-startIcon MuiButton-iconSizeSmall css-y6rp3m-MuiButton-startIcon">
             <FileUploadIcon />
           </span>
           Upload Files
         </button>
+        {isLoading && <div>Loading...</div>}
+        </div>
       </GridToolbarContainer>
     );
   };

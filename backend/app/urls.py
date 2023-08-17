@@ -22,7 +22,7 @@ urlpatterns = [
     path('api/retrievefile/<uuid:file_id>', obtainfile),
 
         # url for retrieving file of particular version
-    path('api/retreiveFile/version/<uuid:file_id>/<uuid:fileVersion>',obatainfileOfVersion),
+    path('api/retrieveFile/version/<uuid:file_id>/<uuid:fileVersion>',obatainfileOfVersion),
     
     ### file deletion ################
         # url for deleting file # requires fileid and client id
