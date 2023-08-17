@@ -568,7 +568,10 @@ def obtainfile(request, file_id):
     ## getting current version of file 
     fileVer = getCurrentFileversion(file_id)
     ## getting all the shards from db - returns list of file and key shards 
-    keyname_list, filename_list = getAllfileAndSecretparts(file_id, fileVer)
+    keyname_list, filename_list, result = getAllfileAndSecretparts(file_id, fileVer)
+    if result == 'file data not in file server' :
+        data = {'response':'file data not in file server' }
+        return JsonResponse(data)
     ## combine the file with ecc - returns list of names of recombined file
     filename_c = combine_file(filename_list)
     ## combining pub key with sss - returns name of key file
@@ -597,7 +600,10 @@ def obatainfileOfVersion(request, file_id, fileVersion):
     ## taking info of the file 
     filename, fileExt = getfileinfo(file_id)
     ## getting all the shards from db - returns list of file and key shards 
-    keyname_list, filename_list = getAllfileAndSecretparts(file_id, fileVersion)
+    keyname_list, filename_list, result = getAllfileAndSecretparts(file_id, fileVersion)
+    if result == 'file data not in file server' :
+        data = {'response':'file data not in file server' }
+        return JsonResponse(data)
      ## combine the file with ecc - returns list of names of recombined file
     filename_c = combine_file(filename_list)
     ## combining pub key with sss - returns name of key file
