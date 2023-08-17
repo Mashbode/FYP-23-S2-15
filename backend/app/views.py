@@ -858,6 +858,42 @@ class FileUploadView(APIView):
         dirs = dir + ('/shard_make')
         for f in os.listdir(dirs):
             os.remove(os.path.join(dirs, f))
+
+        ## check for file issue 
+        chk1 = File1.objects.filter(file_id=file_id).using('server1')
+        chk2 = File2.objects.filter(file_id=file_id).using('server2')
+        chk3 = File3.objects.filter(file_id=file_id).using('server3')
+        chk4 = File4.objects.filter(file_id=file_id).using('server4')
+        chk5 = File5.objects.filter(file_id=file_id).using('server5')
+        count = chk1.count() + chk2.count() +chk3.count() + chk4.count() + chk5.count()
+        if count <=3:
+            Filetable.objects.filter(file_id=file_id).delete()
+            FileLog.objects.filter(file_id=file_id).delete()
+            FileVersionLog.objects.filter(file_id=file_id).delete()
+            FilePartsLog.objects.filter(file_id=file_id).delete()
+            Server1Logs.objects.filter(file_id=file_id).delete()
+            Server2Logs.objects.filter(file_id=file_id).delete()
+            Server3Logs.objects.filter(file_id=file_id).delete()
+            Server4Logs.objects.filter(file_id=file_id).delete()
+            Server5Logs.objects.filter(file_id=file_id).delete()
+            if chk1 ==1:
+                File1.objects.filter(file_id=file_id).using('server1').delete()
+                File1_log.objects.filter(file_id=file_id).using('server1').delete()
+            if chk2 ==1:
+                File2.objects.filter(file_id=file_id).using('Server2').delete()
+                File2_log.objects.filter(file_id=file_id).using('Server2').delete()
+            if chk3 ==1:
+                File3.objects.filter(file_id=file_id).using('Server3').delete()
+                File3_log.objects.filter(file_id=file_id).using('Server3').delete()
+            if chk4 ==1:
+                File4.objects.filter(file_id=file_id).using('Server4').delete()
+                File4_log.objects.filter(file_id=file_id).using('Server4').delete()
+            if chk5 ==1:
+                File5.objects.filter(file_id=file_id).using('Server5').delete()
+                File5_log.objects.filter(file_id=file_id).using('Server5').delete()
+            data = {'result': 'upload failed, please try again'}
+            return JsonResponse(data)
+
         return HttpResponse('file ok')
 
 ## for update
@@ -904,6 +940,47 @@ class fileupdateWhenUpdateView(APIView):
         dirs = dir + ('/shard_make')
         for f in os.listdir(dirs):
             os.remove(os.path.join(dirs, f))
+        
+        ## check for file issue 
+        chk1 = File1.objects.filter(file_id=fileId,file_version_id=file_version_id).using('server1')
+        chk2 = File2.objects.filter(file_id=fileId,file_version_id=file_version_id).using('server2')
+        chk3 = File3.objects.filter(file_id=fileId,file_version_id=file_version_id).using('server3')
+        chk4 = File4.objects.filter(file_id=fileId,file_version_id=file_version_id).using('server4')
+        chk5 = File5.objects.filter(file_id=fileId,file_version_id=file_version_id).using('server5')
+        count = chk1.count() + chk2.count() +chk3.count() + chk4.count() + chk5.count()
+        if count <=3:
+            Fileversion.objects.filter(file_id=fileId,file_version_id=file_version_id).delete()
+            FileVersionLog.objects.filter(file_id=fileId,file_version_id=file_version_id).delete()
+            Fileparts.objects.filter(file_id=fileId,file_version_id=file_version_id).delete()
+            FilePartsLog.objects.filter(file_id=fileId,file_version_id=file_version_id).delete()
+            Server1.objects.filter(file_id=fileId,file_version_id=file_version_id).delete()
+            Server1Logs.objects.filter(file_id=fileId,file_version_id=file_version_id).delete()
+            Server2.objects.filter(file_id=fileId,file_version_id=file_version_id).delete()
+            Server2Logs.objects.filter(file_id=fileId,file_version_id=file_version_id).delete()
+            Server3.objects.filter(file_id=fileId,file_version_id=file_version_id).delete()
+            Server3Logs.objects.filter(file_id=fileId,file_version_id=file_version_id).delete()
+            Server4.objects.filter(file_id=fileId,file_version_id=file_version_id).delete()
+            Server4Logs.objects.filter(file_id=fileId,file_version_id=file_version_id).delete()
+            Server5.objects.filter(file_id=fileId,file_version_id=file_version_id).delete()
+            Server5Logs.objects.filter(file_id=fileId,file_version_id=file_version_id).delete()
+            if chk1 ==1:
+                File1.objects.filter(file_id=fileId,file_version_id=file_version_id).using('server1').delete()
+                File1_log.objects.filter(file_id=fileId,file_version_id=file_version_id).using('server1').delete()
+            if chk2 ==1:
+                File2.objects.filter(file_id=fileId,file_version_id=file_version_id).using('Server2').delete()
+                File2_log.objects.filter(file_id=fileId,file_version_id=file_version_id).using('Server2').delete()
+            if chk3 ==1:
+                File3.objects.filter(file_id=fileId,file_version_id=file_version_id).using('Server3').delete()
+                File3_log.objects.filter(file_id=fileId,file_version_id=file_version_id).using('Server3').delete()
+            if chk4 ==1:
+                File4.objects.filter(file_id=fileId,file_version_id=file_version_id).using('Server4').delete()
+                File4_log.objects.filter(file_id=fileId,file_version_id=file_version_id).using('Server4').delete()
+            if chk5 ==1:
+                File5.objects.filter(file_id=fileId,file_version_id=file_version_id).using('Server5').delete()
+                File5_log.objects.filter(file_id=fileId,file_version_id=file_version_id).using('Server5').delete()
+            data = {'result': 'upload failed, please try again'}
+            return JsonResponse(data)
+
         return HttpResponse('file ok')
     
 
