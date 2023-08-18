@@ -882,7 +882,7 @@ const getFileVersion = async (params) => {
   };
 
   // upload file
-  const handleUploadFiles = async () => {
+  const handleUploadFile = async () => {
     const input = document.createElement('input');
     input.type = 'file';
     input.onchange = (event) => {
@@ -905,7 +905,7 @@ const getFileVersion = async (params) => {
         <div>
         <button
           class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeSmall MuiButton-textSizeSmall MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeSmall MuiButton-textSizeSmall css-1knaqv7-MuiButtonBase-root-MuiButton-root"
-          onClick={handleUploadFiles}
+          onClick={handleUploadFile}
           disabled={isLoading}
         >
           <span class="MuiButton-startIcon MuiButton-iconSizeSmall css-y6rp3m-MuiButton-startIcon">
