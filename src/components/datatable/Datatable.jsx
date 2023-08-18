@@ -911,7 +911,7 @@ const getFileVersion = async (params) => {
           <span class="MuiButton-startIcon MuiButton-iconSizeSmall css-y6rp3m-MuiButton-startIcon">
             <FileUploadIcon />
           </span>
-          Upload Files
+          Upload File
         </button>
         {isLoading && <div>Loading...</div>}
         </div>
