@@ -1,7 +1,8 @@
 import styled from "styled-components";
 import Files from "../../img/files.png";
-import Dashboard from "../../img/dashboard.png";
 import AnimatedShapes from "./AnimatedShapes";
+
+import { Link } from "react-router-dom";
 
 const Container = styled.div`
   height: calc(100vh - 60px); // 50px is the size of Navbar
@@ -26,15 +27,16 @@ const Left = styled.div`
 `;
 
 const Title = styled.h1`
-  width: 50%;
+  width: 80%;
   @media only screen and (max-width: 480px) {
     width: 100%;
     font-size: 50px;
   }
+  font-size: 50px;
 `;
 
 const Desc = styled.p`
-  width: 60%;
+  width: 80%;
   font-size: 20px;
   margin-top: 20px;
   @media only screen and (max-width: 480px) {
@@ -43,7 +45,7 @@ const Desc = styled.p`
 `;
 
 const Info = styled.div`
-  width: 60%;
+  width: 80%;
   margin-top: 50px;
   display: flex;
   align-items: center;
@@ -95,8 +97,8 @@ const Right = styled.div`
 const Image = styled.img`
   width: 100%;
   position: absolute;
-  top: 40%;
-  right: 10%;
+  top: 32%;
+  right: 7%;
   font-size: 18px;
   border-radius: 10px;  
   box-shadow: 10px 5px 10px 10px rgba(0, 0, 0, 0.3);
@@ -106,25 +108,27 @@ const Intro = () => {
   return (
     <Container id="intro">
       <Left>
-        <Title>This is intro of our home page</Title>
+        <Title>Introducing Secure File Sharing</Title>
         <Desc>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Velit,
-          officiis magni eaque ipsum commodi ea rerum mollitia eius harum
-          provident
+        Welcome to our cutting-edge platform that specializes in secure file sharing.<br/>
+        Your data's confidentiality is our priority, employing robust security measures to prevent unauthorized access. 
+        Experience the future of secure sharing today.
         </Desc>
         <Info>
-          <Button>START A PROJECT</Button>
-          <Contact>
+          <Link to="/register">
+            <Button>START A PROJECT</Button>
+          </Link>
+          {/* <Contact>
             <Phone>Call Us (012) 345 - 6789</Phone>
             <ContactText>For any question or concern</ContactText>
-          </Contact>
+          </Contact> */}
         </Info>
       </Left>
       <Right>
         <Image src={Files} />
       </Right>
       {/* Location of below does not matter */}
-      <AnimatedShapes />
+      {/* <AnimatedShapes /> */}
     </Container>
   );
 };

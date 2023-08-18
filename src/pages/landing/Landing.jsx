@@ -2,16 +2,16 @@ import styled, { css } from "styled-components";
 // import css from "styled-components";
 import Navbar from "../../components/landing/Navbar";
 import Intro from "../../components/landing/Intro";
-import Feature from "../../components/landing/Feature";
-import Service from "../../components/landing/Service";
-import Price from "../../components/landing/Price";
+import Product from "../../components/landing/Product";
+import Team from "../../components/landing/Team";
+import Price from "../../components/landing/Safety";
 import Contact from "../../components/landing/Contact";
 import Footer from "../../components/landing/Footer";
 
 const Container = styled.div`
   height: 100vh;
   overflow: hidden; // Prevent Woman image to overflow
-  position: relative; // Otherwise, FeatureShape will be at the top
+  position: relative; // Otherwise, ResearchShape will be at the top
 `;
 
 const Shape = css`
@@ -27,28 +27,28 @@ const Shape = css`
 const IntoShape = styled.div`
   ${Shape}
   clip-path: polygon(67% 0, 100% 0%, 100% 100%, 55% 100%);
-  background-color: crimson;
+  background-color: #5e35b1;
 `;
 
-const FeatureShape = styled.div`
+const ProductShape = styled.div`
   ${Shape}
   //                   (1)                         (2)
   /* clip-path: polygon(67% 0, 100% 0%, 100% 100%, 55% 100%); */
   //                      (2)     100%-(1)
   clip-path: polygon(0 0, 55% 0%, 33% 100%, 0 100%);
-  background-color: pink;
+  background-color: #ad66f0;
 `;
 
-const ServiceShape = styled.div`
+const TeamShape = styled.div`
   ${Shape}
   clip-path: polygon(0 0, 33% 0%, 33% 100%, 0 100%);
-  background-color: #ff4ca5;
+  background-color: #8a52c0;
 `;
 
 const PriceShape = styled.div`
   ${Shape}
   clip-path: polygon(33% 0, 100% 0%, 100% 100%, 67% 100%);
-  background-color: crimson;
+  background-color: #be6dcc;
 `;
 
 const App = () => {
@@ -62,13 +62,13 @@ const App = () => {
         <IntoShape />
       </Container>
       <Container>
-        <Feature />
-        <FeatureShape />
+        <Product />
+        <ProductShape />
       </Container>
       <Container>
-        <Service />
+        <Team />
         {/* Show this animation only when it is not a small screen */}
-        {!smallScreen && <ServiceShape />}
+        {!smallScreen && <TeamShape />}
       </Container>
       <Container>
         <Price />

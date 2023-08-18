@@ -97,25 +97,25 @@ const Sidebar = () => {
                   <span>Users</span>
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link to="/admin-drive" style={{ textDecoration: "none" }}>
                   <InsertDriveFileIcon className="icon" />
                   <span>Files</span>
                 </Link>
-              </li>
+              </li> */}
               <p className="title">SERVICE</p>
-              <li>
+              {/* <li>
                 <InsertChartIcon className="icon" />
                 <span>Statistics</span>
-              </li>
+              </li> */}
               <li>
                 <SettingsSystemDaydreamOutlinedIcon className="icon" />
                 <span>System Health</span>
               </li>
-              <li>
+              {/* <li>
                 <NotificationsNoneIcon className="icon" />
                 <span>Notifications</span>
-              </li>
+              </li> */}
               <li>
                 <Link to="/enquiries" style={{ textDecoration: "none" }}>
                   <SupportAgentIcon className="icon" />
@@ -172,24 +172,24 @@ const Sidebar = () => {
                   <span>Dashboard</span>
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link to="/my-drive" style={{ textDecoration: "none" }}>
                   <StorageIcon className="icon" />
                   <span>My Drive</span>
                 </Link>
-              </li>
-              <li>
+              </li> */}
+              {/* <li>
                 <Link to="/files/upload" style={{ textDecoration: "none" }}>
                   <UploadFileIcon className="icon" />
                   <span>Upload Files</span>
                 </Link>
-              </li>
-              <li>
+              </li> */}
+              {/* <li>
                 <Link to="/files/update" style={{ textDecoration: "none" }}>
                   <UpdateIcon className="icon" />
                   <span>Update Files</span>
                 </Link>
-              </li>
+              </li> */}
               <p className="title">LISTS</p>
               <li>
                 <Link to="/files" style={{ textDecoration: "none" }}>
@@ -210,10 +210,10 @@ const Sidebar = () => {
                 </Link>
               </li>
               <p className="title">SERVICE</p>
-              <li>
+              {/* <li>
                 <NotificationsNoneIcon className="icon" />
                 <span>Notifications</span>
-              </li>
+              </li> */}
               <li>
                 <Link to="/enquiries" style={{ textDecoration: "none" }}>
                   <SupportAgentIcon className="icon" />

@@ -33,7 +33,7 @@ const Navbar = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
 
-  const initials = (firstName[0] || '') + (lastName[0] || '');
+  const initials = (firstName[0] || "") + (lastName[0] || "");
 
   // Function to fetch the authenticated user's data from Firestore
   const fetchUserData = async () => {
@@ -88,12 +88,12 @@ const Navbar = () => {
   return (
     <div className="navbar">
       <div className="wrapper">
-        <div className="search">
+        {/* <div className="search">
           <input type="text" placeholder="Search..." />
           <SearchOutlinedIcon />
-        </div>
+        </div> */}
         <div className="items">
-          <div className="item">
+          {/* <div className="item">
             <LanguageOutlinedIcon className="icon" />
             English
           </div>
@@ -116,7 +116,7 @@ const Navbar = () => {
           </div>
           <div className="item">
             <ListOutlinedIcon className="icon" />
-          </div>
+          </div> */}
           <div className="item">
             {/* <Link to="/users/test">
               <img
@@ -188,14 +188,19 @@ const Navbar = () => {
                   style={{ textDecoration: "none", color: "black" }}
                 >
                   <MenuItem onClick={handleClose} sx={{ fontSize: 15 }}>
-                    <Avatar className="avatar">{initials}</Avatar> {firstName + " " + lastName}
+                    <Avatar className="avatar">{initials}</Avatar>{" "}
+                    {firstName + " " + lastName}
                   </MenuItem>
                 </Link>
                 <MenuItem sx={{ fontSize: 15 }}>
-                  Username<br/>{username}
+                  Username
+                  <br />
+                  {username}
                 </MenuItem>
                 <MenuItem sx={{ fontSize: 15 }}>
-                  Email<br/>{email}
+                  Email
+                  <br />
+                  {email}
                 </MenuItem>
                 <Divider />
                 {/* <MenuItem onClick={handleClose} sx={{fontSize:15}}>

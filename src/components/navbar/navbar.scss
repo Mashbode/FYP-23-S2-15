@@ -10,25 +10,26 @@
         width: 100%;
         padding: 10px;
         display: flex;
-        justify-content: space-between; // This does not work when width is not 100%
+        flex-direction: row-reverse;
+        // justify-content: space-between; // This does not work when width is not 100%
 
-        .search {
-            display: flex;
-            align-items: center;
-            border: 0.5px solid lightgray;
-            padding: 3px;
+        // .search {
+        //     display: flex;
+        //     align-items: center;
+        //     border: 0.5px solid lightgray;
+        //     padding: 3px;
 
-            input {
-                border: none;
-                outline: none; // When input box is clicked
-                background: transparent; // If not it will show a white background in Dark mode
+        //     input {
+        //         border: none;
+        //         outline: none; // When input box is clicked
+        //         background: transparent; // If not it will show a white background in Dark mode
 
-                // A CSS pseudo-element is used to style specified parts of an element.
-                &::placeholder {
-                    font-size: 12px;
-                }
-            }
-        }
+        //         // A CSS pseudo-element is used to style specified parts of an element.
+        //         &::placeholder {
+        //             font-size: 12px;
+        //         }
+        //     }
+        // }
 
         .items {
             display: flex;
@@ -84,4 +85,4 @@
 
 .MenuItem.Mui-selected {
     color: #5e35b1;
-  }
+}
