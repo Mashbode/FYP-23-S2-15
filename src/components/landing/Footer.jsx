@@ -42,7 +42,7 @@ const Footer = () => {
           <ListItem>API</ListItem>
           <ListItem>Community</ListItem>
         </List>
-        <CopyRight>CopyRight Ⓒ</CopyRight>
+        <CopyRight>OnlyFiles Ⓒ</CopyRight>
       </Wrapper>
     </Container>
   );

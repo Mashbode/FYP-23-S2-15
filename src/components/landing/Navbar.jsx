@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 
 const Container = styled.div.attrs((props) => ({ className: props.className }))`
   &.changeBackground {
-    background-color: rgba(188, 117, 131, 0.797);
+    background-color: rgba(207, 194, 232, 0.7);   // 207, 194, 232, 1
   }
 
   position: fixed;
@@ -70,7 +70,7 @@ const MenuItem = styled.a`
 
   &:hover {
     /* padding-bottom: 12px; */
-    border-bottom: 3px solid #ff2c56aa;
+    border-bottom: 3px solid #5e35b1;
     cursor: pointer;
   }
 `;
@@ -78,7 +78,7 @@ const MenuItem = styled.a`
 const Button = styled.button`
   border: 2px solid white;
   padding: 10px 15px;
-  background-color: crimson;
+  background-color: #5e35b1;
   color: white;
   font-weight: bold;
   border-radius: 10px;
@@ -116,43 +116,43 @@ const Navbar = () => {
                 duration={500}
                 // onClick={closeMenu}
               >
-                Home
+                Intro
               </LinkScroll>
             </MenuItem>
             <MenuItem>
               <LinkScroll
-                to="feature" // Give same id to Feature component
+                to="product" // Give same id to Feature component
                 spy={true}
                 smooth={true}
                 offset={-60} // Due to Navbar size
                 duration={500}
                 // onClick={closeMenu}
               >
-                Features
+                Product
               </LinkScroll>
             </MenuItem>
             <MenuItem>
               <LinkScroll
-                to="service"
+                to="team"
                 spy={true}
                 smooth={true}
                 offset={-60}
                 duration={500}
                 // onClick={closeMenu}
               >
-                Services
+                Team
               </LinkScroll>
             </MenuItem>
             <MenuItem>
               <LinkScroll
-                to="price"
+                to="saftey"
                 spy={true}
                 smooth={true}
                 offset={-60}
                 duration={500}
                 // onClick={closeMenu}
               >
-                Pricing
+                Safety
               </LinkScroll>
             </MenuItem>
             <MenuItem>

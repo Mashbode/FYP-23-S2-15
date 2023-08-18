@@ -3,6 +3,19 @@ import Map from "../../img/map.png";
 import Phone from "../../img/phone.png";
 import Send from "../../img/send.png";
 
+import FormInput from "../forminput/FormInput";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { db } from "../../firebase";
+import {
+  doc,
+  setDoc,
+  collection,
+  addDoc,
+  serverTimestamp,
+  getDocs,
+} from "firebase/firestore";
+
 const Container = styled.div`
   height: 90%; // 10% is for Footer.jsx
   background: url("https://www.toptal.com/designers/subtlepatterns/uploads/webb.png"); // Below url is not available -> Click download btn w/ shift
@@ -39,6 +52,7 @@ const Form = styled.form`
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-right: 25%;
   @media only screen and (max-width: 480px) {
     flex-direction: column;
   }
@@ -70,6 +84,7 @@ const RightForm = styled.div`
 const Input = styled.input`
   width: 200px;
   padding: 20px;
+  border-radius: 10px;
   @media only screen and (max-width: 480px) {
     padding: 5px;
   }
@@ -79,6 +94,7 @@ const TextArea = styled.textarea`
   width: 200px;
   height: 60%; // Rest is for Button
   padding: 20px;
+  border-radius: 10px;
   @media only screen and (max-width: 480px) {
     padding: 5px;
     margin-top: 20px;
@@ -139,6 +155,136 @@ const Text = styled.span`
 `;
 
 const Contact = () => {
+  // const [values, setValues] = useState({
+  //   username: "",
+  //   email: "",
+  //   enquiryTitle: "",
+  //   enquiryMessage: "",
+  // });
+
+  // const [enquirying, setEnquirying] = useState(false);
+
+  // const formInputs = [
+  //   {
+  //     id: 1,
+  //     name: "username",
+  //     type: "text",
+  //     placeholder: "Your Name"
+  //   },
+  //   {
+  //     id: 2,
+  //     name: "email",
+  //     type: "email",
+  //     placeholder: "Your Email Address"
+  //   },
+  //   {
+  //     id: 3,
+  //     name: "enquiryTitle",
+  //     type: "text",
+  //     placeholder: "Enter Enquiry Title"
+  //   },
+  //   {
+  //     id: 4,
+  //     name: "enquiryMessage",
+  //     type: "text",
+  //     placeholder: "Enter Enquiry Message"
+  //   }
+  // ]
+
+  // const onChange = async (e) => {
+  //   setValues({ ...values, [e.target.name]: e.target.value });
+  // };
+
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   setEnquirying(true);
+
+  //   const docRef = await addDoc(collection(db, "enquiries"), {
+  //     username: "David Smith",
+  //     email: "davidSmith@gmail.com",
+  //   });
+
+  //   const { username, email, enquiryTitle, enquiryMessage } = values;
+
+  //   const docData = {
+  //     username: username,
+  //     email: email,
+  //     enquiryTitle: enquiryTitle,
+  //     enquiryMessage: enquiryMessage,
+  //     timeStamp: serverTimestamp()
+  //   };
+
+  //   await setDoc(doc(db, "enquiries", "id"), docData);
+  // };
+
+  const [newName, setNewName] = useState("");
+  const [newEmail, setNewEmail] = useState("");
+  const [newEnquiryTitle, setNewEnquiryTitle] = useState("");
+  const [newEnquiryMessage, setNewEnquiryMessage] = useState("");
+
+  const enquiriesCollectionRef = collection(db, "enquiries");
+
+  const createEnquiry = async (e) => {
+    e.preventDefault();
+    try {
+      // const newEnquiryData = {
+      //   name: newName,
+      //   email: newEmail,
+      //   enquiryTitle: newEnquiryTitle,
+      //   enquiryMessage: newEnquiryMessage,
+      //   timeStamp: serverTimestamp(),
+      //   enquiryStatus: "Not Answered",
+      // };
+  
+      // await addDoc(enquiriesCollectionRef, newEnquiryData);
+      await setDoc(collection(db, "enquiries"), {
+            name: newName,
+            email: newEmail,
+            enquiryTitle: newEnquiryTitle,
+            enquiryMessage: newEnquiryMessage,
+            timeStamp: serverTimestamp(),
+            enquiryStatus: "Not Answered",
+      });
+      console.log("Enquiry created successfully!");
+    } catch (error) {
+      console.error("Error creating enquiry:", error);
+    }
+  };
+
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    try {
+      // const newEnquiryData = {
+      //   name: newName,
+      //   email: newEmail,
+      //   enquiryTitle: newEnquiryTitle,
+      //   enquiryMessage: newEnquiryMessage,
+      //   timeStamp: serverTimestamp(),
+      //   enquiryStatus: "Not Answered",
+      // };
+  
+      // await addDoc(enquiriesCollectionRef, newEnquiryData);
+      await addDoc(collection(db, "enquiries"), {
+            name: newName,
+            email: newEmail,
+            enquiryTitle: newEnquiryTitle,
+            enquiryMessage: newEnquiryMessage,
+            timeStamp: serverTimestamp(),
+            enquiryStatus: "Not Answered",
+      });
+      console.log("Enquiry created successfully!");
+    } catch (error) {
+      console.error("Error creating enquiry:", error);
+    }
+
+    setNewName("");
+    setNewEmail("");
+    setNewEnquiryTitle("");
+    setNewEnquiryMessage("");
+  };
+
   return (
     <Container id="contact">
       <Wrapper>
@@ -146,32 +292,81 @@ const Contact = () => {
           <Title>
             Questions? <br /> Let's Get In Touch
           </Title>
-          <Form>
+          <Form onSubmit={handleSubmit}>
             <LeftForm>
-              <Input placeholder="Your Name" />
+              {/* <Input placeholder="Your Name" />
               <Input placeholder="Your Email" />
-              <Input placeholder="Subject" />
+              <Input placeholder="Subject" /> */}
+              {/* {formInputs.map((formInput) => {
+                return (
+                  <form onSubmit={handleSubmit}>
+                  <FormInput
+                    key={formInput.id}
+                    {...formInput}
+                    values={values[formInput.name]}
+                    onChange={onChange}
+                  />
+                  </form>
+                );
+              })} */}
+              <Input
+                placeholder="Name"
+                onChange={(event) => {
+                  setNewName(event.target.value);
+                }}
+                required
+              />
+              <Input
+                type="email"
+                placeholder="Email"
+                onChange={(event) => {
+                  setNewEmail(event.target.value);
+                }}
+                required
+              />
+              <Input
+                placeholder="Enquiry Title"
+                onChange={(event) => {
+                  setNewEnquiryTitle(event.target.value);
+                }}
+                required
+              />
             </LeftForm>
             <RightForm>
-              <TextArea placeholder="Your Message" />
-              <Button>Send</Button>
+              {/* <TextArea placeholder="Your Message" />
+              <Button>Send</Button> */}
+              {/* <button>
+                {enquirying ? (
+                  <CircularProgress color="inherit" size={20} />
+                ) : (
+                  "Submit"
+                )}
+              </button> */}
+              <TextArea
+                placeholder="Leave the Enquiry Message Here..."
+                onChange={(event) => {
+                  setNewEnquiryMessage(event.target.value);
+                }}
+                required
+              />
+              <Button>Submit</Button>
             </RightForm>
           </Form>
         </FormContainer>
         <AddressContainer>
           <AddressItem>
             <Icon src={Map} />
-            <Text>123 Park Avenue St., New York, USA</Text>
+            <Text>461 Clementi Rd, Singapore 599491</Text>
           </AddressItem>
           <AddressItem>
             <Icon src={Phone} />
-            <Text>+1 631 1234 5678</Text>
-            <Text>+1 326 1234 5678</Text>
+            <Text>+65 9017 2832</Text>
+            <Text>+65 8497 9855</Text>
           </AddressItem>
           <AddressItem>
             <Icon src={Send} />
-            <Text>contact@test.com</Text>
-            <Text>sales@test.com</Text>
+            <Text>onlyfiles@gmail.com</Text>
+            <Text>fyps215@gmail.com</Text>
           </AddressItem>
         </AddressContainer>
       </Wrapper>
