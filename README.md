@@ -69,8 +69,8 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
 
-# AWS stuff
-## AWS email
+# cloud stuff
+## fyp email
 fyps215@gmail.com \
 bMHRKwU-P9MCq \
 This is just a burner email for this project.
@@ -97,6 +97,20 @@ Username : postgres \
 password : passcanliao \
 Click save and you will connect to AWS RDS, under database there will be a postgres (default db by postgres DO NOT DELETE OR ALTER ANYTHING), rdsAdmin (AWS STUFF u will not be able to access)   
 metadatadb - this will be our main db \
+fileserver - this will be where we store the file parts 
+
+### Connecting to Microsoft Azure 
+Follow from connecting to rds instance(same method) : https://adamtheautomator.com/rds-postgres/
+Steps \
+Under the existing server right click -> register -> server \
+Enter a name for the server  
+Under connections \
+Host : myfypserver.postgres.database.azure.com    
+Port : 5432 \
+Maintenance : postgres \
+Username : myadmin \
+password : Passcanliao1 \
+Click save and you will connect to Microsoft Azure. Under  databases, there will be postgres (default db by postgres), azure_sys and azure_maintenance. These are there by default.  
 fileserver - this will be where we store the file parts 
 
 ## in django, there is a file named requirements .txt 
