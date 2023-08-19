@@ -583,17 +583,17 @@ def obtainfile(request, file_id):
     c_name = filename+fileExt
     print(c_name)
     # this to catch file size error
-    b = os.path.getsize(decom)
-    ss = Filetable.objects.filter(file_id=file_id).values('filesize')
-    if b != ss[0]['filesize'] :
-            ## remove all files in folder 
-        path = os.path.realpath(__file__)
-        dir = os.path.dirname(path)
-        dirs = dir + ('/shard_retrieve')
-        for f in os.listdir(dirs):
-            os.remove(os.path.join(dirs, f))
-        data = {'result', 'filedownload error'}
-        return JsonResponse(data)
+    # b = os.path.getsize(decom)
+    # ss = Filetable.objects.filter(file_id=file_id).values('filesize')
+    # if b != ss[0]['filesize'] :
+    #         ## remove all files in folder 
+    #     path = os.path.realpath(__file__)
+    #     dir = os.path.dirname(path)
+    #     dirs = dir + ('/shard_retrieve')
+    #     for f in os.listdir(dirs):
+    #         os.remove(os.path.join(dirs, f))
+    #     data = {'result', 'filedownload error'}
+    #     return JsonResponse(data)
     ## uploading file to the frontend
     with open(decom, 'rb') as f:
         response = HttpResponse(f.read(), content_type='application/octet-stream')
@@ -688,25 +688,6 @@ def deletefile(request, fileId, clientId):
         detail ={'status': 'fail',
                  'message': 'error occured'}
     return JsonResponse(detail)
-        # print('herte')
-        # death = Filetable.objects.filter(file_id =fileId, client= clientId )
-        # print(death)
-        # death.delete()
-        # print('a')
-        # ## delete from file servers 
-        # File1.objects.filter(file_id =fileId).using('server1').delete() 
-        # print('b')
-        # File2.objects.filter(file_id=fileId).using('server2').delete()
-        # print('c')
-        # File3.objects.filter(file_id=fileId).using('server3').delete()
-        # print('d')
-        # File4.objects.filter(file_id=fileId).using('server4').delete()
-        # print('e')
-        # File5.objects.filter(file_id=fileId).using('server5').delete()
-        # print('f')
-        # detail = {'status':'success',
-        #         'message': 'file deleted'}
-        # return JsonResponse(detail)
 
 
 def restorefile(request,file_id):

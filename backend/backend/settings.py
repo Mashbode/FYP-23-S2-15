@@ -145,22 +145,20 @@ DATABASES = {
         "HOST": "testdb.c9ybbr2jzshu.ap-southeast-1.rds.amazonaws.com",
         "PORT": "5432",
     },
-    ## azure ?
-    "server6": {
-       "ENGINE": "django.db.backends.postgresql",
+    "server6":{ ## azure?
+        "ENGINE": "django.db.backends.postgresql",
         "NAME": "FileServer6",
-        "USER": "postgres",
-        "PASSWORD": "passcanliao",
-        "HOST": "testdb.c9ybbr2jzshu.ap-southeast-1.rds.amazonaws.com",
+        "USER": "myadmin",
+        "PASSWORD": "Passcanliao1",
+        "HOST": "myfypserver.postgres.database.azure.com",
         "PORT": "5432",
     },
-    ## azure ?
-    "server7": {
-       "ENGINE": "django.db.backends.postgresql",
+    "server7":{ ## azure?
+        "ENGINE": "django.db.backends.postgresql",
         "NAME": "FileServer7",
-        "USER": "postgres",
-        "PASSWORD": "passcanliao",
-        "HOST": "testdb.c9ybbr2jzshu.ap-southeast-1.rds.amazonaws.com",
+        "USER": "myadmin",
+        "PASSWORD": "Passcanliao1",
+        "HOST": "myfypserver.postgres.database.azure.com",
         "PORT": "5432",
     },
 }

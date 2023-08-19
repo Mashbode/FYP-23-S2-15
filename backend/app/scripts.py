@@ -259,7 +259,7 @@ def fileversionOnUpdate(file_id):
 						password="passcanliao", host="testdb.c9ybbr2jzshu.ap-southeast-1.rds.amazonaws.com", port="5432")
     cur = conn.cursor()
     # smt = "SELECT file_version_id FROM fileversion WHERE file_id='" + str(file_id) + "' and file_version = (SELECT MAX(file_version) FROM fileversion WHERE file_id='" +str(file_id) +"' )"
-    cur.execute("SELECT file_version_id FROM fileversion WHERE file_id= '%s' and file_version=(SELECT MAX(file_version) FROM fileversion WHERE file_id='%s')", (file_id,file_id))
+    cur.execute("SELECT file_version_id FROM fileversion WHERE file_id= %s and file_version=(SELECT MAX(file_version) FROM fileversion WHERE file_id=%s)", (str(file_id),str(file_id)))
     data = cur.fetchone()
     print(data[0])
     cur.close()
