@@ -544,3 +544,51 @@ class Enquiries(models.Model):
     class Meta:
         managed=False
         db_table = 'enquiries'
+
+##fileserver6
+class File6(models.Model):
+    fileserver6_id = models.AutoField(primary_key=True)
+    file_version_id = models.UUIDField()
+    file_id = models.UUIDField()
+    data = models.BinaryField(blank=True, null=True, editable=True)
+    secret = models.BinaryField()
+
+    class Meta:
+        managed = False
+        db_table = 'file6'
+
+class File6_log(models.Model):
+    fileserver6_id = models.AutoField(primary_key=True)
+    file_version_id = models.UUIDField()
+    file_id = models.UUIDField()
+    data = models.BinaryField(blank=True, null=True)
+    secret = models.BinaryField()
+    delete_time = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        managed=False
+        db_table = 'file6_log'
+
+##fileserver7
+class File7(models.Model):
+    fileserver7_id = models.AutoField(primary_key=True)
+    file_version_id = models.UUIDField()
+    file_id = models.UUIDField()
+    data = models.BinaryField(blank=True, null=True, editable=True)
+    secret = models.BinaryField()
+
+    class Meta:
+        managed = False
+        db_table = 'file7'
+
+class File7_log(models.Model):
+    fileserver7_id = models.AutoField(primary_key=True)
+    file_version_id = models.UUIDField()
+    file_id = models.UUIDField()
+    data = models.BinaryField(blank=True, null=True)
+    secret = models.BinaryField()
+    delete_time = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        managed=False
+        db_table = 'file7_log'

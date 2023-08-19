@@ -86,7 +86,7 @@ def ecc_file (file):
     split = os.path.splitext(file)
     prefix = split[0]
     # the function returns a list of files made
-    parts = file_ecc.EncodeFile(file, prefix,5,2)
+    parts = file_ecc.EncodeFile(file, prefix,7,4)
     # remove encrypted file 
     os.remove(file)
     end1 = time.time()
@@ -99,9 +99,9 @@ def pyshmir_split():
     # take in the key 
     key = open('key.bin', 'rb').read()
     # set the number of shares; i.e. the number of parts to split the secret into
-    num_of_shares = 5
+    num_of_shares = 7
     # threshold is minimum number of keys required to get back the secret
-    threshold = 3
+    threshold = 4
     # split to get a list of bytearrays which can be combined later to get back the secret
     parts = split(key, num_of_shares, threshold)
     # output to file
@@ -295,6 +295,17 @@ def filepartsupload(filelist, keylist, fileid, fileversion):
     key5= open(key_list[4],'rb').read()
     fileshard5= File5(file_id = fileid, data= file5, file_version_id = fileversion, secret=key5)
     fileshard5.save(using='server5')
+    ## inserting into azure db 
+    ## server 6
+    file6 = open(file_list[5],'rb').read()
+    key6= open(key_list[5],'rb').read()
+    fileshard6= File6(file_id = fileid, data= file6, file_version_id = fileversion, secret=key6)
+    fileshard6.save(using='server6')
+    ## server 7
+    file7 = open(file_list[6],'rb').read()
+    key7= open(key_list[6],'rb').read()
+    fileshard7= File7(file_id = fileid, data= file7, file_version_id = fileversion, secret=key7)
+    fileshard7.save(using='server7')
     return True
 ################################################################################################################################################
 
@@ -423,6 +434,24 @@ def getAllfileAndSecretparts(fileID, fileVersion):
         print('fileserver5  down')
         count+=1
     
+     ## take from fileserver6 AZURE
+    try:
+        take = File6.objects.filter(file_id=fileID, file_version_id=fileVersion).values('data','secret').using('server6')
+        key_list.append(take[0]['secret'])
+        file_list.append(take[0]['data'])
+    except:
+        print('fileserver6  down')
+        count+=1
+    
+    ## take from fileserver7 AZURE
+    try:
+        take = File7.objects.filter(file_id=fileID, file_version_id=fileVersion).values('data','secret').using('server7')
+        key_list.append(take[0]['secret'])
+        file_list.append(take[0]['data'])
+    except:
+        print('fileserver7  down')
+        count+=1
+
     if count == 5 :
         data = 'file data not in file server'
         return  0, 0, data

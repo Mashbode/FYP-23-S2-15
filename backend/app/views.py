@@ -677,6 +677,11 @@ def deletefile(request, fileId, clientId):
         print('e')
         File5.objects.filter(file_id=fileId).using('server5').delete()
         print('f')
+        ## azure DBs
+        File6.objects.filter(file_id=fileId).using('server6').delete()
+        print('g')
+        File7.objects.filter(file_id=fileId).using('server7').delete()
+        print('j')
         detail = {'status':'success',
                 'message': 'file deleted'}
     except:
@@ -796,7 +801,9 @@ def restorefile(request,file_id):
     fs3 = File3_log.objects.filter(file_id=file_id).values('file_id', 'file_version_id', 'data', 'fileserver3_id', 'secret').using('server3')
     fs4 = File4_log.objects.filter(file_id=file_id).values('file_id', 'file_version_id', 'data', 'fileserver4_id', 'secret').using('server4')
     fs5 = File5_log.objects.filter(file_id=file_id).values('file_id', 'file_version_id', 'data', 'fileserver5_id', 'secret').using('server5')
-
+    ## azure db 
+    fs6 = File6_log.objects.filter(file_id=file_id).values('file_id', 'file_version_id', 'data', 'fileserver6_id', 'secret').using('server6')
+    fs7 = File7_log.objects.filter(file_id=file_id).values('file_id', 'file_version_id', 'data', 'fileserver7_id', 'secret').using('server7')
     # insert into file
     for i in range(len(fs1)):
         ffs1 = File1(file_id=fs1[i]['file_id'], data=fs1[i]['data'], file_version_id=fs1[i]['file_version_id'], fileserver1_id=fs1[i]['fileserver1_id'], secret=fs1[i]['secret'])
@@ -813,12 +820,24 @@ def restorefile(request,file_id):
     for i in range(len(fs5)):
         ffs5 = File5(file_id=fs5[i]['file_id'], data=fs5[i]['data'], file_version_id=fs5[i]['file_version_id'], fileserver5_id=fs5[i]['fileserver5_id'], secret=fs5[i]['secret'])
         ffs5.save(using='server5')
+    ## azure db
+    for i in range(len(fs6)):
+        ffs6 = File6(file_id=fs6[i]['file_id'], data=fs6[i]['data'], file_version_id=fs6[i]['file_version_id'], fileserver6_id=fs6[i]['fileserver6_id'], secret=fs6[i]['secret'])
+        ffs6.save(using='server6')
+    
+    for i in range(len(fs7)):
+        ffs7 = File7(file_id=fs7[i]['file_id'], data=fs7[i]['data'], file_version_id=fs7[i]['file_version_id'], fileserver7_id=fs7[i]['fileserver7_id'], secret=fs7[i]['secret'])
+        ffs7.save(using='server7')
+    
     # delete from logs 
     File1_log.objects.filter(file_id=file_id).using('server1').delete()
     File2_log.objects.filter(file_id=file_id).using('server2').delete()
     File3_log.objects.filter(file_id=file_id).using('server3').delete()
     File4_log.objects.filter(file_id=file_id).using('server4').delete()
     File5_log.objects.filter(file_id=file_id).using('server5').delete()
+    ## azure db
+    File6_log.objects.filter(file_id=file_id).using('server6').delete()
+    File7_log.objects.filter(file_id=file_id).using('server7').delete()
     return HttpResponse('restored')
 
 
@@ -889,7 +908,10 @@ class FileUploadView(APIView):
         chk3 = File3.objects.filter(file_id=file_id).using('server3')
         chk4 = File4.objects.filter(file_id=file_id).using('server4')
         chk5 = File5.objects.filter(file_id=file_id).using('server5')
-        count = chk1.count() + chk2.count() +chk3.count() + chk4.count() + chk5.count()
+        ## azure db
+        chk6 = File6.objects.filter(file_id=file_id).using('server6')
+        chk7 = File7.objects.filter(file_id=file_id).using('server7')
+        count = chk1.count() + chk2.count() +chk3.count() + chk4.count() + chk5.count() + chk6.count() + chk7.count()
         if count <=3:
             Filetable.objects.filter(file_id=file_id).delete()
             FileLog.objects.filter(file_id=file_id).delete()
@@ -915,6 +937,14 @@ class FileUploadView(APIView):
             if chk5 ==1:
                 File5.objects.filter(file_id=file_id).using('Server5').delete()
                 File5_log.objects.filter(file_id=file_id).using('Server5').delete()
+            ## azure db
+            if chk6 ==1:
+                File6.objects.filter(file_id=file_id).using('Server6').delete()
+                File6_log.objects.filter(file_id=file_id).using('Server6').delete()
+            if chk7 ==1:
+                File7.objects.filter(file_id=file_id).using('Server7').delete()
+                File7_log.objects.filter(file_id=file_id).using('Server7').delete()
+            
             data = {'result': 'upload failed, please try again'}
             return JsonResponse(data)
 
@@ -971,7 +1001,11 @@ class fileupdateWhenUpdateView(APIView):
         chk3 = File3.objects.filter(file_id=fileId,file_version_id=file_version_id).using('server3')
         chk4 = File4.objects.filter(file_id=fileId,file_version_id=file_version_id).using('server4')
         chk5 = File5.objects.filter(file_id=fileId,file_version_id=file_version_id).using('server5')
-        count = chk1.count() + chk2.count() +chk3.count() + chk4.count() + chk5.count()
+        ## azure db
+        chk6 = File6.objects.filter(file_id=fileId,file_version_id=file_version_id).using('server6')
+        chk7 = File7.objects.filter(file_id=fileId,file_version_id=file_version_id).using('server7')
+
+        count = chk1.count() + chk2.count() +chk3.count() + chk4.count() + chk5.count() +chk6.count() + chk7.count()
         if count <=3:
             Fileversion.objects.filter(file_id=fileId,file_version_id=file_version_id).delete()
             FileVersionLog.objects.filter(file_id=fileId,file_version_id=file_version_id).delete()
@@ -1002,6 +1036,13 @@ class fileupdateWhenUpdateView(APIView):
             if chk5 ==1:
                 File5.objects.filter(file_id=fileId,file_version_id=file_version_id).using('Server5').delete()
                 File5_log.objects.filter(file_id=fileId,file_version_id=file_version_id).using('Server5').delete()
+            ## azure db
+            if chk6 ==1:
+                File6.objects.filter(file_id=fileId,file_version_id=file_version_id).using('Server6').delete()
+                File6_log.objects.filter(file_id=fileId,file_version_id=file_version_id).using('Server6').delete()
+            if chk7 ==1:
+                File7.objects.filter(file_id=fileId,file_version_id=file_version_id).using('Server7').delete()
+                File7_log.objects.filter(file_id=fileId,file_version_id=file_version_id).using('Server7').delete()
             data = {'result': 'upload failed, please try again'}
             return JsonResponse(data)
 
@@ -1047,6 +1088,12 @@ class deleteHistView(APIView):
         File4_log.objects.filter(file_id=file_id).using('server4').delete()
         print('ffff')
         File5_log.objects.filter(file_id=file_id).using('server5').delete()
+        print('az1')
+        ## azure db 
+        File6_log.objects.filter(file_id=file_id).using('server6').delete()
+        print('az2')
+        File7_log.objects.filter(file_id=file_id).using('server7').delete()
+
         data = {'result':'All gone'}
         return JsonResponse(data)
 
@@ -1083,6 +1130,16 @@ class deleteUserView(APIView):
                 File5.objects.filter(file_id=fileList[i]['file_id']).using('server5').delete()
                 #delete from file5 logs
                 File5_log.objects.filter(file_id=fileList[i]['file_id']).using('server5').delete()
+                ## azure db 
+                #delete from file6 
+                File6.objects.filter(file_id=fileList[i]['file_id']).using('server6').delete()
+                #delete from file6 logs 
+                File5_log.objects.filter(file_id=fileList[i]['file_id']).using('server6').delete()
+                ##delete from file7
+                File7.objects.filter(file_id=fileList[i]['file_id']).using('server7').delete()
+                ##delete from file7
+                File7_log.objects.filter(file_id=fileList[i]['file_id']).using('server7').delete()
+
         ## delete client 
         Client.objects.filter(u_id=u_id).delete() 
         ##delete user 
