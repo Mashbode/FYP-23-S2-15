@@ -17,6 +17,7 @@ import time
 from zoneinfo import ZoneInfo
 import psycopg2
 from django.http import HttpResponse, JsonResponse
+from django.db.models import Sum, Max
 ################################################     splitting       ############################################################
 
 ## compressing the file first #1
@@ -255,16 +256,19 @@ def fileversionOnInsert(file_id):
 ## function to get fileversionID for newly updated file 
 def fileversionOnUpdate(file_id):
     # connect to db 
-    conn = psycopg2.connect(database="metadatadb", user="postgres",
-						password="passcanliao", host="testdb.c9ybbr2jzshu.ap-southeast-1.rds.amazonaws.com", port="5432")
-    cur = conn.cursor()
-    # smt = "SELECT file_version_id FROM fileversion WHERE file_id='" + str(file_id) + "' and file_version = (SELECT MAX(file_version) FROM fileversion WHERE file_id='" +str(file_id) +"' )"
-    cur.execute("SELECT file_version_id FROM fileversion WHERE file_id= %s and file_version=(SELECT MAX(file_version) FROM fileversion WHERE file_id=%s)", (str(file_id),str(file_id)))
-    data = cur.fetchone()
-    print(data[0])
-    cur.close()
-    conn.close()
-    return data[0]
+    # conn = psycopg2.connect(database="metadatadb", user="postgres",
+	# 					password="passcanliao", host="testdb.c9ybbr2jzshu.ap-southeast-1.rds.amazonaws.com", port="5432")
+    # cur = conn.cursor()
+    # # smt = "SELECT file_version_id FROM fileversion WHERE file_id='" + str(file_id) + "' and file_version = (SELECT MAX(file_version) FROM fileversion WHERE file_id='" +str(file_id) +"' )"
+    # cur.execute("SELECT file_version_id FROM fileversion WHERE file_id= %s and file_version=(SELECT MAX(file_version) FROM fileversion WHERE file_id=%s)", (str(file_id),str(file_id)))
+    # data = cur.fetchone()
+    # print(data[0])
+    # cur.close()
+    # conn.close()
+    # return data[0]
+    latest_file_version = Fileversion.objects.filter(file_id=file_id).aggregate(Max('file_version'))
+    file_version_id = Fileversion.objects.filter(file_id=file_id, file_version=latest_file_version['file_version__max']).values_list('file_version_id', flat=True).first()
+    return file_version_id
 
 ## uploading the file parts to the file servers
 def filepartsupload(filelist, keylist, fileid, fileversion):
@@ -323,9 +327,9 @@ def getCurrentFileversion(file_id):
     # cur.close()
     # conn.close()
     # return data[0]
-    file = Fileversion.objects.filter(file_id=file_id).values('file_version_id')
-    data = file[0]['file_version_id']
-    return data
+    latest_file_version = Fileversion.objects.filter(file_id=file_id).aggregate(Max('file_version'))
+    file_version_id = Fileversion.objects.filter(file_id=file_id, file_version=latest_file_version['file_version__max']).values_list('file_version_id', flat=True).first()
+    return file_version_id
 
 ## get file info 
 def getfileinfo(file_id):

@@ -67,7 +67,7 @@ urlpatterns = [
 
     ######### functions to view file and folder info ##########
         # url to retrieve list of files under the client
-    path('api/client/file/<int:client_id>', getallClientfiles.as_view(), name='client-file'),
+    path('api/client/file/<int:client_id>', getallClientfiles, name='client-file'),
 
         # view file info -requires file_id
     path('api/client/file/info/<uuid:pk>', fileview.as_view(), name = 'file-view'),
@@ -130,6 +130,9 @@ urlpatterns = [
         ## get total number of shares for admin
     path('api/admin/total/share', getsharedForAd),
         #######################################################################
+
+    path('api/<uuid:fileId>', testingfas),
+    path('api/t/<uuid:file_id>', get_latest_file_version),
         #######################################################################
    
    #Users
