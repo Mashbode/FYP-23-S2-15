@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework import generics, viewsets
 from .serializers import *
 from .models import *
-from django.db.models import Sum
+from django.db.models import Sum, Max
 #####################
 from rest_framework.decorators import api_view, APIView
 from rest_framework.response import Response
@@ -13,6 +13,7 @@ from django.http import HttpResponse, JsonResponse
 from django.core.files import File
 from .forms import  testForm
 from .response import filenotUrsResponse
+
 
 #USERS
 # Create your views here.
@@ -341,10 +342,15 @@ class getFileversions(generics.ListAPIView):
     def get_queryset(self):
         return Fileversion.objects.filter(file_id=self.kwargs['file_id'])
 ###  getting all the files that are under the user
-class getallClientfiles(generics.ListAPIView):
-    serializer_class =FileSerializer
-    def get_queryset(self):
-        return Filetable.objects.filter(client_id=self.kwargs['client_id'])
+# class getallClientfiles(generics.ListAPIView):
+#     serializer_class =FileSerializer
+#     def get_queryset(self):
+#         return Filetable.objects.filter(client_id=self.kwargs['client_id'])
+
+def getallClientfiles(request, client_id):
+    test = Filetable.objects.filter(client_id=client_id).values('file_id', 'filename','filetype', 'filesize', 'last_change', 'uploadtime', 'client__u_id__f_name', 'client__u_id__l_name')
+    data = {'result': list(test)}
+    return JsonResponse(data)
 ##########################################################################    
 
 ### getting all the folders of a user 
@@ -1216,3 +1222,29 @@ def getsharedForAd(request):
     data = {'result':count.count()}
     return  JsonResponse(data)
 ##testing
+
+def testingfas(request, fileId):
+    # get = Fileversion.objects.filter(file_id=fileId).values('file_version_id').aggregate(Max('file_version'))
+    # to = get.aggregate(Max('file_version'))
+    max_value = Fileversion.objects.aggregate(Max('file_version'))
+    print(max_value[0]['file_version'])
+    get = Fileversion.objects.filter(file_version=max_value, file_id=fileId).order_by('-id').first()
+    print(get)
+    return HttpResponse('oh')
+
+from django.db.models import Max
+
+def get_latest_file_version(request,file_id):
+    try:
+        latest_file_version = Fileversion.objects.filter(file_id=file_id).aggregate(Max('file_version'))
+        file_version_id = Fileversion.objects.filter(file_id=file_id, file_version=latest_file_version['file_version__max']).values_list('file_version_id', flat=True).first()
+        print(file_version_id)
+        if file_version_id is not None:
+            # Process the file_version_id as needed
+            return HttpResponse('not')
+        else:
+            # Handle the case when no result is found
+            return HttpResponse('no')
+    except Fileversion.DoesNotExist:
+        # Handle the case when no result is found
+        return HttpResponse('oh')
