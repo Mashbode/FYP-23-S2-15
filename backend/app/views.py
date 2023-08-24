@@ -388,7 +388,7 @@ def getfilesharedtoClient(request, client_id):
     # client_id". The values() method is used to specify the fields that should be included in the
     # result set. The fields being selected are 'file', 'create_time', 'client', 'permission_type',
     # 'file__filename', and 'file__filetype'.
-    test = Sharedfileaccess.objects.filter(shared_client_id = client_id).values('file',  'create_time', 'client', 'permission_type', 'file__filename', 'file__filetype', 'client__u_id__f_name', 'client__u_id__l_name', 'share_id')
+    test = Sharedfileaccess.objects.filter(shared_client_id = client_id).values('file',  'create_time', 'client', 'permission_type', 'file__filename', 'file__filetype', 'client__u_id__f_name', 'client__u_id__l_name', 'client__u_id__email', 'share_id')
     data ={'results': list(test)}
     return JsonResponse(data)
 
