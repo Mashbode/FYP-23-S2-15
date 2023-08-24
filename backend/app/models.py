@@ -350,7 +350,6 @@ class Sharedfileaccess(models.Model):
     shared_client_id = models.IntegerField(blank=True, null=True)
     create_time = models.DateTimeField(auto_now_add=True)
     shared_client_name = models.CharField(max_length=50)
-    shared_client_email = models.CharField(max_length=50)
 
     class Meta:
         managed = False
