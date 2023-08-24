@@ -15,15 +15,15 @@ import { Link } from "react-router-dom";
 import React, { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import {
-  collection,
-  getDocs,
-  query,
-  where,
+  // collection,
+  // getDocs,
+  // query,
+  // where,
   doc,
   deleteDoc,
-  onSnapshot,
+  // onSnapshot,
 } from "firebase/firestore";
-import { db, auth } from "../../firebase";
+import { db } from "../../firebase";
 import {
   userColumns,
   fileColumns,
@@ -31,7 +31,7 @@ import {
   trashColumns,
   enquiryColumns,
 } from "../../datatablesource";
-import { getStorage, ref, deleteObject } from "firebase/storage";
+// import { getStorage, ref, deleteObject } from "firebase/storage";
 import { ThreeDots } from "react-loader-spinner"; // npm install react-loader-spinner --save
 import instance from "../../axios_config";
 
@@ -39,13 +39,14 @@ import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
+// import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { useDropzone } from 'react-dropzone'; // npm install --save react-dropzone
 
 import Menu from '@mui/material/Menu'; // npm install @mui/material
 import MenuItem from '@mui/material/MenuItem';
 import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';  // npm install material-ui-popup-state
+// import { WindowSharp } from "@mui/icons-material";
 
 // Pass type prop if u want to apply it to both users & products
 const Datatable = ({ type }) => {
@@ -58,9 +59,9 @@ const Datatable = ({ type }) => {
   const [clientID, setClientID] = useState(""); // get client id
 
   //**************************************SUPERADMIN STUFF************************************** */
-  const [adminID, setAdminID] = useState(""); // get admin id
+  // const [adminID, setAdminID] = useState(""); // get admin id
   const [ usertype, setUsertype ] = useState(""); // get usertype
-  const [ totalUsers, getTotalUsers ] = useState();
+  // const [ totalUsers, getTotalUsers ] = useState();
 
   //******************************************************************************************** */
 
@@ -119,11 +120,22 @@ const Datatable = ({ type }) => {
     try {
       console.log(params.row.id);
 
-      toast.loading(`${params.row.fileName} downloading`);
+      // toast.loading(`${params.row.fileName} downloading`);
 
       const response = await instance.get(`retrievefile/${params.row.id}`, {
         responseType: "blob", // Important for handling binary data
       });
+
+      console.log("Response downloading: ", response.data);
+
+      // error catching for download
+      if (response.data === "file data not in file server") {
+        toast.error("file data not in file server, contact admin!");
+        return("file data not in file server, contact admin!")
+      } else if (response.data === "file download error") {
+        toast.error("file download error, contact admin!");
+        return("File download error, contact admin!")
+      }
 
       // Create a URL object from the blob data
       const url = window.URL.createObjectURL(new Blob([response.data]));
@@ -138,9 +150,10 @@ const Datatable = ({ type }) => {
       // Clean up the URL and anchor
       window.URL.revokeObjectURL(url);
       document.body.removeChild(link);
+      toast.success(`${params.row.fileName} downloaded successfully!`);
     } catch (error) {
-      toast.error("Failed to download, please contact admin");
       console.error("Error downloading file: ", error);
+      throw new Error("Failed to download, please contact admin");
     }
   };
   // *********************************************************************************************************************************
@@ -157,17 +170,18 @@ const Datatable = ({ type }) => {
 
       if (response.data === "yes") {
         // Email registrant exists
-        toast.success(`${params.row.fileName} shared successfully`);
+        toast.success(`${params.row.fileName} shared successfully to ${email}`);
+        return;
       } else if (response.data === "no") {
         // Email registrant does not exist
-        toast.error(`Registrant wih "${email}" does not exist`);
+        toast.error(`Registrant with "${email}" does not exist`);
       }
 
       console.log(params.row.id); // fileID to share
-
     
     } catch (error) {
       console.log("Error sharing file: ", error);
+      toast.error(`Error sharing "${params.row.fileName}" with "${email}", contact admin!`)
     }
   };
   // **********************File unshare (remove file shared to you)*********************
@@ -178,7 +192,7 @@ const Datatable = ({ type }) => {
       );
       console.log("Response from delete shared file: ", response);
       // reload shared file table
-      toast.info(`${params.row.fileName} no longer shared`)
+      toast.success(`${params.row.fileName} no longer shared`)
       setTimeout(() => {
          load_shared_files(); 
       }, 2000);
@@ -224,6 +238,7 @@ const Datatable = ({ type }) => {
     try {
       // update file_id's content with the newest file
       const response = await instance.post(`fileupdate/${params.row.id}`, formData);
+
       // Handle response
       console.log("Response:", response.data);
       if (response.data === "file ok") {
@@ -244,26 +259,32 @@ const Datatable = ({ type }) => {
   // **************************file deletion****************************
   const handleFileDelete = async (params) => {
     try {
-      // url for deleting file requires field_id and client_id
-      const response = await instance.get(
-        `fileDelete/${params.row.id}/${params.row.userName}`
-      );
+      if(window.confirm("Are you sure you want to delete this file?")) {
+        // url for deleting file requires field_id and client_id
+        const response = await instance.get(
+          `fileDelete/${params.row.id}/${params.row.userName}`
+        );
 
-      // check response of Delete request from django
-      console.log("Deletion Response: ", response.data);
-      if (response.data.status === "success") {
-        toast.success(`${params.row.fileName} deleted successfully`);
-        // Perform any other necessary actions after successful deletion.
-        setTimeout(() => {
+        // check response of Delete request from django
+        console.log("Deletion Response: ", response.data);
+        if (response.data.status === "success") {
           load_all_data();
-        }, 2000);
-      } else {
-        toast.error(`${params.row.fileName} deletion failed`);
-        // Handle the error case appropriately.
-      }
+          // Perform any other necessary actions after successful deletion.
+          setTimeout(() => {
+            toast.success(`${params.row.fileName} deleted successfully`);
+          }, 1000);
+        } else {
+          toast.error(`${params.row.fileName} deletion failed`);
+          // Handle the error case appropriately.
+          throw new Error ("Deletion failed, try again");
+        }
+      } 
     } catch (error) {
       console.log("Error deleting file: ", error);
+      throw new Error("Deletion failed, contact admin");
     }
+
+    
   };
 
   // ******************************file restore*******************************
@@ -273,8 +294,10 @@ const Datatable = ({ type }) => {
       const response = await instance.get(`filerestore/${params.row.id}`);
       console.log("File Restore response: ", response.data);
       if (response.data === "restored") {
-        toast.success(`${params.row.fileName} restored successfully`);
         load_trashed_files();
+        setTimeout(() => {
+          toast.success(`${params.row.fileName} restored successfully`);
+         }, 1000);
       } else {
         toast.error(`${params.row.fileName} failed restoring`);
         setSelectedFile([]);
@@ -294,12 +317,14 @@ const Datatable = ({ type }) => {
         console.log("File Log Deletion: ", response.data);
         if (response.data.result === "All gone") {
           console.log("File Log Delete: ", response.data.result);
-          toast.success(`${params.row.fileName} deleted successfully`);
+          load_trashed_files();
+
           setTimeout(() => {
-            load_trashed_files();
-          }, 2000);
+            toast.success(`${params.row.fileName} deleted successfully`);            
+          }, 1000);
         } else {
-          toast.error("Delete unsuccessful");
+          // throw new Error(`${params.row.fileName} deletion failed, try again!}`)
+          toast.error(`${params.row.fileName} deletion failed, try again!}`);
         }
       } else {
         return;
@@ -347,16 +372,23 @@ const getFileVersion = async (params) => {
 
 
   // fileversion from versionList.map(), params from setCurrentParams
-  const handleFileVerDownload = async (file_version, params) => {
+  const handleFileVerDownload = async (file_ver_num ,file_version, params) => {
     // Implement your file download logic here
     try {
       console.log(params.row.id);
 
-      toast.loading(`${params.row.id} version ${file_version} downloading`);
+      // toast.loading(`${params.row.id} version ${file_version} downloading`);
       // download chosen file version 
       const response = await instance.get(`retrieveFile/version/${params.row.id}/${file_version}`, {
         responseType: "blob", // Important for handling binary data
       });
+
+      // error catching for download
+      if (response.data === "file data no in file server") {
+        toast.error("file data no in file server, contact admin!");
+      } else if (response.data === "file download error") {
+        toast.error("File download error, contact admin!");
+      }
 
       // Create a URL object from the blob data
       const url = window.URL.createObjectURL(new Blob([response.data]));
@@ -371,9 +403,11 @@ const getFileVersion = async (params) => {
       // Clean up the URL and anchor
       window.URL.revokeObjectURL(url);
       document.body.removeChild(link);
+
+      toast.success(`Version ${file_ver_num} downloaded successfully!`);
     } catch (error) {
-      toast.error("Failed to download, please contact admin");
       console.error("Error downloading file: ", error);
+      throw new Error("Failed to download, please contact admin"); // toast error message
     }
     console.log(`Downloading version ${file_version} of ${params.row.id} check`);
     // Add your file download logic here
@@ -416,7 +450,14 @@ const getFileVersion = async (params) => {
           <div className="cellAction">
             <div
               className="actionButton"
-              onClick={() => handleFileDownload(params)}
+              onClick={() => toast.promise(
+                handleFileDownload(params),
+                {
+                  loading: 'Downloading...',
+                  // success: <b>{`${params.row.fileName} downloaded successfully!`}</b>,
+                  error: <b>{`Error downloading ${params.row.fileName}`}</b>,
+                }
+              )}
             >
               Download
             </div>
@@ -445,7 +486,17 @@ const getFileVersion = async (params) => {
                   </div>
                 </DialogContent>
                 <DialogActions>
-                  <Button onClick={() => handleFileUpdate(currentParams)}>Update</Button>
+                  <Button onClick={() => toast.promise(
+                        handleFileUpdate(currentParams),
+                        {
+                          loading: 'Updating...',
+                          //success: <b>{`${params.row.fileName} downloaded successfully!`}</b>,
+                          error: <b>{`Error updating ${currentParams.row.fileName}`}</b>,
+                        }
+                      )
+                    }
+                  >
+                    Update</Button>
                   <Button onClick={handleClose}>Cancel</Button>
                 </DialogActions>
               </Dialog>
@@ -484,7 +535,14 @@ const getFileVersion = async (params) => {
                           onClick={() => {
                             // Trigger handleFileVerDownload for non-default options
                             if (index !== -1) {
-                              handleFileVerDownload(item.file_version_id, currentParams);
+                              toast.promise(
+                                handleFileVerDownload(item.file_version ,item.file_version_id, currentParams),
+                                {
+                                  loading: 'Downloading version...',
+                                  //success: <b>{`${params.row.fileName} downloaded successfully!`}</b>,
+                                  error: <b>{`Error downloading ${item.file_version}`}</b>,
+                                }
+                              );
                             }
                             popupState.close();
                           }}
@@ -507,30 +565,39 @@ const getFileVersion = async (params) => {
                 </React.Fragment>
               )}
             </PopupState>
-
-
-
-            {/* <PopupState variant="popover" popupId="demo-popup-menu">
-              {(popupState) => (
-                <React.Fragment>
-                  <div className="actionButton" {...bindTrigger({popupState, onClick: ()=>{getFileVersion(params);}})}>
-                    Versions
-                  </div>
-                  <Menu {...bindMenu(popupState)}>
-                    <MenuItem onClick={() => {handleFileDownload(params); popupState.close();}}>Ver1</MenuItem>
-                    <MenuItem onClick={popupState.close}>Ver2</MenuItem>
-                    <MenuItem onClick={popupState.close}>Ver3</MenuItem>
-                  </Menu>
-                </React.Fragment>
-              )}
-            </PopupState> */}
-
             <div
               className="deleteButton"
-              onClick={() => handleFileDelete(params)}
+              onClick={() => toast.promise(
+                handleFileDelete(params),
+                {
+                  loading: 'Deleting...',
+                  // success: <b>{`${params.row.fileName} deleted successfully`}</b>,
+                  error: <b>{`Error deleting ${params.row.fileName}, try again!`}</b>,
+                }
+              )}
             >
               Delete
             </div>
+            {/* <div>
+              <div className="deleteButton" onClick={() => handleClickOpen(params)}>
+                Delete
+              </div>
+              {open && <div className="overlay" />}
+              <Dialog open={open} onClose={handleClose}>
+                <DialogTitle>Confirm Delete</DialogTitle>
+                <DialogContent>
+                  <DialogContentText>Are you sure you want to delete the file?</DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={() => handleFileDelete(params)} color="secondary">
+                    Delete
+                  </Button>
+                  <Button onClick={handleClose} color="primary">
+                    Cancel
+                  </Button>
+                </DialogActions>
+              </Dialog>
+            </div> */}
           </div>
         );
       },
@@ -547,7 +614,14 @@ const getFileVersion = async (params) => {
           <div className="cellAction">
             <div
               className="actionButton"
-              onClick={() => handleFileDownload(params)}
+              onClick={() => toast.promise(
+                handleFileDownload(params),
+                {
+                  loading: 'Downloading...',
+                  //success: <b>{`${params.row.fileName} downloaded successfully!`}</b>,
+                  error: <b>{`Error downloading ${params.row.fileName}`}</b>,
+                }
+              )}
             >
               Download
             </div>
@@ -573,13 +647,28 @@ const getFileVersion = async (params) => {
           <div className="cellAction">
             <div
               className="shareButton"
-              onClick={() => handleFileRestore(params)}
+              onClick={() => toast.promise(
+                  handleFileRestore(params),
+                  {
+                    loading: 'Restoring...',
+                    //success: <b>{`${params.row.fileName} downloaded successfully!`}</b>,
+                    error: <b>{`Error Restoring ${params.row.fileName}, contact admin!`}</b>,
+                  }
+                )
+              }
             >
               Restore
             </div>
             <div
               className="deleteButton"
-              onClick={() => handleFileDeleteForever(params)}
+              onClick={() => toast.promise(
+                handleFileDeleteForever(params),
+                {
+                  loading: 'Deleting...',
+                  // success: <b>{`${params.row.fileName} deleted successfully!`}</b>,
+                  error: <b>{`${params.row.fileName}deletion unsuccessful, contact admin!`}</b>,
+                }
+              )}
             >
               Delete permanently
             </div>
@@ -606,12 +695,12 @@ const getFileVersion = async (params) => {
             >
               Delete
             </div>
-            <div
+            {/* <div
               className="actionButton"
               onClick={() => handleFileUnshare(params)}
             >
               Unshare
-            </div>
+            </div> */}
           </div>
         );
       },
@@ -700,14 +789,13 @@ const getFileVersion = async (params) => {
       instance
         .get(`client/file/${clientID}`) // retrieve list of files under client_id
         .then((response) => {
-          console.log(response.data);
-
-          const data = response.data; // Assuming the response contains the data you provided
+          console.log("Response result: ",response.data.result);
+          const data = response.data.result; // Assuming the response contains the data you provided
 
           const data_list = data.map((entry) => ({
             id: entry.file_id,
-            fileName: entry.filename,
-            userName: entry.client,
+            fileName: `${entry.filename}${entry.filetype}`,
+            userName: `${entry.client__u_id__f_name} ${entry.client__u_id__l_name}`,
             timeStamp: entry.last_change,
             fileSize: entry.filesize,
             fileType: entry.filetype, // for download file insert extension type
@@ -722,7 +810,7 @@ const getFileVersion = async (params) => {
           );
         })
         .catch((err) => {
-          console.log(err);
+          console.log("Error getting client files: ",err);
         });
     }
   };
@@ -742,7 +830,7 @@ const getFileVersion = async (params) => {
 
         const shared_list = sharedData.map((entry) => ({
           id: entry.file,
-          fileName: entry.file__filename,
+          fileName: `${entry.file__filename}${entry.file__filetype}`,
           userName: `${entry.client__u_id__f_name} ${entry.client__u_id__l_name}`,
           timeStamp: entry.create_time,
           fileType: entry.file__filetype, // for download file insert extension type
@@ -750,7 +838,6 @@ const getFileVersion = async (params) => {
         }));
         console.log("Shared_list: ", shared_list);
         setData(shared_list);
-        // console.log("Dadelete`ta: ", data); it wont load in immediately
         setLoading(false);
         console.log(
           "Shared table retrieved list of files under client",
@@ -812,12 +899,35 @@ const getFileVersion = async (params) => {
           phone: entry.phone_number
         }));
         setData(activeUsers_list)
-        getTotalUsers(res.data.length);
+        // getTotalUsers(res.data.length);
         setLoading(false);
       })
       .catch((err)=>{
         console.log("Error getting all users: ", err);
       })
+  }
+
+  const load_all_enquires = () => {
+    setLoading(true);
+    console.log("page type:", type);
+    instance.get(`admin/enq/list`)
+    .then((res) => {
+      console.log("enquires response: ", res.data);
+      let enquires_List = res?.data || [];
+
+      const enquireList = enquires_List.map((entry) => ({
+        id: entry.enquiries_id,
+        enquireTitle: entry.topic,
+        text: entry.text,
+        email: entry.email,
+        timeStamp: entry.time
+      }));
+      setData(enquireList);
+      setLoading(false);
+    })
+    .catch((err) => {
+      console.log("Error loading enquires: ", err);
+    })
   }
 
   useEffect(() => {
@@ -831,6 +941,7 @@ const getFileVersion = async (params) => {
           load_all_data();
           break;
         case "enquiries":
+          load_all_enquires();
           break;
         default:
           break;
@@ -856,13 +967,14 @@ const getFileVersion = async (params) => {
           break;
       }
     }
-    
+    // eslint-disable-next-line
   }, [clientID, usertype, type]);
 
 
 
   // uploading file
   const handleFileUpload = async (file) => {
+    
     if (!clientID) {
       console.log("Client ID not available: ", clientID);
       return;
@@ -874,21 +986,35 @@ const getFileVersion = async (params) => {
     try {
       const response = await instance.post(`fileupload/${clientID}`, formData);
       console.log("Response: ", response.data);
-
-      load_all_data();
+      // error catching
+      if(response.data === "file ok") {
+        load_all_data();
+        setTimeout(() => {
+          toast.success("Successfully uploaded!");
+        }, 500); 
+      } else if (response.data.result === "upload failed, please try again") {
+        toast.error("Fail to upload try again!");
+      }
     } catch (error) {
       console.error("Error uploading file: ", error.response);
     }
   };
 
   // upload file
-  const handleUploadFile = async () => {
+// upload file
+  const handleUploadFiles = async () => {
     const input = document.createElement('input');
     input.type = 'file';
     input.onchange = (event) => {
       const selectedFile = event.target.files[0];
       if (selectedFile) {
-        handleFileUpload(selectedFile);
+        toast.promise(
+            handleFileUpload(selectedFile),
+            {
+              loading: 'Uploading...',
+              error: <b>Could not upload, try again!</b>,
+            }
+          );
       }
     };
     input.click();    
@@ -902,19 +1028,21 @@ const getFileVersion = async (params) => {
         <GridToolbarDensitySelector />
         <GridToolbarExport />
         {/* Upload button */}
-        <div>
-        <button
-          class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeSmall MuiButton-textSizeSmall MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeSmall MuiButton-textSizeSmall css-1knaqv7-MuiButtonBase-root-MuiButton-root"
-          onClick={handleUploadFile}
-          disabled={isLoading}
-        >
-          <span class="MuiButton-startIcon MuiButton-iconSizeSmall css-y6rp3m-MuiButton-startIcon">
-            <FileUploadIcon />
-          </span>
-          Upload File
-        </button>
-        {isLoading && <div>Loading...</div>}
-        </div>
+        {usertype === "Admin" ? ("") : (
+          <div>
+          <button
+            class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeSmall MuiButton-textSizeSmall MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeSmall MuiButton-textSizeSmall css-1knaqv7-MuiButtonBase-root-MuiButton-root"
+            onClick={handleUploadFiles}
+            disabled={isLoading}
+          >
+            <span class="MuiButton-startIcon MuiButton-iconSizeSmall css-y6rp3m-MuiButton-startIcon">
+              <FileUploadIcon />
+            </span>
+            Upload File
+          </button>
+          {isLoading && <div>Loading...</div>}
+          </div>
+        )}
       </GridToolbarContainer>
     );
   };
@@ -937,7 +1065,7 @@ const getFileVersion = async (params) => {
     return (
       <div className="datatable">
         {/* https://react-hot-toast.com/ */}
-        <Toaster toastOptions={{ duration: 3000 }} />
+        <Toaster />
         <div className="datatableTitle">
           {/* Title of the datatable = Type with the first letter changed to upper case */}
           {type.replace(/^./, type[0].toUpperCase())}
@@ -958,8 +1086,10 @@ const getFileVersion = async (params) => {
               paginationModel: { page: 0, pageSize: 25 },
             },
           }}
+
           pageSizeOptions={[25, 50, 100]}
-          checkboxSelection
+          autoHeight
+          // checkboxSelection
         />
       </div>
     );
