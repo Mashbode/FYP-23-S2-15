@@ -396,7 +396,7 @@ def getfilesharedtoClient(request, client_id):
 # ## client_id in parameters is client that shared the file
 # ## shared_client_id in sharedfileaccess table is the client who receives the shared file
 def getfilesThatClientShared(request, client_id):
-    test = Sharedfileaccess.objects.filter(client=client_id).values('file',  'create_time','shared_client_id', 'permission_type', 'file__filename', 'file__filetype')
+    test = Sharedfileaccess.objects.filter(client=client_id).values('file',  'create_time','shared_client_id', 'permission_type', 'file__filename', 'file__filetype', 'shared_client_name', 'shared_client_email')
     data = {'results' : list(test)}
     return JsonResponse(data)
 
@@ -447,7 +447,7 @@ class sharefileView(APIView):
             ## get filename
             files = Filetable.objects.filter(file_id=fileId).values("filename")
             ## add into sharedFileAccess 
-            create = Sharedfileaccess(file_id=fileId,client_id= clientId, shared_client_id = gettor[0]['client_id'], shared_client_name=name)
+            create = Sharedfileaccess(file_id=fileId,client_id= clientId, shared_client_id = gettor[0]['client_id'], shared_client_name=name, shared_client_email=email)
             create.save()
             return HttpResponse('yes')
         else:
