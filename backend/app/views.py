@@ -396,7 +396,7 @@ def getfilesharedtoClient(request, client_id):
 # ## client_id in parameters is client that shared the file
 # ## shared_client_id in sharedfileaccess table is the client who receives the shared file
 def getfilesThatClientShared(request, client_id):
-    test = Sharedfileaccess.objects.filter(client=client_id).values('file',  'create_time','shared_client_id', 'permission_type', 'file__filename', 'file__filetype', 'shared_client_name', 'shared_client_email')
+    test = Sharedfileaccess.objects.filter(client=client_id).values('file',  'create_time','shared_client_id', 'permission_type', 'file__filename', 'file__filetype', 'shared_client_name', 'shared_client_email', 'share_id')
     data = {'results' : list(test)}
     return JsonResponse(data)
 
