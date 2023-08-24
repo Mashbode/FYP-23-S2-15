@@ -28,6 +28,7 @@ import {
   userColumns,
   fileColumns,
   sharedColumns,
+  sharingColumns,
   trashColumns,
   enquiryColumns,
 } from "../../datatablesource";
@@ -118,11 +119,11 @@ const Datatable = ({ type }) => {
   // *****************************file download********************************
   const handleFileDownload = async (params) => {
     try {
-      console.log(params.row.id);
+      console.log(params.row.file_ID);
 
       // toast.loading(`${params.row.fileName} downloading`);
 
-      const response = await instance.get(`retrievefile/${params.row.id}`, {
+      const response = await instance.get(`retrievefile/${params.row.file_ID}`, {
         responseType: "blob", // Important for handling binary data
       });
 
@@ -143,7 +144,7 @@ const Datatable = ({ type }) => {
       // Create a temporary anchor element to initiate the download
       const link = document.createElement("a");
       link.href = url;
-      link.download = `${params.row.fileName}${params.row.fileType}`; // Set the filename and extension for download
+      link.download = `${params.row.fileName}`; // Set the filename and extension for download
       document.body.appendChild(link);
       link.click();
 
@@ -164,7 +165,7 @@ const Datatable = ({ type }) => {
       var email = prompt("Please enter a user's email to share");
 
       const response = await instance.post(
-        `fileshare/${email}/${params.row.id}/${params.row.userName}`
+        `fileshare/${email}/${params.row.file_ID}/${params.row.client_ID}`
       );
       console.log("File Share response: ", response.data);
 
@@ -177,7 +178,7 @@ const Datatable = ({ type }) => {
         toast.error(`Registrant with "${email}" does not exist`);
       }
 
-      console.log(params.row.id); // fileID to share
+      console.log(params.row.file_ID); // fileID to share
     
     } catch (error) {
       console.log("Error sharing file: ", error);
@@ -198,6 +199,22 @@ const Datatable = ({ type }) => {
       }, 2000);
     } catch (error) {
       console.log("Error deleting shared file: ", error);
+    }
+  };  
+
+  const handleFileUnsharing = async (params) => {
+    try {
+      const response = await instance.delete(
+        `SharedFileAccess/${params.row.share_id}`
+      );
+      console.log("Response from delete sharing file: ", response);
+      // reload shared file table
+      toast.success(`${params.row.fileName} no longer shared`)
+      setTimeout(() => {
+         load_sharing_files(); 
+      }, 2000);
+    } catch (error) {
+      console.log("Error deleting sharing file: ", error);
     }
   };
 
@@ -230,14 +247,14 @@ const Datatable = ({ type }) => {
   //********************************* file update **********************************
   const handleFileUpdate = async (params) => {
     setOpen(false); // close dialog after pressing update
-    console.log("file_id: ", params.row.id);
+    console.log("file_id: ", params.row.file_ID);
 
     const formData = new FormData();
     formData.append('file', selectedFile);
 
     try {
       // update file_id's content with the newest file
-      const response = await instance.post(`fileupdate/${params.row.id}`, formData);
+      const response = await instance.post(`fileupdate/${params.row.file_ID}`, formData);
 
       // Handle response
       console.log("Response:", response.data);
@@ -262,7 +279,7 @@ const Datatable = ({ type }) => {
       if(window.confirm("Are you sure you want to delete this file?")) {
         // url for deleting file requires field_id and client_id
         const response = await instance.get(
-          `fileDelete/${params.row.id}/${params.row.userName}`
+          `fileDelete/${params.row.file_ID}/${params.row.client_ID}`
         );
 
         // check response of Delete request from django
@@ -291,7 +308,7 @@ const Datatable = ({ type }) => {
   const handleFileRestore = async (params) => {
     try {
       // url for restoring a deleted file
-      const response = await instance.get(`filerestore/${params.row.id}`);
+      const response = await instance.get(`filerestore/${params.row.file_ID}`);
       console.log("File Restore response: ", response.data);
       if (response.data === "restored") {
         load_trashed_files();
@@ -313,7 +330,7 @@ const Datatable = ({ type }) => {
     try {
       if (window.confirm("Are you sure to delete the file?")) {
         // URL for deleting file from logs (for deleting file from trashbin)
-        const response = await instance.post(`filelog/delete/${params.row.id}`);
+        const response = await instance.post(`filelog/delete/${params.row.file_ID}`);
         console.log("File Log Deletion: ", response.data);
         if (response.data.result === "All gone") {
           console.log("File Log Delete: ", response.data.result);
@@ -352,8 +369,8 @@ const getFileVersion = async (params) => {
   setCurrentParams(params);
 
   try {
-    const response = await instance.get(`file/versions/${params.row.id}`);
-    console.log(`FILE VERSIONS LIST of ${params.row.id}`, response?.data[1]);
+    const response = await instance.get(`file/versions/${params.row.file_ID}`);
+    console.log(`FILE VERSIONS LIST of ${params.row.file_ID}`, response?.data[1]);
 
     const data = response.data; // Assuming the response contains the data you provided
     const data_list = data.map((entry) => ({
@@ -372,14 +389,14 @@ const getFileVersion = async (params) => {
 
 
   // fileversion from versionList.map(), params from setCurrentParams
-  const handleFileVerDownload = async (file_ver_num ,file_version, params) => {
+  const handleFileVerDownload = async (file_ver_num ,file_version, lastUploaded, params) => {
     // Implement your file download logic here
     try {
-      console.log(params.row.id);
+      console.log(params.row.file_ID);
 
-      // toast.loading(`${params.row.id} version ${file_version} downloading`);
+      // toast.loading(`${params.row.file_ID} version ${file_version} downloading`);
       // download chosen file version 
-      const response = await instance.get(`retrieveFile/version/${params.row.id}/${file_version}`, {
+      const response = await instance.get(`retrieveFile/version/${params.row.file_ID}/${file_version}`, {
         responseType: "blob", // Important for handling binary data
       });
 
@@ -396,7 +413,18 @@ const getFileVersion = async (params) => {
       // Create a temporary anchor element to initiate the download
       const link = document.createElement("a");
       link.href = url;
-      link.download = `${params.row.fileName}${params.row.fileType}`; // Set the filename and extension for download
+      let uploadDate = new Date(lastUploaded)
+      .toLocaleString('en-US', { 
+          year: 'numeric', 
+          month: 'long', 
+          day: 'numeric', 
+          hour: '2-digit', 
+          minute: '2-digit', 
+          second: '2-digit', 
+          hour12: false 
+      });
+      // link.download = `${params.row.fileName}`; // Set the filename and extension for download
+      link.download =  `${params.row.justFileName}_ver${file_ver_num}_${uploadDate}${params.row.fileType}`
       document.body.appendChild(link);
       link.click();
 
@@ -409,7 +437,7 @@ const getFileVersion = async (params) => {
       console.error("Error downloading file: ", error);
       throw new Error("Failed to download, please contact admin"); // toast error message
     }
-    console.log(`Downloading version ${file_version} of ${params.row.id} check`);
+    console.log(`Downloading version ${file_version} of ${params.row.file_ID} check`);
     // Add your file download logic here
   };
 
@@ -429,7 +457,7 @@ const getFileVersion = async (params) => {
           <div className="cellAction">
             <div
               className="deleteButton"
-              onClick={() => handleUserDelete(params.row.id)}
+              onClick={() => handleUserDelete(params.row.file_ID)}
             >
               Delete
             </div>
@@ -503,14 +531,15 @@ const getFileVersion = async (params) => {
             </div>
 
             {/* FILE VERSION BUTTON  */}
-            <PopupState variant="popover" popupId={`demo-popup-menu`}>
+            <PopupState variant="popover" popupId={`demo-popup-menu`} >
               {(popupState) => (
                 <React.Fragment>
                   <div className="versionButton" {...bindTrigger(popupState)}
-                                                onClick={async () => {
+                                                onClick={async (event) => {
+                                                  popupState.setAnchorEl(event.currentTarget); // impt for menu positioning
                                                   console.log("Versions button clicked");
                                                   setVersionList([]); // Reset the versionList to an empty array
-                                                  await getFileVersion(params);
+                                                  await getFileVersion(params);                                                  
                                                   popupState.open(); // this is causing the menu to appear bottom left
                                                 }}
                   >
@@ -536,7 +565,7 @@ const getFileVersion = async (params) => {
                             // Trigger handleFileVerDownload for non-default options
                             if (index !== -1) {
                               toast.promise(
-                                handleFileVerDownload(item.file_version ,item.file_version_id, currentParams),
+                                handleFileVerDownload(item.file_version ,item.file_version_id, item.last_change, currentParams),
                                 {
                                   loading: 'Downloading version...',
                                   //success: <b>{`${params.row.fileName} downloaded successfully!`}</b>,
@@ -635,6 +664,39 @@ const getFileVersion = async (params) => {
         );
       },
     },
+  ];  
+
+  const actionSharingColumns = [
+    {
+      field: "action",
+      headerName: "Action",
+      width: 200,
+      renderCell: (params) => {
+        return (
+          <div className="cellAction">
+            <div
+              className="actionButton"
+              onClick={() => toast.promise(
+                handleFileDownload(params),
+                {
+                  loading: 'Downloading...',
+                  //success: <b>{`${params.row.fileName} downloaded successfully!`}</b>,
+                  error: <b>{`Error downloading ${params.row.fileName}`}</b>,
+                }
+              )}
+            >
+              Download
+            </div>
+            <div
+              className="deleteButton"
+              onClick={() => handleFileUnsharing(params)}
+            >
+              Unshare
+            </div>
+          </div>
+        );
+      },
+    },
   ];
 
   const actionTrashColumns = [
@@ -691,7 +753,7 @@ const getFileVersion = async (params) => {
             </Link>
             <div
               className="deleteButton"
-              onClick={() => handleUserDelete(params.row.id)}
+              onClick={() => handleUserDelete(params.row.file_ID)}
             >
               Delete
             </div>
@@ -722,6 +784,10 @@ const getFileVersion = async (params) => {
     case "shared":
       columns = sharedColumns;
       actionColumn = actionSharedColumns;
+      break;
+    case "sharing":
+      columns = sharingColumns;
+      actionColumn = actionSharingColumns;
       break;
     case "trash":
       columns = trashColumns;
@@ -791,14 +857,17 @@ const getFileVersion = async (params) => {
         .then((response) => {
           console.log("Response result: ",response.data.result);
           const data = response.data.result; // Assuming the response contains the data you provided
-
+          let countID = 1;
           const data_list = data.map((entry) => ({
-            id: entry.file_id,
+            id: `${countID++}`, // filename
             fileName: `${entry.filename}${entry.filetype}`,
             userName: `${entry.client__u_id__f_name} ${entry.client__u_id__l_name}`,
             timeStamp: entry.last_change,
             fileSize: entry.filesize,
             fileType: entry.filetype, // for download file insert extension type
+            client_ID: entry.client,
+            file_ID: entry.file_id,
+            justFileName: entry.filename 
           }));
           console.log("Data_list: ", data_list);
           setData(data_list);
@@ -827,20 +896,58 @@ const getFileVersion = async (params) => {
         console.log("Share response: ", response.data);
 
         const sharedData = response.data.results; // Assuming the response contains the data you provided
-
+        let countID = 1;
         const shared_list = sharedData.map((entry) => ({
-          id: entry.file,
-          fileName: `${entry.file__filename}${entry.file__filetype}`,
+          id: `${countID++}`,
+          fileName: `${entry.file__filename}${entry.file__filetype}`, // file name
           userName: `${entry.client__u_id__f_name} ${entry.client__u_id__l_name}`,
+          email: entry.client__u_id__email,
           timeStamp: entry.create_time,
           fileType: entry.file__filetype, // for download file insert extension type
           share_id: entry.share_id, // for removing shared file
+          file_ID: entry.file // file id
         }));
         console.log("Shared_list: ", shared_list);
         setData(shared_list);
         setLoading(false);
         console.log(
           "Shared table retrieved list of files under client",
+          clientID
+        );
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };  
+  
+  
+  const load_sharing_files = () => {
+    setLoading(true);
+    console.log("Page type: ", type);
+    // load all the user's files
+    // let client_file_id_url = `client/file/${clientID}`
+    instance
+      .get(`sharedfile/toothers/${clientID}`) // retrieve files shared to client_id
+      .then((response) => {
+        console.log("Sharing response: ", response.data);
+
+        const sharedData = response.data.results; // Assuming the response contains the data you provided
+        let countID = 1;
+        const sharing_list = sharedData.map((entry) => ({
+          id: `${countID++}`,
+          fileName: `${entry.file__filename}${entry.file__filetype}`, // file name
+          userName: entry.shared_client_name,
+          email: entry.shared_client_email,
+          timeStamp: entry.create_time,
+          fileType: entry.file__filetype, // for download file insert extension type
+          share_id: entry.share_id, // for removing shared file
+          file_ID: entry.file // file id
+        }));
+        console.log("Sharing_list: ", sharing_list);
+        setData(sharing_list);
+        setLoading(false);
+        console.log(
+          "Sharing table retrieved list of files under client",
           clientID
         );
       })
@@ -858,10 +965,11 @@ const getFileVersion = async (params) => {
       .get(`client/deleted/fileLogs/${clientID}`)
       .then((response) => {
         let trashedFilesList = response?.data || [];
-
+        let countID = 1;
         const trashed_list = trashedFilesList.map((entry) => ({
-          id: entry.file_id,
-          fileName: entry.filename,
+          id: `${countID++}`,
+          fileName: `${entry.filename}${entry.filetype}`, // file name
+          file_ID: entry.file_id,
           userName: entry.client_id,
           timeStamp: entry.delete_time,
           fileSize: entry.filesize,
@@ -957,6 +1065,9 @@ const getFileVersion = async (params) => {
           break;
         case "shared":
           load_shared_files();
+          break;        
+        case "sharing":
+          load_sharing_files();
           break;
         case "trash":
           load_trashed_files();
@@ -1031,11 +1142,11 @@ const getFileVersion = async (params) => {
         {usertype === "Admin" ? ("") : (
           <div>
           <button
-            class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeSmall MuiButton-textSizeSmall MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeSmall MuiButton-textSizeSmall css-1knaqv7-MuiButtonBase-root-MuiButton-root"
+            className="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeSmall MuiButton-textSizeSmall MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeSmall MuiButton-textSizeSmall css-1knaqv7-MuiButtonBase-root-MuiButton-root"
             onClick={handleUploadFiles}
             disabled={isLoading}
           >
-            <span class="MuiButton-startIcon MuiButton-iconSizeSmall css-y6rp3m-MuiButton-startIcon">
+            <span className="MuiButton-startIcon MuiButton-iconSizeSmall css-y6rp3m-MuiButton-startIcon">
               <FileUploadIcon />
             </span>
             Upload File

@@ -2,20 +2,21 @@ import "./sidebar.scss";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
-import InsertChartIcon from "@mui/icons-material/InsertChart";
+import ShareIcon from '@mui/icons-material/Share';
+// import InsertChartIcon from "@mui/icons-material/InsertChart";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
-import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
-import SettingsSystemDaydreamOutlinedIcon from "@mui/icons-material/SettingsSystemDaydreamOutlined";
+// import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
+// import SettingsSystemDaydreamOutlinedIcon from "@mui/icons-material/SettingsSystemDaydreamOutlined";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
-import SupportAgentIcon from "@mui/icons-material/SupportAgent";
-import StorageIcon from "@mui/icons-material/Storage";
+// import SupportAgentIcon from "@mui/icons-material/SupportAgent";
+// import StorageIcon from "@mui/icons-material/Storage";
 import PeopleAltOutlinedIcon from "@mui/icons-material/PeopleAltOutlined";
 import DeleteIcon from "@mui/icons-material/Delete";
-import UploadFileIcon from "@mui/icons-material/UploadFile";
-import UpdateIcon from "@mui/icons-material/Update";
+// import UploadFileIcon from "@mui/icons-material/UploadFile";
+// import UpdateIcon from "@mui/icons-material/Update";
 import Box from "@mui/material/Box";
 import LinearProgress from "@mui/joy/LinearProgress";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
+// import { createTheme, ThemeProvider } from "@mui/material/styles";
 
 import { Link, useNavigate } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
@@ -26,9 +27,26 @@ import { AuthContext } from "../../context/AuthContext";
 import { doc, getDoc } from "firebase/firestore";
 import { db, auth } from "../../firebase";
 import { signOut } from "firebase/auth";
+import instance from "../../axios_config";
+
+import Logo from "../../img/logo2_capture-removebg.png";
+import AdminLogo from "../../img/admin_logo.png"
 
 const Sidebar = () => {
   const { currentUser } = useContext(AuthContext);
+  // const [ fileStorage_Limit, setFileStorageLimit] = useState(1000000000); // FREETIER 1000000000 1073741824
+  const fileStorage_Limit = 1000000000; // FREETIER 1000000000 1073741824
+  // const [ storageLeft, setStorageLeft ] = useState();
+  // const [converted_maxStorage_Admin, convert_StorageLimit_Admin] = useState();
+  const [ convert_storage_limit, convert_StorageLimit] = useState();
+  // const [ clientID, getClientID ] = useState();
+  const [ percentile_used, setPercentile_used ] = useState();
+  const [ amount, setAmount ] = useState(``);
+  const [admin, setAdmin] = useState();
+  const { dispatchDarkMode } = useContext(DarkModeContext);
+  const { dispatch } = useContext(AuthContext);
+
+  const navigate = useNavigate(); 
 
   // Run only once when the component is build
   useEffect(() => {
@@ -49,11 +67,61 @@ const Sidebar = () => {
     getUserType();
   }, [currentUser]);
 
-  const [admin, setAdmin] = useState();
-  const { dispatchDarkMode } = useContext(DarkModeContext);
-  const { dispatch } = useContext(AuthContext);
+  useEffect (() => {
+      const getTotalData = async () => {
+        if (admin === false) {
+          // GET CLIENT_ID FIRST
+          const cid = await instance.get(`client/getid/${currentUser.uid}`)
+          // getClientID(cid.data.client_id);
+          var client_id = cid.data.client_id;
+          console.log("Client ID: ", client_id);
 
-  const navigate = useNavigate();
+          const getClientStorageData = async () => {
+            const res = await instance.get(`client/filestorage/used/${client_id}`);
+            const total_files_stored = res.data.result.filesize__sum;
+            console.log("Total Files stored by client: ", total_files_stored);
+            
+            const percentile = (total_files_stored / fileStorage_Limit ) * 100; // By Default 1GB per user
+            setPercentile_used(parseFloat(percentile.toFixed(2)));
+            const storage_Left = fileStorage_Limit - total_files_stored;
+            console.log("Storage left in client: ", storage_Left);
+            return { total_files_stored };
+          };
+
+          // Function to convert bytes to human-readable sizes
+          const convertSize = (value) => {
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            let index = 0;
+            while (value >= 1000 && index < sizes.length - 1) {
+              value /= 1000;
+              index++;
+            }
+            if(value === null) {
+              return `${(0)}${sizes[index]}`;
+            }
+            return `${value.toFixed(2)}${sizes[index]}`;
+          };
+
+          // Fetch storage-related data
+          const { total_files_stored } = await getClientStorageData();
+
+          // Set converted storage amount and storage left
+          setAmount(convertSize(total_files_stored));
+          // setStorageLeft(convertSize(storage_Left));
+          convert_StorageLimit(convertSize(fileStorage_Limit));
+
+          // Fetch total number of files uploaded by client
+          const rs = await instance.get(`client/countfiles/${client_id}`);
+          const total_files = rs.data.result;
+          console.log("Total files in server: ", total_files);
+        }
+      }
+      getTotalData();
+  }, [admin, currentUser.uid, fileStorage_Limit])
+ 
+
+
+
 
   const handleLogout = () => {
     signOut(auth)
@@ -74,9 +142,10 @@ const Sidebar = () => {
         <>
           <div className="top">
             <Link to="/" style={{ textDecoration: "none" }}>
-              <span className="logo">
-                {admin ? "Secure File Sharing Admin" : "Secure File Sharing"}
-              </span>
+              {/* <span className="logo">
+                {admin ? "OnlyFile Admin" : "OnlyFile"}
+              </span> */}
+              <img className="logoImg" src={admin ? AdminLogo : Logo} alt="Logo" />
             </Link>
           </div>
           <hr />
@@ -103,25 +172,27 @@ const Sidebar = () => {
                   <span>Files</span>
                 </Link>
               </li> */}
-              <p className="title">SERVICE</p>
-              {/* <li>
+              {/* <p className="title">SERVICE</p>
+              <li>
                 <InsertChartIcon className="icon" />
                 <span>Statistics</span>
-              </li> */}
-              <li>
-                <SettingsSystemDaydreamOutlinedIcon className="icon" />
-                <span>System Health</span>
               </li>
-              {/* <li>
+              <li>
+                <Link to="/systemhealth" style={{ textDecoration: "none" }}>
+                  <SettingsSystemDaydreamOutlinedIcon className="icon" />
+                  <span>System Health</span>
+                </Link>
+              </li>
+              <li>
                 <NotificationsNoneIcon className="icon" />
                 <span>Notifications</span>
-              </li> */}
+              </li>
               <li>
                 <Link to="/enquiries" style={{ textDecoration: "none" }}>
                   <SupportAgentIcon className="icon" />
                   <span>Enquiries</span>
                 </Link>
-              </li>
+              </li> */}
               <p className="title">USER</p>
               <li>
                 <Link to="/users/profile" style={{ textDecoration: "none" }}>
@@ -157,9 +228,10 @@ const Sidebar = () => {
         <>
           <div className="top">
             <Link to="/" style={{ textDecoration: "none" }}>
-              <span className="logo">
-                {admin ? "Secure File Sharing Admin" : "Secure File Sharing"}
-              </span>
+              {/* <span className="logo">
+                {admin ? "OnlyFile Admin" : "OnlyFile"}
+              </span> */}
+              <img className="logoImg" src={admin ? AdminLogo : Logo} alt="Logo" />
             </Link>
           </div>
           <hr />
@@ -202,6 +274,12 @@ const Sidebar = () => {
                   <PeopleAltOutlinedIcon className="icon" />
                   <span>Shared</span>
                 </Link>
+              </li>              
+              <li>
+                <Link to="/files/sharing" style={{ textDecoration: "none" }}>
+                  <ShareIcon className="icon" />
+                  <span>Sharing</span>
+                </Link>
               </li>
               <li>
                 <Link to="/files/trash" style={{ textDecoration: "none" }}>
@@ -209,17 +287,17 @@ const Sidebar = () => {
                   <span>Trash</span>
                 </Link>
               </li>
-              <p className="title">SERVICE</p>
-              {/* <li>
+              {/* <p className="title">SERVICE</p>
+              <li>
                 <NotificationsNoneIcon className="icon" />
                 <span>Notifications</span>
-              </li> */}
+              </li>
               <li>
                 <Link to="/enquiries" style={{ textDecoration: "none" }}>
                   <SupportAgentIcon className="icon" />
                   <span>Enquiries</span>
                 </Link>
-              </li>
+              </li> */}
               <p className="title">USER</p>
               <li>
                 <Link to="/users/profile" style={{ textDecoration: "none" }}>
@@ -255,11 +333,11 @@ const Sidebar = () => {
                 // color="primary"
                 determinate={true}
                 // size="md"
-                value={30}
+                value={percentile_used}
               />
             </Box>
           </div>
-          <div className="barComment">5 GB of 20 GB used</div>
+          <div className="barComment">{amount} of {convert_storage_limit} used</div>
         </>
       )}
     </div>
