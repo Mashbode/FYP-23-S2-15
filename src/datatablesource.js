@@ -72,11 +72,16 @@ export const userColumns = [
 // ************************** Connect with Django **************************
 // Change the field according to the data fetched from Datatabls.jsx -> useEffect()
 export const fileColumns = [
-  { field: "id", headerName: "File ID", width: 200 },
+  { field: "id", headerName: "No.", width: 70 ,
+    // renderCell: (params) => {
+    //   let uploadTime = new Date(params.row.id).toDateString();
+    //   return <div className="cellWithLastModified">{uploadTime}</div>;
+    // }
+  },
   {
     field: "fileName",
     headerName: "File Name",
-    width: 350,
+    width: 1000,
   },
   {
     field: "userName",
@@ -133,16 +138,60 @@ export const fileColumns = [
 // ************************** Connect with Django **************************
 // Change the field according to the data fetched from Datatabls.jsx -> useEffect()
 export const sharedColumns = [
-  { field: "id", headerName: "File ID", width: 250 },
+  { field: "id", headerName: "No.", width: 70 },
   {
     field: "fileName",
     headerName: "File Name",
-    width: 300,
+    width: 1000,
   },
   {
     field: "userName",
     headerName: "Shared by",
-    width: 230,
+    width: 250,
+  },
+  {
+    field: "email",
+    headerName: "Email",
+    width: 280,
+  },
+  {
+    field: "timeStamp",
+    headerName: "Shared date",
+    width: 220,
+    renderCell: (params) => {
+      let lastModifiedDate = new Date(
+        //   params.row.timeStamp.toDate() // Returns Date object (Firebase)
+        // ).toDateString(); // turns Data object into readable string (React)
+        params.row.timeStamp
+      ).toLocaleString('en-US', { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric', 
+        hour: '2-digit', 
+        minute: '2-digit', 
+        second: '2-digit', 
+        hour12: false 
+    }); // turns Data object into readable string (React)
+      return <div className="cellWithLastModified">{lastModifiedDate}</div>;
+    },
+  },
+];
+export const sharingColumns = [
+  { field: "id", headerName: "No.", width: 70 },
+  {
+    field: "fileName",
+    headerName: "File Name",
+    width: 1000,
+  },
+  {
+    field: "userName",
+    headerName: "Shared to",
+    width: 250,
+  },
+  {
+    field: "email",
+    headerName: "Email",
+    width: 280,
   },
   {
     field: "timeStamp",
@@ -171,17 +220,17 @@ export const sharedColumns = [
 // ************************** Connect with Django **************************
 // Change the field according to the data fetched from Datatabls.jsx -> useEffect()
 export const trashColumns = [
-  { field: "id", headerName: "File ID", width: 250 },
+  { field: "id", headerName: "No.", width: 70 },
   {
     field: "fileName",
     headerName: "File Name",
-    width: 300,
+    width: 1000,
   },
-  {
-    field: "userName",
-    headerName: "Uploader",
-    width: 230,
-  },
+  // {
+  //   field: "userName",
+  //   headerName: "Uploader",
+  //   width: 230,
+  // },
   {
     field: "timeStamp",
     headerName: "Trashed Date",

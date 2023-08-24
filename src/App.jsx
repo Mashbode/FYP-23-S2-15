@@ -8,15 +8,11 @@ import Single from "./pages/single/Single";
 import Edit from "./pages/edit/Edit";
 import ChangePassword from "./pages/password/ChangePassword";
 import OTP from "./pages/otp/OTP";
-import MyDrive from "./pages/mydrive/MyDrive";
-import AdminDrive from "./pages/admindrive/AdminDrive";
-import Shared from "./pages/shared/Shared";
-import Trash from "./pages/trash/Trash";
 import UploadFile from "./pages/uploadfile/UploadFile";
 import UpdateFile from "./pages/updatefiles/UpdateFile";
+import SystemHealth from "./pages/systemhealth/SystemHealth";
 
 import "./style/dark.scss";
-import "devextreme/dist/css/dx.light.css";
 
 import { DarkModeContext } from "./context/darkModeContext";
 import { AuthContext } from "./context/AuthContext";
@@ -24,44 +20,44 @@ import { AuthContext } from "./context/AuthContext";
 import { useContext } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
-const userInputs = [
-  // Changed id to its actual name w/ adoption of firebase
-  {
-    id: "displayName",
-    label: "Name",
-    type: "text",
-    placeholder: "John Doe",
-  },
-  {
-    id: "username",
-    label: "Username",
-    type: "text",
-    placeholder: "john_doe",
-  },
-  {
-    id: "email",
-    label: "Email",
-    type: "mail",
-    placeholder: "john_doe@gmail.com",
-  },
-  {
-    id: "date",
-    lable: "Registered Date",
-    type: "date",
-    placeholder: "10 July 2023",
-  },
-  {
-    id: "phone",
-    label: "Phone",
-    type: "text",
-    placeholder: "+1 234 567 89",
-  },
-  {
-    id: "password",
-    label: "Password",
-    type: "password",
-  },
-];
+// const userInputs = [
+//   // Changed id to its actual name w/ adoption of firebase
+//   {
+//     id: "displayName",
+//     label: "Name",
+//     type: "text",
+//     placeholder: "John Doe",
+//   },
+//   {
+//     id: "username",
+//     label: "Username",
+//     type: "text",
+//     placeholder: "john_doe",
+//   },
+//   {
+//     id: "email",
+//     label: "Email",
+//     type: "mail",
+//     placeholder: "john_doe@gmail.com",
+//   },
+//   {
+//     id: "date",
+//     lable: "Registered Date",
+//     type: "date",
+//     placeholder: "10 July 2023",
+//   },
+//   {
+//     id: "phone",
+//     label: "Phone",
+//     type: "text",
+//     placeholder: "+1 234 567 89",
+//   },
+//   {
+//     id: "password",
+//     label: "Password",
+//     type: "password",
+//   },
+// ];
 
 function App() {
   const { darkMode } = useContext(DarkModeContext);
@@ -159,6 +155,14 @@ function App() {
                     <List type="shared" />
                   </RequireAuth>
                 }
+              />              
+              <Route
+                path="sharing"
+                element={
+                  <RequireAuth>
+                    <List type="sharing" />
+                  </RequireAuth>
+                }
               />
               <Route
                 path="trash"
@@ -201,39 +205,11 @@ function App() {
                   }
                 /> */}
             </Route>
-            <Route path="my-drive">
-              <Route
-                index
-                element={
-                  <RequireAuth>
-                    <MyDrive />
-                  </RequireAuth>
-                }
-              />
-              <Route
-                index
-                path="shared"
-                element={
-                  <RequireAuth>
-                    <Shared />
-                  </RequireAuth>
-                }
-              />
-              <Route
-                index
-                path="trash"
-                element={
-                  <RequireAuth>
-                    <Trash />
-                  </RequireAuth>
-                }
-              />
-            </Route>
             <Route
-              path="admin-drive"
+              path="systemhealth"
               element={
                 <RequireAuth>
-                  <AdminDrive />
+                  <SystemHealth />
                 </RequireAuth>
               }
             />
