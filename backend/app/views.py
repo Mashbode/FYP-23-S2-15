@@ -348,7 +348,7 @@ class getFileversions(generics.ListAPIView):
 #         return Filetable.objects.filter(client_id=self.kwargs['client_id'])
 
 def getallClientfiles(request, client_id):
-    test = Filetable.objects.filter(client_id=client_id).values('file_id', 'filename','filetype', 'filesize', 'last_change', 'uploadtime', 'client__u_id__f_name', 'client__u_id__l_name')
+    test = Filetable.objects.filter(client_id=client_id).values('file_id', 'filename','filetype', 'filesize', 'last_change', 'uploadtime', 'client__u_id__f_name', 'client__u_id__l_name', 'client')
     data = {'result': list(test)}
     return JsonResponse(data)
 ##########################################################################    
