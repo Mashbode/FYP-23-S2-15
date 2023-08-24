@@ -76,7 +76,7 @@ export const fileColumns = [
   {
     field: "fileName",
     headerName: "File Name",
-    width: 200,
+    width: 350,
   },
   {
     field: "userName",
@@ -86,13 +86,19 @@ export const fileColumns = [
   {
     field: "timeStamp",
     headerName: "Last Modified",
-    width: 150,
+    width: 220,
     renderCell: (params) => {
       let lastModifiedDate = new Date(
-        //   params.row.timeStamp.toDate() // Returns Date object (Firebase)
-        // ).toDateString(); // turns Data object into readable string (React)
         params.row.timeStamp
-      ).toDateString(); // turns Data object into readable string (React)
+      ).toLocaleString('en-US', { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric', 
+        hour: '2-digit', 
+        minute: '2-digit', 
+        second: '2-digit', 
+        hour12: false 
+    }); // turns Data object into readable string (React)
       return <div className="cellWithLastModified">{lastModifiedDate}</div>;
     },
   },
@@ -102,9 +108,9 @@ export const fileColumns = [
     width: 100,
     renderCell: (params) => {
       const bytesValue = parseInt(params.row.fileSize, 10);
-      const KBValue = bytesValue / 1024;
-      const MBValue = KBValue / 1024;
-      const GBValue = MBValue / 1024;
+      const KBValue = bytesValue / 1000;
+      const MBValue = KBValue / 1000;
+      const GBValue = MBValue / 1000;
 
       if (GBValue >= 1) {
         return (
@@ -141,13 +147,21 @@ export const sharedColumns = [
   {
     field: "timeStamp",
     headerName: "Shared date",
-    width: 150,
+    width: 220,
     renderCell: (params) => {
       let lastModifiedDate = new Date(
         //   params.row.timeStamp.toDate() // Returns Date object (Firebase)
         // ).toDateString(); // turns Data object into readable string (React)
         params.row.timeStamp
-      ).toDateString(); // turns Data object into readable string (React)
+      ).toLocaleString('en-US', { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric', 
+        hour: '2-digit', 
+        minute: '2-digit', 
+        second: '2-digit', 
+        hour12: false 
+    }); // turns Data object into readable string (React)
       return <div className="cellWithLastModified">{lastModifiedDate}</div>;
     },
   },
@@ -171,13 +185,21 @@ export const trashColumns = [
   {
     field: "timeStamp",
     headerName: "Trashed Date",
-    width: 150,
+    width: 220,
     renderCell: (params) => {
       let lastModifiedDate = new Date(
         //   params.row.timeStamp.toDate() // Returns Date object (Firebase)
         // ).toDateString(); // turns Data object into readable string (React)
         params.row.timeStamp
-      ).toDateString(); // turns Data object into readable string (React)
+      ).toLocaleString('en-US', { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric', 
+        hour: '2-digit', 
+        minute: '2-digit', 
+        second: '2-digit', 
+        hour12: false 
+    }); // turns Data object into readable string (React)
       return <div className="cellWithLastModified">{lastModifiedDate}</div>;
     },
   },
@@ -187,9 +209,9 @@ export const trashColumns = [
     width: 100,
     renderCell: (params) => {
       const bytesValue = parseInt(params.row.fileSize, 10);
-      const KBValue = bytesValue / 1024;
-      const MBValue = KBValue / 1024;
-      const GBValue = MBValue / 1024;
+      const KBValue = bytesValue / 1000;
+      const MBValue = KBValue / 1000;
+      const GBValue = MBValue / 1000;
 
       if (GBValue >= 1) {
         return (
@@ -217,9 +239,14 @@ export const enquiryColumns = [
     width: 350,
   },
   {
-    field: "name",
-    headerName: "Enquirer",
-    width: 150,
+    field: "text",
+    headerName: "Text",
+    width: 1200,
+  },
+  {
+    field: "email",
+    headerName: "Email",
+    Width: 250,
   },
   {
     field: "timeStamp",
@@ -231,10 +258,5 @@ export const enquiryColumns = [
       ).toDateString(); // turns Data object into readable string (React)
       return <div className="cellWithLastModified">{lastModifiedDate}</div>;
     },
-  },
-  {
-    field: "enquiryStatus",
-    headerName: "Status",
-    width: 150,
   },
 ];
