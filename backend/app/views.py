@@ -442,11 +442,12 @@ class sharefileView(APIView):
             # getti = Userstab.objects.filter(email=email).values('u_id')
             getti = Users.objects.filter(email=email).values('u_id')
             ## get client_id
-            gettor = Client.objects.filter(u_id=getti[0]['u_id']).values('client_id')
+            gettor = Client.objects.filter(u_id=getti[0]['u_id']).values('client_id', 'u_id__f_name', 'u_id__l_name')
+            name = gettor[0]['u_id__f_name'] + " " + gettor[0]['u_id__l_name']
             ## get filename
             files = Filetable.objects.filter(file_id=fileId).values("filename")
             ## add into sharedFileAccess 
-            create = Sharedfileaccess(file_id=fileId,client_id= clientId, shared_client_id = gettor[0]['client_id'])
+            create = Sharedfileaccess(file_id=fileId,client_id= clientId, shared_client_id = gettor[0]['client_id'], shared_client_name=name)
             create.save()
             return HttpResponse('yes')
         else:
