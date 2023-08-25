@@ -129,6 +129,9 @@ urlpatterns = [
     path('api/admin/total/storage', gettotal),
         ## get total number of shares for admin
     path('api/admin/total/share', getsharedForAd),
+
+           ## new query with number 
+    path('api/user/login/<str:phone>', queryPhoneNumber),
         #######################################################################
 
     path('api/<uuid:fileId>', testingfas),
