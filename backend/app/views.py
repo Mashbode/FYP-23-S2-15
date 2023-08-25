@@ -452,6 +452,12 @@ class sharefileView(APIView):
             return HttpResponse('yes')
         else:
             return HttpResponse('no')
+        
+## using phone number to query     
+def queryPhoneNumber(request, phone):
+    stat = Users.objects.filter(phone_number = phone).values('username','f_name','l_name','email', 'phone_number','usertype','u_id')
+    data = {'results': list(stat)}
+    return JsonResponse(data)
 ##########################################################################
 
 #####################################################################################
