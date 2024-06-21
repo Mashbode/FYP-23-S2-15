@@ -72,7 +72,7 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
 # cloud stuff
 ## fyp email
 fyps215@gmail.com \
-bMHRKwU-P9MCq \
+
 This is just a burner email for this project.
 ## postgres (still being modified)
 maindb.sql - this is our db schema that is for holding the metadata of files and everything else like admin, folder .etc \
